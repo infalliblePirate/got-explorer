@@ -1,6 +1,6 @@
 @GotExplorer.Server_HostAddress = http://localhost:5153
 
-GET {{GotExplorer.Server_HostAddress}}/weatherforecast/
+GET {{GotExplorer.Server_HostAddress}}/api/Account/register
 Accept: application/json
 
 ###
