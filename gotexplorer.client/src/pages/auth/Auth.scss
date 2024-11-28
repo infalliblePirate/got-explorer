@@ -1,0 +1,152 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+    grid-template-rows: 1fr;
+    height: 100vh;
+    align-items: center;
+
+    .photo-bg {
+        grid-column: 1;
+        content: url(../../assets/images/dragon-eye.png);
+        width: 100%;
+        height: 100vh;
+    }
+
+    .col-2 {
+        margin: 50px;
+        grid-column: 2;
+        grid-row: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .logo {
+            content: url(../../assets/images/blackGOTlogo.png);
+            margin-bottom: 50px;
+            width: 100%;
+        }
+
+        .greeting {
+            font-weight: bold;
+            font-size: 24px;
+            align-self: flex-start;
+        }
+
+        form {
+            width: 100%;
+            margin: 10px;
+            margin-top: 24px;
+            margin-bottom: 0;
+
+            .register-label {
+                margin: 20px;
+            }
+
+            .login-label {
+                margin: 12px;
+            }
+
+            input {
+                width: 100%;
+                height: 48px;
+                display: block;
+                padding: 10px 0 10px 10px;
+                border-radius: 8px;
+                margin-top: 10px;
+                margin-bottom: 24px;
+                background-color: #E5E5E5;
+                border: 5px;
+                font-size: 20px;
+
+                &::placeholder {
+                    padding-left: 10px;
+                    color: #808080;
+                }
+            }
+
+            #email-container {
+                display: flex;
+            }
+
+            #pass-container {
+                position: relative;
+                display: flex;
+                align-items: center;
+                width: 100%;
+
+                button {
+                    position: absolute;
+                    right: 10px;
+                    bottom: 19px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+
+                    #pass-eye-img {
+                        content: url(../../assets/images/pass_see.png);
+                    }
+                }
+
+                input {
+                    margin-bottom: 0;
+                }
+            }
+
+            #rmmbr-btn-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+
+                .remember-me {
+                    display: flex;
+                    align-items: center;
+                    font-size: 16px;
+                    position: relative;
+
+                    input[type="checkbox"] {
+                        position: relative;
+                        top: 7px;
+                        right: 8px;
+                        width: 22px;
+                        height: 22px;
+                    }
+                }
+
+                .link {
+                    color: #007AFF;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            input[type="submit"] {
+                width: 102%;
+                height: 50px;
+                margin-top: 40px;
+                color: white;
+                background-color: #007AFF;
+                border-radius: 6px;
+
+                &:hover {
+                    background-color: #002aff;
+                }
+            }
+        }
+
+        .link {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+}
