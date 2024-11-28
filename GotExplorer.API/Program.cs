@@ -4,14 +4,15 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
-using GotExplorer.DAL.Models;
+using GotExplorer.DAL.Entities;
+using GotExplorer.BLL.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 namespace GotExplorer.API
 {
     public class Program
@@ -39,8 +40,10 @@ namespace GotExplorer.API
                 };
             });
 
-            // TODO: Connect database
-            builder.Services.AddDbContext<AppDbContext>();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             builder.Services.AddIdentity<User, UserRole>(options =>
             {
@@ -49,7 +52,8 @@ namespace GotExplorer.API
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredLength = 8;
-            }).AddEntityFrameworkStores<AppDbContext>();
+            }).AddRoles<UserRole>()
+              .AddEntityFrameworkStores<AppDbContext>();
 
 
             // Add CORS
@@ -141,12 +145,28 @@ namespace GotExplorer.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
 
+            using (var scope = app.Services.CreateScope())
+            {
+                CreateRoles(scope.ServiceProvider).Wait();
+            }
             app.Run();
+        }
+
+        public static async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roles = serviceProvider.GetRequiredService<IConfiguration>().GetSection("Roles").Get<string[]>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<UserRole>>();
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new UserRole(role));
+                }
+            }
         }
     }
 }

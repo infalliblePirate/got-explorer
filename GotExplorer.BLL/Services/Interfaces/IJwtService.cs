@@ -1,4 +1,4 @@
-﻿using GotExplorer.DAL.Models;
+﻿using GotExplorer.DAL.Entities;
 
 namespace GotExplorer.BLL.Services.Interfaces
 {
