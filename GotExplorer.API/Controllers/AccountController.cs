@@ -13,7 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-
+using GotExplorer.API.Extensions;
 namespace GotExplorer.API.Controllers
 {
     [Route("api/[controller]")]
@@ -64,25 +64,6 @@ namespace GotExplorer.API.Controllers
         }
 
         /// <summary>
-        /// Get user data by id.
-        /// </summary>
-        /// <param name="id">user id</param>
-        /// <response code="200">Successfully retrieved user data</response>
-        /// <response code="400">The request data is invalid or incomplete.</response>
-        /// <response code="404">User not found.</response>
-        /// <response code="500">An unexpected error occurred on the server.</response>   
-        [HttpGet("get/{id}")]
-        [ProducesResponseType(typeof(GetUserDTO),200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public async Task<IActionResult> GetUserById(string id)
-        {
-            var result = await _userService.GetUserById(id);
-            return Ok(result);
-        }
-
-        /// <summary>
         /// Update user data by id stored in jwt claims. Require Authorization.
         /// </summary>
         /// <param name="updateUserDTO">The data to update the user's profile</param>
@@ -91,15 +72,15 @@ namespace GotExplorer.API.Controllers
         /// <response code="404">User not found.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>        
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("update")]
+        [HttpPut("update")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> UpdateUserById([FromBody] UpdateUserDTO updateUserDTO)
         {
-            updateUserDTO.Id = User.Claims.Where(x => x.Type == "Id").FirstOrDefault()?.Value;
-            await _userService.UpdateUserById(updateUserDTO);
+            updateUserDTO.Id = User.GetClaimValue("Id");
+            await _userService.UpdateUserByIdAsync(updateUserDTO);
             return Ok();
         }
 
@@ -112,15 +93,15 @@ namespace GotExplorer.API.Controllers
         /// <response code="404">User not found.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>        
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("update-password")]
+        [HttpPut("update-password")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordDTO updateUserPasswordDTO)
         {
-            updateUserPasswordDTO.Id = User.Claims.Where(x => x.Type == "Id").FirstOrDefault()?.Value; 
-            await _userService.UpdatePassword( updateUserPasswordDTO);
+            updateUserPasswordDTO.Id = User.GetClaimValue("Id");
+            await _userService.UpdatePasswordAsync( updateUserPasswordDTO);
             return Ok();
         }
 
@@ -128,19 +109,19 @@ namespace GotExplorer.API.Controllers
         /// Generates user password reset link and send it to user's email.
         /// </summary>
         /// <param name="generatePasswordResetLinkDTO">The data to generate the user's password reset link</param>
-        /// <response code="200">Successfully generated user password reset link.</response>
+        /// <response code="204">Successfully generated user password reset link.</response>
         /// <response code="400">The request data is invalid or incomplete.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>        
-        [HttpPost("reset-password-link")]
-        [ProducesResponseType(200)]
+        [HttpPut("password-reset-link")]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> GeneratePasswordResetLink([FromBody] GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO)
         {
-            await _userService.GeneratePasswordResetLink(generatePasswordResetLinkDTO, $"{Request.Scheme}://{Request.Host}{Url.Content("~/")}");
-            return Ok();
+            await _userService.GeneratePasswordResetLinkAsync(generatePasswordResetLinkDTO.Email, $"{Request.Scheme}://{Request.Host}{Url.Content("~/")}");
+            return NoContent();
         }
 
         /// <summary>
@@ -151,14 +132,14 @@ namespace GotExplorer.API.Controllers
         /// <response code="400">The request data is invalid or incomplete.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>        
-        [HttpPost("reset-password")]
+        [HttpPut("password-reset")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
-            await _userService.ResetPassword(resetPasswordDTO);
+            await _userService.ResetPasswordAsync(resetPasswordDTO);
             return Ok();
         }
 
@@ -177,8 +158,8 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> DeleteUser()
         {
-            var userId = User.Claims.Where(x => x.Type == "Id").FirstOrDefault()?.Value;
-            await _userService.DeleteUserById(userId);
+            var userId = User.GetClaimValue("Id");
+            await _userService.DeleteUserByIdAsync(userId);
             return Ok();
         }
     }

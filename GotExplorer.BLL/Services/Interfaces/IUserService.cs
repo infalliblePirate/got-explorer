@@ -8,11 +8,10 @@ namespace GotExplorer.BLL.Services.Interfaces
     {
         Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO);
         Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO);
-        Task UpdateUserById(UpdateUserDTO updateUserDTO);
-        Task DeleteUserById(string userId);
-        Task UpdatePassword(UpdateUserPasswordDTO updateUserPasswordDTO);
-        Task<GetUserDTO> GetUserById(string id);
-        Task GeneratePasswordResetLink(GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO, string origin);
-        Task ResetPassword(ResetPasswordDTO ResetPasswordDTO);
+        Task UpdateUserByIdAsync(UpdateUserDTO updateUserDTO);
+        Task DeleteUserByIdAsync(string userId);
+        Task UpdatePasswordAsync(UpdateUserPasswordDTO updateUserPasswordDTO);
+        Task GeneratePasswordResetLinkAsync(string email, string origin);
+        Task ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO);
     }
 }

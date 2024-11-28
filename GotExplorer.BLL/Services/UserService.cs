@@ -19,6 +19,7 @@ namespace GotExplorer.BLL.Services
         private readonly IEmailService _emailService;
         private readonly IValidator<RegisterDTO> _registerDtoValidator;
         private readonly IValidator<LoginDTO> _loginDtoValidator;
+        private readonly IValidator<UpdateUserDTO> _updateUserDtoValidator;
         public UserService(
             IJwtService jwtService, 
             UserManager<User> userManager, 
@@ -26,6 +27,7 @@ namespace GotExplorer.BLL.Services
             IMapper mapper, 
             IValidator<LoginDTO> loginDtoValidator, 
             IValidator<RegisterDTO> registerDtoValidator,
+            IValidator<UpdateUserDTO> updateUserDtoValidator,
             IEmailService emailService)
         {
             _jwtService = jwtService;
@@ -35,6 +37,7 @@ namespace GotExplorer.BLL.Services
             _emailService = emailService;
             _loginDtoValidator = loginDtoValidator;
             _registerDtoValidator = registerDtoValidator;
+            _updateUserDtoValidator = updateUserDtoValidator;
         }
 
         public async Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO)
@@ -113,23 +116,21 @@ namespace GotExplorer.BLL.Services
             serviceResult.ResultObject = userDto;   
             return serviceResult;
         }
-
-        public async Task<GetUserDTO> GetUserById(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-
-            if (user == null)
-                throw new HttpException(StatusCodes.Status404NotFound, "User not found");
-
-            return _mapper.Map<GetUserDTO>(user);
-        }
              
-        public async Task UpdateUserById(UpdateUserDTO updateUserDTO)
+        public async Task UpdateUserByIdAsync(UpdateUserDTO updateUserDTO)
         {
+            var validationResult = await _updateUserDtoValidator.ValidateAsync(updateUserDTO);
+            if (!validationResult.IsValid)
+            {
+                var ex = new BadRequestException("Validation failed");
+                ex.Data["errors"] = validationResult.Errors;
+                throw ex;
+            }
+
             var user = await _userManager.FindByIdAsync(updateUserDTO.Id);
 
             if (user == null)
-                throw new HttpException(StatusCodes.Status404NotFound, "User not found");
+                throw new NotFoundException("User not found");
 
             _mapper.Map(updateUserDTO,user);
 
@@ -137,69 +138,82 @@ namespace GotExplorer.BLL.Services
 
             if (!result.Succeeded)
             {
-                var ex = new HttpException(StatusCodes.Status400BadRequest, "Updating user failed");
+                var ex = new BadRequestException("Updating user failed");
                 ex.Data["errors"] = result.Errors;
                 throw ex;
             }
         }
 
-        public async Task UpdatePassword(UpdateUserPasswordDTO updateUserPasswordDTO)
+        public async Task UpdatePasswordAsync(UpdateUserPasswordDTO updateUserPasswordDTO)
         {
             var user = await _userManager.FindByIdAsync(updateUserPasswordDTO.Id);
 
             if (user == null)
-                throw new HttpException(StatusCodes.Status404NotFound, "User not found");
+                throw new NotFoundException("User not found");
 
             var result = await _userManager.ChangePasswordAsync(user,updateUserPasswordDTO.CurrentPassword,updateUserPasswordDTO.NewPassword);
 
             if (!result.Succeeded)
             {
-                var ex = new HttpException(StatusCodes.Status400BadRequest, "Updating password failed");
+                var ex = new BadRequestException("Updating password failed");
                 ex.Data["errors"] = result.Errors;
                 throw ex;
             }
         }
 
-        public async Task GeneratePasswordResetLink(GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO, string origin)
+        public async Task GeneratePasswordResetLinkAsync(string email, string origin)
         {
-            var user = await _userManager.FindByEmailAsync(generatePasswordResetLinkDTO.Email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
-                throw new HttpException(StatusCodes.Status404NotFound, "User not found");
-   
+                throw new NotFoundException("User not found");
+
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var url = $"{origin}reset-password?id={user.Id}&token={token}";
-            _emailService.SendEmail(generatePasswordResetLinkDTO.Email, "Your Password Reset Link", url);
+            await _emailService.SendEmailAsync(email, "Your Password Reset Link", url);
         }
 
-        public async Task ResetPassword(ResetPasswordDTO resetPasswordDTO)
+        public async Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
             var user = await _userManager.FindByIdAsync(resetPasswordDTO.Id.ToString());
             if (user == null)
-                throw new HttpException(StatusCodes.Status404NotFound, "User not found");
+                throw new NotFoundException("User not found");
 
             var result = await _userManager.ResetPasswordAsync(user, resetPasswordDTO.Token, resetPasswordDTO.Token);
 
             if (!result.Succeeded)
             {
-                var ex = new HttpException(StatusCodes.Status400BadRequest, "Resetting password failed");
+                var ex = new BadRequestException("Resetting password failed");
                 ex.Data["errors"] = result.Errors;
                 throw ex;
             }
         }
 
-        public async Task DeleteUserById(string userId)
+        public async Task DeleteUserByIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-                throw new HttpException(StatusCodes.Status404NotFound, "User not found");
+                throw new NotFoundException("User not found");
 
             var result = await _userManager.DeleteAsync(user);
 
+            var rolesForUser = await _userManager.GetRolesAsync(user);
+
+
+            if (rolesForUser.Count() > 0)
+            {
+                foreach (var item in rolesForUser.ToList())
+                {
+                    await _userManager.RemoveFromRoleAsync(user, item);
+                }
+            }
+
+            await _userManager.DeleteAsync(user);
+  
             if (!result.Succeeded)
             {
-                var ex = new HttpException(StatusCodes.Status400BadRequest, "Deleting user failed");
+                var ex = new BadRequestException("Deleting user failed");
                 ex.Data["errors"] = result.Errors;
                 throw ex;
             }

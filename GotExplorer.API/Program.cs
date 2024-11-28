@@ -95,6 +95,8 @@ namespace GotExplorer.API
             // Add Validators
             builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDtoValidator>();
             builder.Services.AddScoped<IValidator<LoginDTO>, LoginDtoValidator>();
+            builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDtoValidator>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
@@ -154,7 +156,6 @@ namespace GotExplorer.API
             {
                 options.LowercaseUrls = true;
             });
-
 
             var app = builder.Build();
 

@@ -12,9 +12,13 @@ namespace GotExplorer.BLL.Mapper
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<User, UpdateUserDTO>().ReverseMap()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.ImageId, opt => opt.PreCondition((src,dest) => src.ImageId != null))
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-            CreateMap<User, GetUserDTO>().ReverseMap();
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Username))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.ImageId, opt =>
+                {
+                    opt.MapFrom(src => src.ImageId);
+                    opt.PreCondition(src => src.ImageId != null);
+                });
         }
     }
 }
