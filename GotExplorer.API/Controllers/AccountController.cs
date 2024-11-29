@@ -39,7 +39,7 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
-            var result = await _userService.Register(registerDTO);
+            var result = await _userService.RegisterAsync(registerDTO);
             return result.ToActionResult<UserDTO>();
         }
 
@@ -58,7 +58,7 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            var result = await _userService.Login(loginDTO);
+            var result = await _userService.LoginAsync(loginDTO);
            
             return result.ToActionResult<UserDTO>();
         }
@@ -69,19 +69,21 @@ namespace GotExplorer.API.Controllers
         /// <param name="updateUserDTO">The data to update the user's profile</param>
         /// <response code="200">Successfully updated the user data.</response>
         /// <response code="400">The request data is invalid or incomplete.</response>
+        /// <response code="401">Authentication failed due to invalid JWT.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>        
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("update")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> UpdateUserById([FromBody] UpdateUserDTO updateUserDTO)
         {
             updateUserDTO.Id = User.GetClaimValue("Id");
-            await _userService.UpdateUserByIdAsync(updateUserDTO);
-            return Ok();
+            var result = await _userService.UpdateUserByIdAsync(updateUserDTO);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -90,19 +92,21 @@ namespace GotExplorer.API.Controllers
         /// <param name="updateUserPasswordDTO">The data to update the user's password</param>
         /// <response code="200">Successfully updated the user password.</response>
         /// <response code="400">The request data is invalid or incomplete.</response>
+        /// <response code="401">Authentication failed due to invalid JWT.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>        
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("update-password")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordDTO updateUserPasswordDTO)
         {
             updateUserPasswordDTO.Id = User.GetClaimValue("Id");
-            await _userService.UpdatePasswordAsync( updateUserPasswordDTO);
-            return Ok();
+            var result = await _userService.UpdatePasswordAsync( updateUserPasswordDTO);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -120,8 +124,12 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> GeneratePasswordResetLink([FromBody] GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO)
         {
-            await _userService.GeneratePasswordResetLinkAsync(generatePasswordResetLinkDTO.Email, $"{Request.Scheme}://{Request.Host}{Url.Content("~/")}");
-            return NoContent();
+            var result = await _userService.GeneratePasswordResetLinkAsync(generatePasswordResetLinkDTO.Email, $"{Request.Scheme}://{Request.Host}{Url.Content("~/")}");
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -139,8 +147,8 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
-            await _userService.ResetPasswordAsync(resetPasswordDTO);
-            return Ok();
+            var result = await _userService.ResetPasswordAsync(resetPasswordDTO);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -148,19 +156,21 @@ namespace GotExplorer.API.Controllers
         /// </summary>
         /// <response code="200">Successfully deleted user</response>
         /// <response code="400">The request data is invalid or incomplete.</response>
+        /// <response code="401">Authentication failed due to invalid JWT.</response>
         /// <response code="404">User not found</response>
         /// <response code="500">An unexpected error occurred on the server.</response>   
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpDelete("delete")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> DeleteUser()
         {
             var userId = User.GetClaimValue("Id");
-            await _userService.DeleteUserByIdAsync(userId);
-            return Ok();
+            var result = await _userService.DeleteUserByIdAsync(userId);
+            return result.ToActionResult();
         }
     }
 }

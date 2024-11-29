@@ -8,19 +8,19 @@ namespace GotExplorer.BLL.Validators
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage("Id must be not null");
+                .WithMessage("Id is required.");
             RuleFor(x => x.Email)
                 .EmailAddress()
                 .When(x => !string.IsNullOrEmpty(x.Email))
-                .WithMessage("Invalid email address");
+                .WithMessage("Email must be a valid email address.");
             RuleFor(x => x.Username)
                 .NotEmpty()
                 .When(x => !string.IsNullOrEmpty(x.Username))
-                .WithMessage("Username cannot be empty");
+                .WithMessage("Username cannot be empty.");
             RuleFor(x => x.ImageId)
                 .Must(x => x > 0)
                 .When(x => x.ImageId != null)
-                .WithMessage("ImageId must be null or greater than 0");
+                .WithMessage("ImageId must be null or greater than 0.");
         }
     }
 }

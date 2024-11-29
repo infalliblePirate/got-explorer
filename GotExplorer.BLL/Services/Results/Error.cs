@@ -7,7 +7,7 @@ namespace GotExplorer.BLL.Services.Results
         public string Code { get; set; }
         public ValidationResult? ValidationResult { get; set; }
         public Error(string code, ValidationResult? validationResult)
-    {
+        {
             Code = code;
             ValidationResult = validationResult;
         }

@@ -96,6 +96,8 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDtoValidator>();
             builder.Services.AddScoped<IValidator<LoginDTO>, LoginDtoValidator>();
             builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDtoValidator>();
+            builder.Services.AddScoped<IValidator<UpdateUserPasswordDTO>, UpdateUserPasswordDtoValidator>();
+            builder.Services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordDtoValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

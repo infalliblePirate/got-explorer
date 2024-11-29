@@ -14,4 +14,16 @@ namespace GotExplorer.BLL.Services.Results
             }
         }
     }
+
+    public class ServiceResult
+    {
+        public Error Error { get; set; } = Error.None;
+        public bool IsSuccess
+        {
+            get
+            {
+                return (Error.ValidationResult == null) || (Error.ValidationResult != null && Error.ValidationResult.IsValid);
+            }
+        }
+    }
 }
