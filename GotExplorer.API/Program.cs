@@ -11,8 +11,17 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
 using GotExplorer.DAL.Entities;
+using GotExplorer.API.Middleware;
+using GotExplorer.BLL.Mapper;
 using GotExplorer.BLL.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.Text.Json;
+using GotExplorer.API.Configuration;
+using GotExplorer.BLL.Options;
+using FluentValidation;
+using GotExplorer.BLL.DTOs;
+using GotExplorer.BLL.Validators;
 namespace GotExplorer.API
 {
     public class Program
@@ -21,9 +30,9 @@ namespace GotExplorer.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-            var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
-            var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+            var jwtSection = builder.Configuration.GetSection("Jwt");
+            var jwtOptions = jwtSection.Get<JwtOptions>();
+            builder.Services.Configure<JwtOptions>(jwtSection);
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -34,9 +43,9 @@ namespace GotExplorer.API
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtIssuer,
-                    ValidAudience = jwtAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 };
             });
 
@@ -52,24 +61,36 @@ namespace GotExplorer.API
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
             }).AddRoles<UserRole>()
               .AddEntityFrameworkStores<AppDbContext>();
 
-
             // Add CORS
+            var corsSettings = builder.Configuration.GetSection("Cors").Get<CorsSettings>();
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
+                options.AddDefaultPolicy(options =>
                 {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
+                    options.WithOrigins(corsSettings.Origins);
+                    options.WithMethods(corsSettings.Methods);
+                    options.WithHeaders(corsSettings.Headers);
                 });
             });
 
             // Add services to the container.
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
+            
+            builder.Services.AddProblemDetails();
+
             builder.Services.AddControllers();
+
+            // Add Validators
+            builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDtoValidator>();
+            builder.Services.AddScoped<IValidator<LoginDTO>, LoginDtoValidator>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
@@ -125,6 +146,12 @@ namespace GotExplorer.API
                 }
             });
 
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
@@ -137,7 +164,7 @@ namespace GotExplorer.API
                 app.UseSwaggerUI();
             }
 
-
+            app.UseExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseCors();
@@ -148,6 +175,8 @@ namespace GotExplorer.API
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
+
+
 
             using (var scope = app.Services.CreateScope())
             {
