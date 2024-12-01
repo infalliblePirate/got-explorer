@@ -12,7 +12,6 @@ namespace GotExplorer.BLL.Services
 {
     public class JwtService : IJwtService
     {
-        private IConfiguration _config;
         private readonly JwtOptions _jwtOptions;
         public JwtService(IOptions<JwtOptions> jwtOptions)
         {

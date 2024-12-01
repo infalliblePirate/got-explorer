@@ -46,8 +46,10 @@ namespace GotExplorer.API.Extensions
                 Status = code,
                 Title = ReasonPhrases.GetReasonPhrase(code),
             };
-            problemDetails.Extensions["errors"] = error.ValidationResult.Errors;
-
+            if (error.ValidationResult != null)
+            {
+                problemDetails.Extensions["errors"] = error.ValidationResult.Errors;
+            }
             return problemDetails;
         }
     }

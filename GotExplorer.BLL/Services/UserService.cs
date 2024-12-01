@@ -266,16 +266,6 @@ namespace GotExplorer.BLL.Services
                 return serviceResult;
             }
 
-            var rolesForUser = await _userManager.GetRolesAsync(user);
-
-            if (rolesForUser.Count() > 0)
-            {
-                foreach (var item in rolesForUser.ToList())
-                {
-                    await _userManager.RemoveFromRoleAsync(user, item);
-                }
-            }
-
             var result = await _userManager.DeleteAsync(user);
 
             if (!result.Succeeded)
