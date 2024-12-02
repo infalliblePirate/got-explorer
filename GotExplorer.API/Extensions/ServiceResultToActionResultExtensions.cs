@@ -16,6 +16,14 @@ namespace GotExplorer.API.Extensions
             }
             return new ObjectResult(GetProblemDetails(serviceResult.Error));
         }
+        public static IActionResult ToActionResult(this ServiceResult serviceResult)
+        {
+            if (serviceResult.IsSuccess)
+            {
+                return new OkResult();
+            }
+            return new ObjectResult(GetProblemDetails(serviceResult.Error));
+        }
         private static ProblemDetails GetProblemDetails(Error error)
         {
             int code = error.Code switch
@@ -26,6 +34,11 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.Forbidden => StatusCodes.Status403Forbidden,
                 ErrorCodes.UserCreationFailed => StatusCodes.Status400BadRequest,
                 ErrorCodes.RoleAssignmentFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.UserUpdateFailed => StatusCodes.Status400BadRequest,
+                ErrorCodes.UserPasswordUpdateFailed => StatusCodes.Status400BadRequest,
+                ErrorCodes.UserResetPasswordFailed => StatusCodes.Status400BadRequest,
+                ErrorCodes.UserDeletionFailed => StatusCodes.Status500InternalServerError,
+                _ => StatusCodes.Status500InternalServerError,
             };
 
             var problemDetails = new ProblemDetails
@@ -33,8 +46,10 @@ namespace GotExplorer.API.Extensions
                 Status = code,
                 Title = ReasonPhrases.GetReasonPhrase(code),
             };
-            problemDetails.Extensions["errors"] = error.ValidationResult.Errors;
-
+            if (error.ValidationResult != null)
+            {
+                problemDetails.Extensions["errors"] = error.ValidationResult.Errors;
+            }
             return problemDetails;
         }
     }

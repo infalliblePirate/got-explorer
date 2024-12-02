@@ -6,7 +6,12 @@ namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO);
-        Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO);
+        Task<ServiceResult<UserDTO>> RegisterAsync(RegisterDTO registerDTO);
+        Task<ServiceResult<UserDTO>> LoginAsync(LoginDTO loginDTO);
+        Task<ServiceResult> UpdateUserByIdAsync(UpdateUserDTO updateUserDTO);
+        Task<ServiceResult> DeleteUserByIdAsync(string userId);
+        Task<ServiceResult> UpdatePasswordAsync(UpdateUserPasswordDTO updateUserPasswordDTO);
+        Task<ServiceResult> GeneratePasswordResetLinkAsync(string email, string origin);
+        Task<ServiceResult> ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO);
     }
 }

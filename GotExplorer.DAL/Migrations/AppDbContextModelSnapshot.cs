@@ -35,7 +35,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasIndex("LevelsId");
 
-                    b.ToTable("GameLevel");
+                    b.ToTable("GameLevel", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Game", b =>
@@ -62,7 +62,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Image", b =>
@@ -91,7 +91,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
 
                     b.HasData(
                         new
@@ -130,7 +130,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Levels");
+                    b.ToTable("Levels", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Model3D", b =>
@@ -159,7 +159,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Models3D");
+                    b.ToTable("Models3D", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.User", b =>
@@ -277,7 +277,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasIndex("ModelsId");
 
-                    b.ToTable("LevelModel3D");
+                    b.ToTable("LevelModel3D", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

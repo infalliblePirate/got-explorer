@@ -63,7 +63,8 @@ namespace GotExplorer.API
                 options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             }).AddRoles<UserRole>()
-              .AddEntityFrameworkStores<AppDbContext>();
+              .AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();
 
             // Add CORS
             var corsSettings = builder.Configuration.GetSection("Cors").Get<CorsSettings>();
@@ -80,7 +81,10 @@ namespace GotExplorer.API
             // Add services to the container.
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+            builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
             
@@ -91,6 +95,10 @@ namespace GotExplorer.API
             // Add Validators
             builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDtoValidator>();
             builder.Services.AddScoped<IValidator<LoginDTO>, LoginDtoValidator>();
+            builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDtoValidator>();
+            builder.Services.AddScoped<IValidator<UpdateUserPasswordDTO>, UpdateUserPasswordDtoValidator>();
+            builder.Services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordDtoValidator>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
@@ -150,7 +158,6 @@ namespace GotExplorer.API
             {
                 options.LowercaseUrls = true;
             });
-
 
             var app = builder.Build();
 
