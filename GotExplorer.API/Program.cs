@@ -99,6 +99,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDtoValidator>();
             builder.Services.AddScoped<IValidator<UpdateUserPasswordDTO>, UpdateUserPasswordDtoValidator>();
             builder.Services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordDtoValidator>();
+            builder.Services.AddScoped<IValidator<IFormFile>, FileValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -183,8 +184,6 @@ namespace GotExplorer.API
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
-
-
 
             using (var scope = app.Services.CreateScope())
             {

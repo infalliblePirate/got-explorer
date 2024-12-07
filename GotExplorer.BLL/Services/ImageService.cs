@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using GotExplorer.DAL.Entities;
+using FluentValidation;
 namespace GotExplorer.BLL.Services
 {
     public class ImageService : IImageService
@@ -17,11 +18,13 @@ namespace GotExplorer.BLL.Services
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly string _imagePath = "Images";
-        public ImageService(AppDbContext appDbContext,IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        private readonly IValidator<IFormFile> _fileValidator;
+        public ImageService(AppDbContext appDbContext,IMapper mapper, IWebHostEnvironment webHostEnvironment, IValidator<IFormFile> fileValidator)
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _fileValidator = fileValidator;
         }
             
         public async Task<ServiceResult<ImageDTO>> GetImageAsync(int id)
@@ -54,18 +57,13 @@ namespace GotExplorer.BLL.Services
         public async Task<ServiceResult> UploadImageAsync(IFormFile image)
         {
             var serviceResult = new ServiceResult();
-
-            if (image == null || image.Length == 0)
+            var validationResult = await _fileValidator.ValidateAsync(image);
+            if (!validationResult.IsValid)
             {
-                serviceResult.Error = new Error(ErrorCodes.Invalid, new ValidationResult
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(image), "Invalid image"),
-                    }
-                });
+                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult);
                 return serviceResult;
             }
-            var fileName = $"{Guid.NewGuid()}_{image.FileName}";
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
             var filePath = Path.Combine(_imagePath,fileName);
             var fileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, filePath);
 
@@ -108,14 +106,10 @@ namespace GotExplorer.BLL.Services
         {
             var serviceResult = new ServiceResult();
 
-            if (imageFile == null || imageFile.Length == 0)
+            var validationResult = await _fileValidator.ValidateAsync(imageFile);
+            if (!validationResult.IsValid)
             {
-                serviceResult.Error = new Error(ErrorCodes.Invalid, new ValidationResult
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(imageFile), "Invalid image"),
-                    }
-                });
+                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult);
                 return serviceResult;
             }
 
@@ -132,7 +126,7 @@ namespace GotExplorer.BLL.Services
                 return serviceResult;
             }
 
-            var newFileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
+            var newFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
             var newFilePath = Path.Combine(_imagePath, newFileName);
             var newFileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, newFilePath);
 
@@ -156,7 +150,6 @@ namespace GotExplorer.BLL.Services
                 {
                     File.Delete(oldFileAbsolutePath);
                 }
-
                 await transaction.CommitAsync();
             }
             catch
