@@ -39,6 +39,8 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.UserResetPasswordFailed => StatusCodes.Status400BadRequest,
                 ErrorCodes.UserDeletionFailed => StatusCodes.Status500InternalServerError,
                 ErrorCodes.ImageUploadFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.ImageUpdateFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.ImageDeletionFailed => StatusCodes.Status500InternalServerError,
                 _ => StatusCodes.Status500InternalServerError,
             };
 
