@@ -22,6 +22,7 @@ using GotExplorer.BLL.Options;
 using FluentValidation;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Validators;
+using Microsoft.Extensions.FileProviders;
 namespace GotExplorer.API
 {
     public class Program
@@ -48,7 +49,6 @@ namespace GotExplorer.API
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 };
             });
-
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -82,6 +82,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
             builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
@@ -98,6 +99,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDtoValidator>();
             builder.Services.AddScoped<IValidator<UpdateUserPasswordDTO>, UpdateUserPasswordDtoValidator>();
             builder.Services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordDtoValidator>();
+            builder.Services.AddScoped<IValidator<IFormFile>, FileValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -182,8 +184,6 @@ namespace GotExplorer.API
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
-
-
 
             using (var scope = app.Services.CreateScope())
             {

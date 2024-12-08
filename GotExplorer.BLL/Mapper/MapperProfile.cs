@@ -27,6 +27,8 @@ namespace GotExplorer.BLL.Mapper
                     opt.MapFrom(src => src.ImageId);
                     opt.PreCondition(src => src.ImageId != null);
                 });
+
+            CreateMap<Image, ImageDTO>().ReverseMap();
         }
     }
 }
