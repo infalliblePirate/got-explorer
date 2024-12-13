@@ -1,4 +1,6 @@
-﻿using GotExplorer.BLL.DTOs;
+﻿using FluentValidation.Results;
+using GotExplorer.API.Extensions;
+using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.DAL.Entities;
@@ -18,72 +20,49 @@ namespace GotExplorer.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IJwtService _jwtService;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        public AccountController(UserManager<User> userManager,IJwtService jwtService, SignInManager<User> signInManager)
+        private readonly IUserService _userService;
+        public AccountController(IUserService userService)
         {
-            _jwtService = jwtService;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _userService = userService;
         }
 
         /// <summary>
         /// Register new user.
         /// </summary>
-        /// <param name="registerDTO">User data for registration</param>
-        /// <response code="200">Returns the JWT token</response>
+        /// <param name="registerDTO">User data for registration.</param>
+        /// <response code="200">Registration succeeded, and a JWT token is returned for the new user.</response>
+        /// <response code="400">Registration failed due to invalid input.</response>
+        /// <response code="500">An unexpected error occurred on the server</response>
         [HttpPost("register")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
-            // TODO: add user registration and validation.
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                var user = new User
-                {
-                    UserName = registerDTO.Username,
-                    Email = registerDTO.Email,
-                };
-
-
-                return Ok(_jwtService.GenerateToken(user));
-
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            var result = await _userService.Register(registerDTO);
+            return result.ToActionResult<UserDTO>();
         }
 
         /// <summary>
         /// Authenticates the user.
         /// </summary>
         /// <param name="loginDTO">Login credentials</param>
-        /// <response code="200">Returns the JWT token</response>
-        /// <response code="401">Returns if invalid username and/or password</response>
+        /// <response code="200">Authentication succeeded; returns a JWT token for the authenticated user.</response>
+        /// <response code="400">Invalid request data</response>
+        /// <response code="401">Authentication failed due to invalid username (or email) and/or password</response>
+        /// <response code="500">An unexpected error occurred on the server</response>        
         [HttpPost("login")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(string), 401)]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            // TODO: add user login validation.
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                // TODO: Change to actual user, after adding database.
-                return Ok( _jwtService.GenerateToken(new User { Email = loginDTO.Username, UserName = loginDTO.Username}));
-            }
-            catch 
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            var result = await _userService.Login(loginDTO);
+           
+            return result.ToActionResult<UserDTO>();
         }
+
         // TODO: Delete endpoint.
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("JwtTest")]

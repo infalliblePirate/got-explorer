@@ -4,10 +4,10 @@ namespace GotExplorer.BLL.DTOs
 {
     public class LoginDTO
     {
-        [Required]
+        //[Required]
         public string Username { get; set; }
 
-        [Required]
+        //[Required]
         public string Password { get; set; }
     }
 }
