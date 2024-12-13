@@ -22,10 +22,10 @@ namespace GotExplorer.BLL.Validators
                 .WithErrorCode(ErrorCodes.Invalid)
                 .WithMessage("Username cannot be empty.");
             RuleFor(x => x.ImageId)
-                .Must(x => x > 0)
+                .NotEmpty()
                 .When(x => x.ImageId != null)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("ImageId must be null or greater than 0.");
+                .WithMessage("ImageId is required.");
         }
     }
 }

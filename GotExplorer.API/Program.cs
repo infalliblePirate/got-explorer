@@ -82,6 +82,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
             builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
@@ -98,6 +99,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDtoValidator>();
             builder.Services.AddScoped<IValidator<UpdateUserPasswordDTO>, UpdateUserPasswordDtoValidator>();
             builder.Services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordDtoValidator>();
+            builder.Services.AddScoped<IValidator<UploadImageDTO>, ImageValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

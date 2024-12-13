@@ -12,5 +12,7 @@ namespace GotExplorer.BLL.DTOs
         public string Email { get; set; }
       
         public string Token { get; set; }
+
+        public Guid ImageId { get; set; }
     }
 }
