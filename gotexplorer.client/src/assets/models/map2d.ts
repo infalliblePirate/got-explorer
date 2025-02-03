@@ -5,6 +5,7 @@ export class Map2d {
     private imageBounds: [[number, number], [number, number]];
     private imageUrl: string;
     private mapClickCallback!: (lat: number, lng: number) => void;
+    private markers: L.Marker[] = []; // Масив для зберігання всіх маркерів
 
     constructor(imageUrl: string, imageBounds: [[number, number], [number, number]], containerId: string) {
         this.imageUrl = imageUrl;
@@ -14,7 +15,7 @@ export class Map2d {
             minZoom: -2,
             maxZoom: 2,
             center: this.calculateCenter(imageBounds),
-            zoom: 2,
+            zoom: 1,
         });
 
         this.addImageOverlay();
@@ -36,13 +37,19 @@ export class Map2d {
         this.map.on('click', this.handleMapClick.bind(this));
     }
 
+     public addMarker(lat: number, lng: number): L.Marker {
+        const marker = L.marker([lat, lng]).addTo(this.map); // Додаємо маркер на карту
+        return marker; // Повертаємо маркер
+    }
+
+    
     public handleMapClick(e: L.LeafletMouseEvent): void {
         const coords = e.latlng;
         if (
             coords.lng >= this.imageBounds[0][1] && coords.lng <= this.imageBounds[1][1] &&
             coords.lat >= this.imageBounds[0][0] && coords.lat <= this.imageBounds[1][0]
         ) {
-            if(this.mapClickCallback) {
+            if (this.mapClickCallback) {
                 this.mapClickCallback(coords.lat, coords.lng);
             }
         }
@@ -53,9 +60,24 @@ export class Map2d {
     }
 
     public showPopup(lat: number, lng: number, message: string): void {
-        L.marker([lat, lng])
+        const marker = L.marker([lat, lng])
             .addTo(this.map)
             .bindPopup(message)
             .openPopup();
+        
+        this.markers.push(marker); // Додаємо маркер у масив
     }
+
+    // Метод для видалення всіх маркерів
+    public clearMarkers(): void {
+        this.markers.forEach((marker) => {
+            this.map.removeLayer(marker);
+        });
+        this.markers = []; // Очищаємо масив маркерів
+    }
+
+    public removeMarker(marker: L.Marker): void {
+        this.map.removeLayer(marker); // Видаляємо маркер з карти
+    }
+
 }

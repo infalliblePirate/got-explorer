@@ -1,18 +1,22 @@
-import './GameLevelPage.scss';
+import "./GameLevelPage.scss";
 
-interface Player {
+export interface Player {
   rank: number;
   name: string;
   score: number;
 }
 
-interface LeaderboardProps {
+export interface LeaderboardProps {
   players: Player[];
+  currentScore: number;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ players, currentScore }) => {
   return (
     <div className="leaderboard">
+      <div className="leaderboard__current-score">
+            <p>Your points for this game: {currentScore}</p>
+      </div>
       <h2 className="leaderboard__title">TOP PLAYERS</h2>
       <table className="leaderboard__table">
         <thead>
