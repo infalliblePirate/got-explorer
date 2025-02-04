@@ -1,9 +1,15 @@
+@import '../../index.scss';
+
 .auth-grid {
     display: grid;
     grid-template-columns: 5fr 2fr;
     grid-template-rows: 1fr;
     height: 100vh;
     align-items: center;
+
+    @include respond(tab-land) {
+        grid-template-columns: 5fr 3fr;
+    }
 
     .warning-alert {
         border: 3px;
@@ -15,6 +21,10 @@
 
         p {
             margin-top: 10px;
+        }
+
+        @include respond (phone) {
+            width: 230px;
         }
     }
 
@@ -153,6 +163,74 @@
         .link {
             color: inherit;
             text-decoration: none;
+        }
+    }
+
+    @include respond(phone) {
+        grid-template-columns: 1fr;
+        background: linear-gradient(0deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url(../../assets/images/dragon-eye.png) center;
+
+        .photo-bg {
+            display: none;
+        }
+
+        .logo {
+            order: 4;
+        }
+
+        .link {
+            margin-bottom: 24px;
+        }
+
+        .col-2 {
+            margin: 8px auto;
+            grid-column: 1;
+
+            .logo {
+                margin-bottom: 0;
+                width: 230px;
+            }
+
+            .greeting {
+                align-self: center;
+            }
+
+            form {
+                margin-top: 12px;
+
+                label {
+                    display: none;
+                }
+
+                input {
+                    margin: 0 auto 12px auto;
+                    width: 230px;
+                }
+
+                #rmmbr-btn-container {
+                    font-size: 14px;
+                    margin-top: 16px;
+                    justify-content: space-evenly;
+
+                    .link {
+                        color: black;
+                        margin-bottom: 0;
+                    }
+
+                    .remember-me {
+                        font-size: 14px;
+                    }
+                }
+
+                #pass-container button {
+                    right: 30px;
+                }
+
+                .submit-btn {
+                    margin: 16px auto;
+                    width: 230px;
+                }
+            }
         }
     }
 }
