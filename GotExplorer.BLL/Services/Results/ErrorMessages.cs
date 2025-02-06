@@ -4,6 +4,7 @@
     {
         public static readonly string UserServiceIncorrectUsername = "Username is incorrect";
         public static readonly string UserServiceIncorrectPassword = "Password is incorrect";
+        public static readonly string UserServiceUserNotFound = "User not found";
 
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
@@ -14,5 +15,10 @@
         public static readonly string PasswordMustContainUppercase = "Password must contain at least one uppercase letter.";
         public static readonly string PasswordMustContainSpecial = "Password must contain at least one special character.";
         public static readonly string UsernameRequired = "Username is required.";
+
+        public static readonly string TokenRequired = "Token is required.";
+        public static readonly string IdRequired = "Id is required.";
+
+        public static readonly string UpdateUserImageId = "ImageId must be null or greater than 0.";
     }
 }

@@ -17,7 +17,15 @@ namespace GotExplorer.API.Extensions
             }
             return GetActionResult(validationResult);
         }
-        private static IActionResult GetActionResult(ValidationResult? validationResult)
+        public static IActionResult ToActionResult(this ValidationResult validationResult)
+        {
+            if (validationResult.IsValid)
+            {
+                return new OkResult();
+            }
+            return GetActionResult(validationResult);
+        }
+        private static IActionResult GetActionResult(ValidationResult validationResult)
         {
             var result = new ObjectResult(validationResult);
 
@@ -39,6 +47,11 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.Forbidden => StatusCodes.Status403Forbidden,
                 ErrorCodes.UserCreationFailed => StatusCodes.Status400BadRequest,
                 ErrorCodes.RoleAssignmentFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.UserUpdateFailed => StatusCodes.Status400BadRequest,
+                ErrorCodes.UserPasswordUpdateFailed => StatusCodes.Status400BadRequest,
+                ErrorCodes.UserResetPasswordFailed => StatusCodes.Status400BadRequest,
+                ErrorCodes.UserDeletionFailed => StatusCodes.Status500InternalServerError,
+                _ => StatusCodes.Status500InternalServerError,
             };
             return result;
         }
