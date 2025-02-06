@@ -8,7 +8,7 @@ namespace GotExplorer.BLL.Validators
     {
         public UpdateUserPasswordDtoValidator() 
         {
-            RuleFor(x => x.Id)
+            RuleFor(x => x.Id)         
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
                 .WithMessage(ErrorMessages.IdRequired);

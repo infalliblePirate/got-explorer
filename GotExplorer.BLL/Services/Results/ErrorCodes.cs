@@ -15,5 +15,9 @@
         public const string UserPasswordUpdateFailed = nameof(UserPasswordUpdateFailed);
         public const string UserResetPasswordFailed = nameof(UserResetPasswordFailed);
         public const string UserDeletionFailed = nameof(UserDeletionFailed);
+
+        public const string ImageUploadFailed = nameof(ImageUploadFailed);
+        public const string ImageUpdateFailed = nameof(ImageUpdateFailed);
+        public const string ImageDeletionFailed = nameof(ImageDeletionFailed);
     }
 }

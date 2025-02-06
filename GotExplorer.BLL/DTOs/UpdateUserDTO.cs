@@ -16,6 +16,6 @@ namespace GotExplorer.BLL.DTOs
         [EmailAddress]
         public string? Email { get; set; }
 
-        public int? ImageId { get; set; }
+        public Guid? ImageId { get; set; }
     }
 }

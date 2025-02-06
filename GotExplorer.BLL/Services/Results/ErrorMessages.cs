@@ -6,6 +6,11 @@
         public static readonly string UserServiceIncorrectPassword = "Password is incorrect";
         public static readonly string UserServiceUserNotFound = "User not found";
 
+        public static readonly string ImageServiceImageNotFound = "Image not found";
+        public static readonly string ImageServiceFailedToUploadTheImage = "Failed to upload the image";
+        public static readonly string ImageServiceFailedToUpdateTheImage = "Failed to update the image";
+        public static readonly string ImageServiceFailedToDeleteTheImage = "Failed to delete the image";
+
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
         public static readonly string PasswordRequired = "Password is required.";
@@ -20,5 +25,9 @@
         public static readonly string IdRequired = "Id is required.";
 
         public static readonly string UpdateUserImageId = "ImageId must be null or greater than 0.";
+
+        public const string FileCannotBeEmpty = "File cannot be empty.";
+        public const string FileSizeShouldBeLessThan = "File size should be less than {0} MB.";
+        public const string InvalidImage = "Image is invalid.";
     }
 }

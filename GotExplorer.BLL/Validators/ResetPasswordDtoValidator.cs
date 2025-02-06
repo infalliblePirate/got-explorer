@@ -9,7 +9,7 @@ namespace GotExplorer.BLL.Validators
         public ResetPasswordDtoValidator() 
         {
             RuleFor(x => x.Id)
-                 .NotEmpty()
+                .NotEmpty()
                  .WithErrorCode(ErrorCodes.Invalid)
                  .WithMessage(ErrorMessages.IdRequired);
             RuleFor(x => x.Password)

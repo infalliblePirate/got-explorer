@@ -22,7 +22,7 @@ namespace GotExplorer.BLL.Validators
                 .WithErrorCode(ErrorCodes.Invalid)
                 .WithMessage(ErrorMessages.UsernameRequired);
             RuleFor(x => x.ImageId)
-                .Must(x => x > 0)
+                .NotEmpty()
                 .When(x => x.ImageId != null)
                 .WithErrorCode(ErrorCodes.Invalid)
                 .WithMessage(ErrorMessages.UpdateUserImageId);
