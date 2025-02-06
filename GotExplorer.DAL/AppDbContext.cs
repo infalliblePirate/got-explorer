@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GotExplorer.DAL.Entities;
 using System.Data;
 using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GotExplorer.DAL
 {
-    public class AppDbContext : IdentityDbContext<User,UserRole,int>
+    public class AppDbContext : IdentityDbContext<User, UserRole, int>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -38,6 +39,7 @@ namespace GotExplorer.DAL
                 .Property(e => e.Version)
                 .IsRowVersion();
 
+
             builder.Entity<Model3D>()
                 .Property(e => e.Version)
                 .IsRowVersion();
@@ -48,18 +50,19 @@ namespace GotExplorer.DAL
 
             builder.HasPostgresEnum<GameType>();
 
+            Guid defaultImageId = Guid.NewGuid();
             builder.Entity<User>()
                 .Property(e => e.ImageId)
-                .HasDefaultValue(1);
+                .HasDefaultValue(defaultImageId);
 
             builder.Entity<Image>().HasData(
-                new Image { Id = 1, Name = "", Path = "" }
+                new Image { Id = defaultImageId, Name = "", Path = "" }
             );
         }
 
         public DbSet<Game> Games { get; set; }
         public DbSet<Level> Levels { get; set; }
         public DbSet<Model3D> Models3D { get; set; }
-        public DbSet<Image> Images { get; set; }    
+        public DbSet<Image> Images { get; set; }
     }
 }

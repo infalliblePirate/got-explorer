@@ -11,7 +11,6 @@ body {
     grid-template-rows: 1fr;
     height: 100vh;
     align-items: center;
-
     .warning-alert{
         border: 3px;
         border-radius:10px;
@@ -24,7 +23,6 @@ body {
             margin-top:10px;
         }
     }
-
     .photo-bg {
         grid-column: 1;
         content: url(../../assets/images/dragon-eye.png);

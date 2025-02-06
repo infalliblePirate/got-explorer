@@ -29,7 +29,6 @@ const LogInPage = () => {
     const toggleRememberMe = () => {
         setRememberMe(!rememberMe);
     };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setUserData({
@@ -115,7 +114,6 @@ const LogInPage = () => {
                         </label>
                         <Link to="/forgot-password" className="link" > Forgot password </Link>
                     </div>
-
                     <input className="submit-btn" type="button" value="Log in" onClick={Submit}></input>
                 </form>
                 <Link to="/signup" className="link">Don't have an account? Sign up</Link>

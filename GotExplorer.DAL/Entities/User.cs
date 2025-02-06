@@ -6,7 +6,7 @@ namespace GotExplorer.DAL.Entities
 {
     public class User : IdentityUser<int>, IEntity<int>
     {   
-        public int ImageId { get; set; }
+        public Guid ImageId { get; set; }
 
         [ForeignKey("ImageId")]
         public Image Image { get; set; }
