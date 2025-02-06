@@ -54,6 +54,9 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.ImageUploadFailed => StatusCodes.Status500InternalServerError,
                 ErrorCodes.ImageUpdateFailed => StatusCodes.Status500InternalServerError,
                 ErrorCodes.ImageDeletionFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.Model3dUploadFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.Model3dUpdateFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.Model3dDeletionFailed => StatusCodes.Status500InternalServerError,
                 _ => StatusCodes.Status500InternalServerError,
             };
             return result;

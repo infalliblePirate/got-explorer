@@ -19,5 +19,9 @@
         public const string ImageUploadFailed = nameof(ImageUploadFailed);
         public const string ImageUpdateFailed = nameof(ImageUpdateFailed);
         public const string ImageDeletionFailed = nameof(ImageDeletionFailed);
+
+        public const string Model3dUploadFailed = nameof(Model3dUploadFailed);
+        public const string Model3dUpdateFailed = nameof(Model3dUpdateFailed);
+        public const string Model3dDeletionFailed = nameof(Model3dDeletionFailed);
     }
 }

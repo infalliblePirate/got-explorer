@@ -1,77 +1,70 @@
-﻿using GotExplorer.BLL.DTOs;
+﻿using AutoMapper;
+using FluentValidation;
+using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services.Results;
 using GotExplorer.DAL;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Metadata;
+using GotExplorer.DAL.Entities;
 using FluentValidation.Results;
-using AutoMapper;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
-using GotExplorer.DAL.Entities;
-using FluentValidation;
-using GotExplorer.BLL.Validators;
+
 namespace GotExplorer.BLL.Services
 {
-    public class ImageService : IImageService
+    public class Model3DService : IModel3DService
     {
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly string _imagePath = "Images";
-        private readonly IValidator<UploadImageDTO> _imageValidator;
-        public ImageService(AppDbContext appDbContext, IMapper mapper, IWebHostEnvironment webHostEnvironment, IValidator<UploadImageDTO> imageValidator)
+        private readonly string _modelPath = "Models";
+        private readonly IValidator<UploadModel3dDTO> _fileValidator;
+        public Model3DService(AppDbContext appDbContext, IMapper mapper, IWebHostEnvironment webHostEnvironment, IValidator<UploadModel3dDTO> fileValidator)
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
-            _imageValidator = imageValidator;
+            _fileValidator = fileValidator;
         }
 
-        public async Task<ValidationWithEntityModel<ImageDTO>> GetImageAsync(Guid id)
+        public async Task<ValidationWithEntityModel<Model3dDTO>> GetModel3dAsync(int id)
         {
-            var result = await _appDbContext.Images.FindAsync(id);
+            var result = await _appDbContext.Models3D.FindAsync(id);
 
             if (result == null || !File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, result.Path)))
             {
-                return new ValidationWithEntityModel<ImageDTO>(
-                    new ValidationFailure(nameof(id), ErrorMessages.ImageServiceImageNotFound, id) { ErrorCode = ErrorCodes.NotFound }
+                return new ValidationWithEntityModel<Model3dDTO>(
+                    new ValidationFailure(nameof(id), ErrorMessages.ModelServiceModelNotFound, id) { ErrorCode = ErrorCodes.NotFound }
                 );
             }
-            var image = _mapper.Map<ImageDTO>(result);
-            return new ValidationWithEntityModel<ImageDTO>(image);
+            var model = _mapper.Map<Model3dDTO>(result);
+            return new ValidationWithEntityModel<Model3dDTO>(model);
         }
 
-        public async Task<ValidationWithEntityModel<IEnumerable<ImageDTO>>> GetAllImagesAsync()
+        public async Task<ValidationResult> UploadModel3dAsync(UploadModel3dDTO uploadModel3dDTO)
         {
-            var images = await _appDbContext.Images.Select(x => _mapper.Map<ImageDTO>(x)).ToListAsync();
-            return new ValidationWithEntityModel<IEnumerable<ImageDTO>>(images);
-        }
-
-        public async Task<ValidationResult> UploadImageAsync(UploadImageDTO uploadImageDTO)
-        {
-            var validationResult = await _imageValidator.ValidateAsync(uploadImageDTO);
+            var validationResult = await _fileValidator.ValidateAsync(uploadModel3dDTO);
             if (!validationResult.IsValid)
             {
                 return validationResult;
             }
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadImageDTO.Image.FileName)}";
-            var filePath = Path.Combine(_imagePath, fileName);
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadModel3dDTO.Model.FileName)}";
+            var filePath = Path.Combine(_modelPath, fileName);
             var fileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, filePath);
 
             Directory.CreateDirectory(Path.GetDirectoryName(fileAbsolutePath));
             using (var stream = new FileStream(fileAbsolutePath, FileMode.Create))
             {
-                await uploadImageDTO.Image.CopyToAsync(stream);
+                await uploadModel3dDTO.Model.CopyToAsync(stream);
             }
 
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
 
             try
             {
-                _appDbContext.Add(new Image()
+                _appDbContext.Add(new Model3D()
                 {
-                    Name = uploadImageDTO.Image.FileName,
+                    Name = uploadModel3dDTO.Model.FileName,
                     Path = filePath
                 });
                 await _appDbContext.SaveChangesAsync();
@@ -85,34 +78,35 @@ namespace GotExplorer.BLL.Services
                 {
                     File.Delete(fileAbsolutePath);
                 }
+
                 return new ValidationResult(
                     [
-                        new ValidationFailure(nameof(uploadImageDTO.Image), ErrorMessages.ImageServiceFailedToUploadTheImage) { ErrorCode = ErrorCodes.ImageUploadFailed },
+                        new ValidationFailure(nameof(uploadModel3dDTO.Model), ErrorMessages.ModelServiceFailedToUploadTheModel) { ErrorCode = ErrorCodes.Model3dUploadFailed },
                     ]);
             }
             return new ValidationResult();
         }
 
-        public async Task<ValidationResult> UpdateImageAsync(Guid id, UploadImageDTO uploadImageDTO)
+        public async Task<ValidationResult> UpdateModel3dAsync(int id, UploadModel3dDTO uploadModel3dDTO)
         {
-            var validationResult = await _imageValidator.ValidateAsync(uploadImageDTO);
+            var validationResult = await _fileValidator.ValidateAsync(uploadModel3dDTO);
             if (!validationResult.IsValid)
             {
                 return validationResult;
             }
 
-            var image = await _appDbContext.Images.FindAsync(id);
+            var model = await _appDbContext.Models3D.FindAsync(id);
 
-            if (image == null)
+            if (model == null)
             {
                 return new ValidationResult(
                     [
-                        new ValidationFailure(nameof(id), ErrorMessages.ImageServiceImageNotFound, id) { ErrorCode = ErrorCodes.NotFound}
+                        new ValidationFailure(nameof(id), ErrorMessages.ModelServiceModelNotFound, id) { ErrorCode = ErrorCodes.NotFound },
                     ]);
             }
 
-            var newFileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadImageDTO.Image.FileName)}";
-            var newFilePath = Path.Combine(_imagePath, newFileName);
+            var newFileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadModel3dDTO.Model.FileName)}";
+            var newFilePath = Path.Combine(_modelPath, newFileName);
             var newFileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, newFilePath);
 
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
@@ -122,13 +116,13 @@ namespace GotExplorer.BLL.Services
                 Directory.CreateDirectory(Path.GetDirectoryName(newFileAbsolutePath));
                 using (var stream = new FileStream(newFileAbsolutePath, FileMode.Create))
                 {
-                    await uploadImageDTO.Image.CopyToAsync(stream);
+                    await uploadModel3dDTO.Model.CopyToAsync(stream);
                 }
-                var oldFileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path);
+                var oldFileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, model.Path);
 
-                image.Name = uploadImageDTO.Image.FileName;
-                image.Path = newFilePath;
-                _appDbContext.Images.Update(image);
+                model.Name = uploadModel3dDTO.Model.FileName;
+                model.Path = newFilePath;
+                _appDbContext.Models3D.Update(model);
 
                 await _appDbContext.SaveChangesAsync();
 
@@ -149,30 +143,30 @@ namespace GotExplorer.BLL.Services
 
                 return new ValidationResult(
                     [
-                        new ValidationFailure(nameof(uploadImageDTO.Image), ErrorMessages.ImageServiceFailedToUpdateTheImage) { ErrorCode = ErrorCodes.ImageUpdateFailed },
+                        new ValidationFailure(nameof(id), ErrorMessages.ModelServiceFailedToUpdateTheModel,id) { ErrorCode = ErrorCodes.Model3dUpdateFailed },
                     ]);
             }
 
             return new ValidationResult();
         }
 
-        public async Task<ValidationResult> DeleteImageAsync(Guid id)
+        public async Task<ValidationResult> DeleteModel3dAsync(int id)
         {
-            var image = await _appDbContext.Images.FindAsync(id);
-            if (image == null)
+            var model = await _appDbContext.Models3D.FindAsync(id);
+            if (model == null)
             {
                 return new ValidationResult(
                     [
-                        new ValidationFailure(nameof(id), ErrorMessages.ImageServiceImageNotFound, id) { ErrorCode = ErrorCodes.NotFound}
-                    ]);
+                        new ValidationFailure(nameof(id), ErrorMessages.ModelServiceModelNotFound, id) { ErrorCode = ErrorCodes.NotFound }
+                    ]);    
             }
 
-            var fileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path);
+            var fileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, model.Path);
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
 
             try
             {
-                _appDbContext.Images.Remove(image);
+                _appDbContext.Models3D.Remove(model);
                 await _appDbContext.SaveChangesAsync();
 
                 if (File.Exists(fileAbsolutePath))
@@ -187,12 +181,11 @@ namespace GotExplorer.BLL.Services
 
                 return new ValidationResult(
                     [
-                        new ValidationFailure(nameof(id), ErrorMessages.ImageServiceFailedToDeleteTheImage, id) {ErrorCode= ErrorCodes.ImageDeletionFailed },
+                        new ValidationFailure(nameof(id), ErrorMessages.ModelServiceFailedToDeleteTheModel, id) { ErrorCode = ErrorCodes.Model3dDeletionFailed }
                     ]);
             }
 
             return new ValidationResult();
         }
-
     }
 }

@@ -29,6 +29,7 @@ namespace GotExplorer.BLL.Mapper
                 });
 
             CreateMap<Image, ImageDTO>().ReverseMap();
+            CreateMap<Model3D, Model3dDTO>().ReverseMap();
         }
     }
 }
