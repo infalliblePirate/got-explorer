@@ -35,9 +35,10 @@ const MainPage = () => {
                     <img className='dragon-img' />
                     <img className='fire-img' />
                     <img className='bg-img' />
+                    <img className='vector' />
                 </div>
             </div>
-            <hr></hr>
+            <img className='reverse-vector' />
             <div id="info-section">
                 <InfoSection />
             </div>

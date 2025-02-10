@@ -66,6 +66,7 @@
         grid-column: 1 / 4;
         text-align: right;
         margin-right: 50px;
+        z-index: 100;
 
         .title-font {
             font-family: 'GOTfont', sans-serif;
@@ -202,5 +203,106 @@ nav {
         margin: 0 auto;
         margin-top: 10px;
         width: 30%;
+    }
+}
+
+.vector,
+.reverse-vector {
+    content: url(../../assets/images/Vector.png);
+}
+
+.vector {
+    position: absolute;
+    bottom: 0%;
+    width: 100vw;
+    background-size: cover;
+}
+
+.reverse-vector {
+    position: absolute;
+    transform: rotateX(3.142rad);
+    width: 98.8vw;
+    z-index: -100;
+}
+
+#info_sec {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    background-image: url(../../assets/images/background-prf.png);
+
+    .col-1 {
+        margin: 50px;
+        grid-column: 1;
+
+        button {
+            background: none;
+            border: none;
+            border-radius: 50%;
+            padding: 50px;
+
+            &:focus {
+                border: 3px solid white;
+            }
+        }
+
+        img {
+            cursor: pointer;
+
+            &:focus {
+                border: 3px;
+            }
+        }
+
+        #eyrie-logo {
+            content: url(../../assets/images/eyrie-logo.png);
+        }
+
+        #dragonstone-logo {
+            content: url(../../assets/images/dragonstone-logo.png);
+        }
+
+        #kingslanding-logo {
+            content: url(../../assets/images/kingslanding-logo.png);
+        }
+    }
+
+    .col-2 {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        place-content: center;
+
+        .info {
+            width: calc(100% - 200px);
+            margin: 0 50px 0 50px;
+            color: white;
+
+            h3 {
+                font-family: 'GOTfont', sans-serif;
+                font-size: 80px;
+                text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+                margin: 20px;
+            }
+
+            p {
+                font-family: "Marcellus SC", serif;
+                font-size: 30px;
+            }
+        }
+
+        .fade {
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     }
 }
