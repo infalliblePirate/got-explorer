@@ -306,3 +306,64 @@ nav {
         }
     }
 }
+.game-start-page {
+    position: relative;
+    background:
+        url(../../assets/images/white-walkers.png) no-repeat center center;
+    background-size: cover, cover, cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #ffffff;
+
+    &__content {
+        max-width: 600px;
+        z-index: 2;
+        font-size: 36px;
+        margin-left: 36px;
+    }
+
+    &__button {
+        margin-top: 16px;
+        padding: 20px 30px;
+        border: 2px solid #ffffff;
+        background: transparent;
+        color: #ffffff;
+        font-size: 24px;
+        font-family: 'GOTfont';
+        cursor: pointer;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40%;
+        background: url(../../assets/images/Vector.png) no-repeat center center;
+        background-size: cover;
+        transform: rotate(180deg);
+        z-index: 0;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 40%;
+        background: url(../../assets/images/Vector.png) no-repeat center center;
+        background-size: cover;
+        z-index: 1;
+    }
+}
