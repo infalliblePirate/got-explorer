@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+}
+
+#container {
+  position: relative; 
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+#three-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute; 
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+#map-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40vw;
+  height: 40vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.8); 
+}
+
+#map, #three {
+  width: 100%;
+  height: 100%;
+}

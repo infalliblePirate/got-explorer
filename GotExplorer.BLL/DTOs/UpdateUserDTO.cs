@@ -9,13 +9,13 @@ namespace GotExplorer.BLL.DTOs
     {
         [JsonIgnore]
         [IgnoreDataMember]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         public string? Username { get; set; }
 
         [EmailAddress]
         public string? Email { get; set; }
 
-        public int? ImageId { get; set; }
+        public Guid? ImageId { get; set; }
     }
 }

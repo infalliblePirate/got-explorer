@@ -12,8 +12,9 @@ namespace GotExplorer.DAL.Entities
 
         public TimeSpan SpentTime { get; set; }
 
-        [ForeignKey("User")]
         public int UserId { get; set; }
+
+        [ForeignKey("UserId")]
         public User User { get; set; }
 
         public GameType GameType { get; set; }

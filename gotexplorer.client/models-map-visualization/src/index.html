@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>prototype</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "leaflet": "https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js",
+        "three": "https://unpkg.com/three/build/three.module.js",
+        "three/examples/jsm/": "https://unpkg.com/three/examples/jsm/",
+        "dat.gui": "https://unpkg.com/dat.gui/build/dat.gui.module.js"
+      }
+    }
+  </script>
+
+
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="three-container">
+      <div id="three">
+        <script type="module" src="build/scene.js"></script>
+      </div>
+    </div>
+
+    <div id="map-container">
+      <div id="map">
+        <script type="module" src="build/map2d.js"></script>
+      </div>"></script>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

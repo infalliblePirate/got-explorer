@@ -1,5 +1,4 @@
-﻿using GotExplorer.BLL.Exceptions;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections;
@@ -20,19 +19,12 @@ namespace GotExplorer.API.Middleware
             Exception exception,
             CancellationToken cancellationToken)
         {
-            int status = exception switch
-            {
-                HttpException ex => ex.StatusCode,
-                _ => StatusCodes.Status500InternalServerError,
-            };
-            var reasonPhrase = ReasonPhrases.GetReasonPhrase(status);
-
             _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
             var problemDetails = new ProblemDetails
             {
-                Status = status,
-                Title = reasonPhrase,
+                Status = StatusCodes.Status500InternalServerError,
+                Title = ReasonPhrases.GetReasonPhrase(StatusCodes.Status500InternalServerError),
                 Detail = exception.Message,
             };
 

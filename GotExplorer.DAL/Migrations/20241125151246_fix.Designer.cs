@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GotExplorer.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241118091537_fix")]
+    [Migration("20241125151246_fix")]
     partial class fix
     {
         /// <inheritdoc />
@@ -188,7 +188,9 @@ namespace GotExplorer.DAL.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int>("ImageId")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");

@@ -67,11 +67,9 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Image", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -96,7 +94,7 @@ namespace GotExplorer.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("931e2a1d-7766-4f9f-9ced-f78b57a8faf4"),
                             Name = "",
                             Path = "",
                             Version = 0u
@@ -184,8 +182,10 @@ namespace GotExplorer.DAL.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ImageId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValue(new Guid("931e2a1d-7766-4f9f-9ced-f78b57a8faf4"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");

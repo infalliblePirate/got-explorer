@@ -15,7 +15,7 @@ namespace GotExplorer.BLL.Services
             _smtpOptions = smtpOptions.Value;
         }
 
-        public void SendEmail(string toEmail, string subject, string body)
+        public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
             using (var smtpClient = new SmtpClient(_smtpOptions.Host,_smtpOptions.Port))
             {
@@ -30,7 +30,7 @@ namespace GotExplorer.BLL.Services
                 mailMessage.IsBodyHtml = true;
                 mailMessage.Body = body;
 
-                smtpClient.Send(mailMessage);
+                await smtpClient.SendMailAsync(mailMessage);
             }
         }
     }

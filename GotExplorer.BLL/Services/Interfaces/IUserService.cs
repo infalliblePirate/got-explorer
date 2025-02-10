@@ -1,16 +1,17 @@
 ﻿using GotExplorer.BLL.DTOs;
+using GotExplorer.BLL.Services.Results;
+using FluentValidation.Results;
 
 namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<UserDTO> Register(RegisterDTO registerDTO);
-        Task<UserDTO> Login(LoginDTO loginDTO);
-        Task UpdateUserById(UpdateUserDTO updateUserDTO);
-        Task DeleteUserById(string userId);
-        Task UpdatePassword(UpdateUserPasswordDTO updateUserPasswordDTO);
-        Task<GetUserDTO> GetUserById(string id);
-        Task GeneratePasswordResetLink(GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO, string origin);
-        Task ResetPassword(ResetPasswordDTO ResetPasswordDTO);
+        Task<ValidationWithEntityModel<UserDTO>> RegisterAsync(RegisterDTO registerDTO);
+        Task<ValidationWithEntityModel<UserDTO>> LoginAsync(LoginDTO loginDTO);
+        Task<ValidationResult> UpdateUserByIdAsync(UpdateUserDTO updateUserDTO);
+        Task<ValidationResult> DeleteUserByIdAsync(string userId);
+        Task<ValidationResult> UpdatePasswordAsync(UpdateUserPasswordDTO updateUserPasswordDTO);
+        Task<ValidationResult> GeneratePasswordResetLinkAsync(string email, string origin);
+        Task<ValidationResult> ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO);
     }
 }

@@ -8,15 +8,17 @@ using GotExplorer.DAL.Entities;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
 namespace GotExplorer.BLL.Services
 {
     public class JwtService : IJwtService
     {
-        private IConfiguration _config;
         private readonly JwtOptions _jwtOptions;
-        public JwtService(IOptions<JwtOptions> jwtOptions)
+        private readonly UserManager<User> _userManager;
+        public JwtService(IOptions<JwtOptions> jwtOptions, UserManager<User> userManager)
         {
             _jwtOptions = jwtOptions.Value;
+            _userManager = userManager;
         }
 
         public string GenerateToken(User user)
@@ -45,7 +47,12 @@ namespace GotExplorer.BLL.Services
             ci.AddClaim(new Claim("Id", user.Id.ToString()));
             ci.AddClaim(new Claim(JwtRegisteredClaimNames.Email, user.Email));
             ci.AddClaim(new Claim(JwtRegisteredClaimNames.Name, user.UserName));
-            
+            var roles = _userManager.GetRolesAsync(user).Result; 
+            foreach (var role in roles)
+            {
+                ci.AddClaim(new Claim(ClaimTypes.Role, role));
+            }
+           
             return ci;
         }
     }
