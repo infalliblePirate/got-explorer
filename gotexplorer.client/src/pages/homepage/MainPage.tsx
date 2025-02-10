@@ -19,12 +19,12 @@ const MainPage = () => {
     }, [location]);
     const handleGameClick = () => navigate("/startgame");
 
-    return (
+   return (
         <div className="page">
-            <div className='backg-img'>
+            <div className='backg-img'></div>
                 <div className='wrapper'>
                     <Navigation />
-                    <div className='titles'>
+                    <div className='titles'>    
                         <div className='title-font'>
                             when you play game of thrones
                         </div>
@@ -34,13 +34,11 @@ const MainPage = () => {
                         <button className='start-btn' onClick={handleGameClick}>
                             START NOW
                         </button>
+                        
                     </div>
-                    <img className='dragon-img' />
-                    <img className='fire-img' />
-                    <img className='bg-img' />
-                    <img className='vector' />
                 </div>
-            </div>
+            <img  className="main-2" />
+            
             <img className='reverse-vector' />
             <div id="info-section">
                 <InfoSection />
@@ -48,6 +46,7 @@ const MainPage = () => {
             <div id="go-to-game">
                 <GoToGame />
             </div>
+            
             <div id="team-section">
                 <TeamPage />
             </div>

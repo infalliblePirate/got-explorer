@@ -93,7 +93,7 @@ const LogInPage = () => {
                         <Link to="/forgot-password" className="link" > Forgot password </Link>
                     </div>
 
-                    <input className="submit-btn" value="Log in" onClick={Submit}></input>
+                    <input className="submit-btn" type="button" value="Log in" onClick={Submit}></input>
                 </form>
                 <Link to="/signup" className="link">Don't have an account? Sign up</Link>
             </div>
