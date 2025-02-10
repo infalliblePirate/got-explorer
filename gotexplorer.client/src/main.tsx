@@ -10,7 +10,8 @@ import ForgetPasswordPage from './pages/auth/ForgetPassword.tsx';
 import SetNewPasswordPage from './pages/auth/SetNewPassword.tsx';
 import ProfilePage from './pages/auth/ProfilePage.tsx';
 import StartGamePage from './pages/games/StartGamePage.tsx';
-
+import "./index.scss";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function App() {
     return (

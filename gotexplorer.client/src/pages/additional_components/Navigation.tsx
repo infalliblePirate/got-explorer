@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
-import "../homepage/MainPage.scss"
+import "../homepage/MainPage.scss";
+import profile from "../../assets/images/profile_img.png";
+import Cookies from "universal-cookie";
 const Navigation = () => {
+    const cookies = new Cookies();
+    const isAuthenticated = cookies.get('token') != null ? true : false;
+
     return (<nav>
         <Link to="/">
             <img className="logo" />
@@ -18,11 +23,17 @@ const Navigation = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link to="/login" className="link">
-                        <button className='login-btn'>
-                            Log in
-                        </button>
-                    </Link>
+                    {isAuthenticated ? <>
+                        <Link to="/profile">
+                            <img src={profile} style={{ width: "48px" }}></img>
+                        </Link>
+                    </> :
+                        <Link to="/login" className="link">
+                            <button className='login-btn'>
+                                Log in
+                            </button>
+                        </Link>
+                    }
                 </li>
             </ul>
         </div>
