@@ -12,6 +12,7 @@ import ProfilePage from './pages/auth/ProfilePage.tsx';
 import StartGamePage from './pages/games/StartGamePage.tsx';
 import "./index.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import GameLevelPage from './pages/games/GameLevelPage.tsx';
 
 export default function App() {
     return (
@@ -24,6 +25,7 @@ export default function App() {
                 <Route path="login" element={<LogInPage />} />
                 <Route path="forgetpass" element={<ForgetPasswordPage />} />
                 <Route path="setnewpass" element={<SetNewPasswordPage />} />
+                <Route path="lvl/game" element={<GameLevelPage />} />
             </Routes>
         </BrowserRouter>
     );
