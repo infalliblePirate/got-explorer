@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import "./MainPage.scss";
 import InfoSection from "./InfoSection";
@@ -7,7 +7,7 @@ import Footer from "../additional_components/Footer";
 import TeamPage from "./TeamPage";
 import GoToGame from "./GoToGame";
 const MainPage = () => {
-
+    const navigate = useNavigate(); 
     const location = useLocation();
     useEffect(() => {
         if (location.hash) {
@@ -17,30 +17,36 @@ const MainPage = () => {
             }
         }
     }, [location]);
+    const handleGameClick = () => navigate("/startgame");
 
-    return (
+   return (
         <div className="page">
-            <div className='backg-img'>
+            <div className='backg-img'></div>
                 <div className='wrapper'>
                     <Navigation />
-                    <div className='titles'>
+                    <div className='titles'>    
                         <div className='title-font'>
                             when you play game of thrones
                         </div>
                         <div className='main-title-font'>
                             you win or you die
                         </div>
-                        <GoToGame/>
+                        <button className='start-btn' onClick={handleGameClick}>
+                            START NOW
+                        </button>
+                        
                     </div>
-                    <img className='dragon-img' />
-                    <img className='fire-img' />
-                    <img className='bg-img' />
                 </div>
-            </div>
-            <hr></hr>
+            <img  className="main-2" />
+            
+            <img className='reverse-vector' />
             <div id="info-section">
                 <InfoSection />
             </div>
+            <div id="go-to-game">
+                <GoToGame />
+            </div>
+            
             <div id="team-section">
                 <TeamPage />
             </div>

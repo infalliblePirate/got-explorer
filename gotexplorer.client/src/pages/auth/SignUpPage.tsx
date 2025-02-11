@@ -4,6 +4,7 @@ import { useState } from "react";
 import Cookies from "universal-cookie";
 import authService from "./authService";
 import warning from "../../assets/images/warning.png";
+
 const SignUpPage = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
     const EML_REGEX = /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -18,6 +19,7 @@ const SignUpPage = () => {
         email: "",
         password: ""
     });
+
     const [showAlert, setShowAlert] = useState(false);
     const [errMsg, setErrMsg] = useState([""]);
 
@@ -36,6 +38,7 @@ const SignUpPage = () => {
     function Submit() {
         const passValid = PWD_REGEX.test(userData.password);
         const emailValid = EML_REGEX.test(userData.email);
+
         setErrMsg([""]);
         if (passValid && emailValid && userData.username != "") {
             setShowAlert(false);
@@ -70,6 +73,7 @@ const SignUpPage = () => {
                     <img className="photo-bg" />
                     <div className="col-2">
                         <img className="logo" />
+
                         {showAlert &&
                             <div className="warning-alert">
                                 <img src={ warning}></img>
@@ -78,6 +82,7 @@ const SignUpPage = () => {
                                 ))}
                             </div>
                         }
+
                         <div className="greeting">
                             Nice to see you
                         </div>

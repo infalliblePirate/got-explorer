@@ -188,6 +188,8 @@ namespace GotExplorer.API
 
             app.MapFallbackToFile("/index.html");
 
+
+
             using (var scope = app.Services.CreateScope())
             {
                 CreateRoles(scope.ServiceProvider).Wait();

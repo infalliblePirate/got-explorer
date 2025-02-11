@@ -1,0 +1,192 @@
+body {
+    margin: 0;
+}
+
+#container {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+#three-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+#map-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 25vw;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+#map,
+#three {
+    width: 100%;
+    height: 100%;
+}
+
+#map-container:hover {
+    width: 35vw;
+    height: 60vh;
+}
+
+.submit-button {
+    position: absolute;
+    bottom: 10px;
+    right: auto;
+    padding: 12px 24px;
+    font-family: 'GOTfont';
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, background-color 0.2s;
+    z-index: 10000;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+.submit-button:active {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    text-align: center;
+}
+
+@font-face {
+    font-family: 'GOTfont';
+    src: url("../../assets/fonts/Game of Thrones.ttf") format('truetype');
+}
+
+.leaderboard {
+    min-width: 800px;
+    margin: 50px auto;
+    margin-bottom: 30px;
+    padding: 50px;
+    padding-top: 30px;
+    background-color: #D9D9D9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    &__current-score {
+        font-family: 'GOTfont';
+        font-size: 20px;
+        margin-bottom: 30px;
+        color: #333;
+        background-color: #101e3430;
+        padding: 10px;
+        border-radius: 12px;
+
+        p {
+            font-family: 'Times New Roman', Times, serif;
+        }
+    }
+
+    &__title {
+        font-family: 'GOTfont';
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #333;
+    }
+
+    &__table {
+        font-family: 'GOTfont';
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 18px;
+
+        & thead {
+            & th {
+                font-family: 'GOTfont';
+                padding: 10px;
+                font-weight: bold;
+                text-transform: uppercase;
+                border-bottom: 2px solid #ccc;
+                color: #333;
+            }
+        }
+
+        & tbody {
+            & tr {
+                &:hover {
+                    background-color: #e0e0e0;
+                }
+
+                & td {
+                    font-family: 'GOTfont';
+                    padding: 10px;
+                    text-align: center;
+
+                    &:first-child {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.restart-button,
+.close-button {
+    padding: 10px 20px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'GOTfont';
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #003d80;
+    }
+}

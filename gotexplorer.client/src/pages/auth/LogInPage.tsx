@@ -5,6 +5,7 @@ import authService from "./authService";
 import Cookies from "universal-cookie";
 import warning from "../../assets/images/warning.png";
 
+
 const LogInPage = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
     const [userData, setUserData] = useState({
@@ -29,6 +30,7 @@ const LogInPage = () => {
     const toggleRememberMe = () => {
         setRememberMe(!rememberMe);
     };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setUserData({
@@ -38,6 +40,7 @@ const LogInPage = () => {
     };
     function Submit() {
         const passValid = PWD_REGEX.test(userData.password);
+
         setErrMsg([""]);
         if (passValid && userData.username != "") {
             setShowAlert(false);
@@ -114,6 +117,7 @@ const LogInPage = () => {
                         </label>
                         <Link to="/forgot-password" className="link" > Forgot password </Link>
                     </div>
+
                     <input className="submit-btn" type="button" value="Log in" onClick={Submit}></input>
                 </form>
                 <Link to="/signup" className="link">Don't have an account? Sign up</Link>
