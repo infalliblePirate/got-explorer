@@ -1,0 +1,59 @@
+.nf-body {
+    background-image: url(../../assets/images/error-404.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+* {
+    font-family: "Marcellus SC", serif;
+}
+
+.nf-page {
+    height: 100vh;
+    width: 100%;
+}
+
+.nf-container {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    place-items: center;
+    height: 100h;
+
+    h1 {
+        font-size: 160px;
+    }
+
+    h2 {
+        font-size: 100px;
+    }
+
+    button {
+        background: none;
+        font-size: 16px;
+        border-color: white;
+        border-width: 3px;
+        border-radius: 50px;
+        height: 60px;
+        width: calc(100% / 4 - 50px);
+        z-index: 500;
+        font-size: 24px;
+        margin-top: 50px;
+        color: white;
+
+        &:hover {
+            background-color: white;
+
+            color: black;
+        }
+    }
+
+    #dragon {
+        transform: rotateY(3.142rad);
+        position: absolute;
+        top: 0%;
+        right: 50%;
+    }
+}
