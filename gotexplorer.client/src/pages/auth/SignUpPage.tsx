@@ -3,6 +3,7 @@ import "./Auth.scss";
 import { useState } from "react";
 import Cookies from "universal-cookie";
 import authService from "./authService";
+import warning from "../../assets/images/warning.png";
 
 const SignUpPage = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -19,6 +20,9 @@ const SignUpPage = () => {
         password: ""
     });
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [errMsg, setErrMsg] = useState([""]);
+
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const togglePasswordVisibility = () => {
         setPasswordVisible(!isPasswordVisible);
@@ -34,25 +38,33 @@ const SignUpPage = () => {
     function Submit() {
         const passValid = PWD_REGEX.test(userData.password);
         const emailValid = EML_REGEX.test(userData.email);
-        if (passValid && emailValid) {
+
+        setErrMsg([""]);
+        if (passValid && emailValid && userData.username != "") {
+            setShowAlert(false);
             authserv.signup(userData.username, userData.email, userData.password)
-                .then((r) => {
-                    console.log("Registration successful:", r);
-                    navigate("/");
+                .then(() => {
+                    alert("Successfull registration");
+                    navigate("/profile");
                 })
                 .catch((error) => {
                     console.error("Registration failed:", error);
+                    setErrMsg(errMsg => [...errMsg, error.response.data.errors[0].errorMessage]);
+                    setShowAlert(true);
                 });
         }
         else {
             if (!passValid) {
-                console.log('wrong pass');
+                setErrMsg(errMsg => [...errMsg, "Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol"]);
             }
             if (!emailValid) {
-                console.log('wrong email');
+                setErrMsg(errMsg => [...errMsg, "Email is invalid"]);
             }
+            if (userData.username == "") {
+                setErrMsg(errMsg => [...errMsg, "Username is empty\n"]);
+            }
+            setShowAlert(true);
         }
-        console.log(cookies.get('token'));
     }
     return (
         <>
@@ -61,6 +73,16 @@ const SignUpPage = () => {
                     <img className="photo-bg" />
                     <div className="col-2">
                         <img className="logo" />
+
+                        {showAlert &&
+                            <div className="warning-alert">
+                                <img src={ warning}></img>
+                                {errMsg.map((err) => (
+                                    <p>{err}</p>
+                                ))}
+                            </div>
+                        }
+
                         <div className="greeting">
                             Nice to see you
                         </div>
