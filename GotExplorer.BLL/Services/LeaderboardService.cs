@@ -81,7 +81,7 @@ namespace GotExplorer.BLL.Services
                      .Where(gl => gl.GameId == x.Id)
                      .Sum(gl => gl.Score ?? 0),
                 })
-               .GroupBy(x => x)
+               .GroupBy(x => x.UserId)
                .Select(g => g.OrderByDescending(x => x.Score).First())
                .FirstOrDefault();
 
