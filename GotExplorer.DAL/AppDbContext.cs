@@ -27,7 +27,8 @@ namespace GotExplorer.DAL
 
             builder.Entity<Game>()
                 .HasMany(e => e.Levels)
-                .WithMany();
+                .WithMany()
+                .UsingEntity<GameLevel>();
 
             builder.Entity<Game>()
                 .HasOne(e => e.User)
@@ -39,7 +40,6 @@ namespace GotExplorer.DAL
                 .Property(e => e.Version)
                 .IsRowVersion();
 
-
             builder.Entity<Model3D>()
                 .Property(e => e.Version)
                 .IsRowVersion();
@@ -47,6 +47,21 @@ namespace GotExplorer.DAL
             builder.Entity<Level>()
                 .Property(e => e.Version)
                 .IsRowVersion();
+
+            builder.Entity<GameLevel>()
+                .HasKey(e => new { e.GameId, e.LevelId });
+
+            builder.Entity<GameLevel>()
+                .HasOne(e => e.Level)
+                .WithMany()
+                .HasForeignKey(e => e.LevelId)
+                .IsRequired();
+
+            builder.Entity<GameLevel>()
+                .HasOne(e => e.Game)
+                .WithMany()
+                .HasForeignKey(e => e.GameId)
+                .IsRequired();
 
             builder.HasPostgresEnum<GameType>();
 
@@ -64,5 +79,6 @@ namespace GotExplorer.DAL
         public DbSet<Level> Levels { get; set; }
         public DbSet<Model3D> Models3D { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<GameLevel> GameLevels { get; set; }
     }
 }

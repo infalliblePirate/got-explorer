@@ -8,9 +8,9 @@ namespace GotExplorer.DAL.Entities
     {
         public int Id { get; set; }
 
-        public int Score { get; set; }
+        public DateTime StartTime { get; set; }
 
-        public TimeSpan SpentTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         public int UserId { get; set; }
 

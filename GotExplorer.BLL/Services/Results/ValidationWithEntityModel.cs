@@ -26,5 +26,18 @@ namespace GotExplorer.BLL.Services.Results
         {
             Errors.Add(error);
         }
+
+        public static ValidationWithEntityModel<TData> GenerateValidationFailure<TData>(
+            string fieldName, 
+            string errorMessage, 
+            object attemptedValue, 
+            string errorCode)
+        {
+            return new ValidationWithEntityModel<TData>(
+            new ValidationFailure(fieldName, errorMessage, attemptedValue)
+            {
+                ErrorCode = errorCode
+            });                
+        }
     }
 }
