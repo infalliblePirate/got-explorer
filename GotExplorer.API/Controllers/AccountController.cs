@@ -125,7 +125,7 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> GeneratePasswordResetLink([FromBody] GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO)
         {
-            var result = await _userService.GeneratePasswordResetLinkAsync(generatePasswordResetLinkDTO.Email, $"{Request.Scheme}://{Request.Host}{Url.Content("~/")}");
+            var result = await _userService.GeneratePasswordResetLinkAsync(generatePasswordResetLinkDTO.Email);
             if (result.IsValid)
             {
                 return NoContent();

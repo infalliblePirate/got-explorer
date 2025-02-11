@@ -1,8 +1,9 @@
 ﻿using GotExplorer.BLL.Options;
 using GotExplorer.BLL.Services.Interfaces;
 using Microsoft.Extensions.Options;
-using System.Net;
-using System.Net.Mail;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 
 namespace GotExplorer.BLL.Services
 {
@@ -17,20 +18,24 @@ namespace GotExplorer.BLL.Services
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            using (var smtpClient = new SmtpClient(_smtpOptions.Host,_smtpOptions.Port))
+            using (var smtpClient = new SmtpClient())
             {
-                smtpClient.EnableSsl = _smtpOptions.EnableSSL;
-                smtpClient.UseDefaultCredentials = _smtpOptions.UseDefaultCredentials;
-                smtpClient.Credentials = new NetworkCredential(_smtpOptions.Username, _smtpOptions.Password);
+                await smtpClient.ConnectAsync(_smtpOptions.Host, _smtpOptions.Port, SecureSocketOptions.Auto);
+                await smtpClient.AuthenticateAsync(_smtpOptions.Username, _smtpOptions.Password);
 
-                MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(_smtpOptions.From);
-                mailMessage.To.Add(toEmail);
-                mailMessage.Subject = subject;
-                mailMessage.IsBodyHtml = true;
-                mailMessage.Body = body;
+                var message = new MimeMessage();
 
-                await smtpClient.SendMailAsync(mailMessage);
+                message.From.Add(new MailboxAddress(_smtpOptions.FromName, _smtpOptions.From));
+                message.To.Add(MailboxAddress.Parse(toEmail));
+                message.Subject = subject;
+                var bodyBuilder = new BodyBuilder() 
+                { 
+                    HtmlBody = body 
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                await smtpClient.SendAsync(message);
+                await smtpClient.DisconnectAsync(true);
             }
         }
     }

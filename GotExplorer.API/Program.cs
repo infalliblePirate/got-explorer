@@ -92,6 +92,7 @@ namespace GotExplorer.API
             builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
             builder.Services.Configure<UploadFileLimitOptions>(builder.Configuration.GetSection("UploadFileLimits"));
             builder.Services.Configure<GameOptions>(builder.Configuration.GetSection("Game"));
+            builder.Services.Configure<FrontendOptions>(builder.Configuration.GetSection("Frontend"));
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
             

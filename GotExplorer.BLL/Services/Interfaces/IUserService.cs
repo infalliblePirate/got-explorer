@@ -11,7 +11,7 @@ namespace GotExplorer.BLL.Services.Interfaces
         Task<ValidationResult> UpdateUserByIdAsync(UpdateUserDTO updateUserDTO);
         Task<ValidationResult> DeleteUserByIdAsync(string userId);
         Task<ValidationResult> UpdatePasswordAsync(UpdateUserPasswordDTO updateUserPasswordDTO);
-        Task<ValidationResult> GeneratePasswordResetLinkAsync(string email, string origin);
+        Task<ValidationResult> GeneratePasswordResetLinkAsync(string email);
         Task<ValidationResult> ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO);
     }
 }

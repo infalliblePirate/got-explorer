@@ -3,16 +3,19 @@ using FluentValidation;
 using FluentValidation.Results;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Extensions;
+using GotExplorer.BLL.Options;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services.Results;
 using GotExplorer.BLL.Validators;
 using GotExplorer.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace GotExplorer.BLL.Services
 {
     public class UserService : IUserService
     {
+        private readonly FrontendOptions _frontendOptions;
         private readonly IJwtService _jwtService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -24,6 +27,7 @@ namespace GotExplorer.BLL.Services
         private readonly IValidator<UpdateUserPasswordDTO> _updateUserPasswordDtoValidator;
         private readonly IValidator<ResetPasswordDTO> _resetPasswordDtoValidator;
         public UserService(
+            IOptions<FrontendOptions> frontendOptions,
             IJwtService jwtService,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -35,6 +39,7 @@ namespace GotExplorer.BLL.Services
             IValidator<ResetPasswordDTO> resetPasswordDtoValidator,
             IEmailService emailService)
         {
+            _frontendOptions = frontendOptions.Value;
             _jwtService = jwtService;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -168,7 +173,7 @@ namespace GotExplorer.BLL.Services
             return new ValidationResult();
         }
 
-        public async Task<ValidationResult> GeneratePasswordResetLinkAsync(string email, string origin)
+        public async Task<ValidationResult> GeneratePasswordResetLinkAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -181,8 +186,8 @@ namespace GotExplorer.BLL.Services
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var url = $"{origin}reset-password?id={user.Id}&token={token}";
-            await _emailService.SendEmailAsync(email, "Your Password Reset Link", url);
+            var url = $"{_frontendOptions.BaseURL}{_frontendOptions.ResetPasswordPath}?id={user.Id}&token={token}";
+            await _emailService.SendEmailAsync(email, "GOTExplorer - Forgot your password?", url);
 
             return new ValidationResult();
         }
