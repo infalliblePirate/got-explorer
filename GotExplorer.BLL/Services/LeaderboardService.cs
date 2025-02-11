@@ -40,12 +40,13 @@ namespace GotExplorer.BLL.Services
                 return new ValidationWithEntityModel<List<LeaderboardRecordDTO>>(validationResult);
             }
 
-            var leaderboard = await _appDbContext.Games
+            var leaderboard = await _appDbContext.Games.Include(x => x.User)
                 .Where(game => game.EndTime != null)
                 .Select(x => new LeaderboardRecordDTO()
                 {
                     UserId = x.UserId,
                     StartTime = x.StartTime,
+                    Username = x.User.UserName,
                     EndTime = x.EndTime.Value,
                     Score = _appDbContext.GameLevels
                      .Where(gl => gl.GameId == x.Id)
@@ -68,18 +69,19 @@ namespace GotExplorer.BLL.Services
                 return new ValidationWithEntityModel<LeaderboardUserDTO>(validationResult);
             }
 
-            var userRecord = _appDbContext.Games
+            var userRecord = _appDbContext.Games.Include(x => x.User)
                 .Where(game => game.EndTime != null && game.UserId == requestDTO.UserId)
                 .Select(x => new LeaderboardUserDTO()
                 {
                     UserId = x.UserId,
+                    Username = x.User.UserName,
                     StartTime = x.StartTime,
                     EndTime = x.EndTime.Value,
                     Score = _appDbContext.GameLevels
                      .Where(gl => gl.GameId == x.Id)
                      .Sum(gl => gl.Score ?? 0),
                 })
-               .GroupBy(x => x.UserId)
+               .GroupBy(x => x)
                .Select(g => g.OrderByDescending(x => x.Score).First())
                .FirstOrDefault();
 
