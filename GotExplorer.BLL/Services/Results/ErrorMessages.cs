@@ -16,6 +16,11 @@
         public static readonly string ModelServiceFailedToUpdateTheModel = "Failed to update the model.";
         public static readonly string ModelServiceFailedToDeleteTheModel = "Failed to delete the model.";
 
+        public static readonly string LevelServiceLevelNotFound = "Level not found";
+        public static readonly string LevelServiceFailedToCreateLevel = "Failed to create the level";
+        public static readonly string LevelServiceFailedToUpdateLevel = "Failed to update the level";
+        public static readonly string LevelServiceFailedToDeleteLevel = "Failed to delete the level";
+
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
         public static readonly string PasswordRequired = "Password is required.";

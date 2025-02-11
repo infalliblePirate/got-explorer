@@ -158,7 +158,7 @@ namespace GotExplorer.BLL.Services
                 return new ValidationResult(
                     [
                         new ValidationFailure(nameof(id), ErrorMessages.ModelServiceModelNotFound, id) { ErrorCode = ErrorCodes.NotFound }
-                    ]);    
+                    ]);
             }
 
             var fileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, model.Path);

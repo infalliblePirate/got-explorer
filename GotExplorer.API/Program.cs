@@ -84,6 +84,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddScoped<IModel3DService, Model3DService>();
+            builder.Services.AddScoped<ILevelService, LevelService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
             builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
@@ -103,6 +104,8 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordDtoValidator>();
             builder.Services.AddScoped<IValidator<UploadImageDTO>, ImageValidator>();
             builder.Services.AddScoped<IValidator<UploadModel3dDTO>, Model3dValidator>();
+            builder.Services.AddScoped<IValidator<CreateLevelDTO>, CreateLevelValidator>();
+            builder.Services.AddScoped<IValidator<UpdateLevelDTO>, UpdateLevelValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

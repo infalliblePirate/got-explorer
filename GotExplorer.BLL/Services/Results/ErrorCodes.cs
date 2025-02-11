@@ -23,5 +23,9 @@
         public const string Model3dUploadFailed = nameof(Model3dUploadFailed);
         public const string Model3dUpdateFailed = nameof(Model3dUpdateFailed);
         public const string Model3dDeletionFailed = nameof(Model3dDeletionFailed);
+
+        public const string LevelCreationFailed = nameof(LevelCreationFailed);
+        public const string LevelUpdateFailed = nameof(LevelUpdateFailed);
+        public const string LevelDeletionFailed = nameof(LevelDeletionFailed);
     }
 }
