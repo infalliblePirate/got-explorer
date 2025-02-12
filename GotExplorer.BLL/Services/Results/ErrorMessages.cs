@@ -28,6 +28,10 @@
         public static readonly string GameLevelServiceGameLevelNotFound = "Game does not have any levels associated with it.";
         public static readonly string GameLevelServiceFailedToSaveScore = "Failed to save the score for the specified game level.";
 
+        public static readonly string LeaderboardServiceFailedToSaveScore = "Failed to save score for the specified user.";
+        public static readonly string LeaderboardServiceRecordsNotFound = "No leaderboard records found.";
+        public static readonly string LeaderboardServiceInternalError = "Failed to fetch the data.";
+
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
         public static readonly string PasswordRequired = "Password is required.";
@@ -49,7 +53,12 @@
         public static readonly string InvalidModel = "Model is invalid.";
 
         public static readonly string FailedToStartTheGame = "Failed to start the game.";
-        public static readonly string IncorrectUserId = "User id is incorrect";
-        public static readonly string IncorrectLevelId = "Level id is incorrect";
+        public static readonly string IncorrectUserId = "User id is incorrect.";
+        public static readonly string IncorrectLevelId = "Level id is incorrect.";
+
+        public static readonly string InvalidScore = "Score must be zero or greater.";
+        public static readonly string InvalidLimit = "Limit must be one or greater.";
+        public static readonly string InvalidLeaderboardSortBy = "SortBy must be a valid enum value.";
+        public static readonly string InvalidLeaderboardOrderBy = "OrderBy must be a valid enum value.";
     }
 }

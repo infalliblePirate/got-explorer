@@ -8,6 +8,7 @@
         public const string Unauthorized = nameof(Unauthorized);
         public const string Invalid = nameof(Invalid);
         public const string Forbidden = nameof(Forbidden);
+        public const string InternalError = nameof(InternalError);
 
         public const string UserCreationFailed = nameof(UserCreationFailed);
         public const string RoleAssignmentFailed = nameof(RoleAssignmentFailed);
