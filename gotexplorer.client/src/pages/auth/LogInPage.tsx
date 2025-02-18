@@ -115,7 +115,7 @@ const LogInPage = () => {
                             />
                             Remember me
                         </label>
-                        <Link to="/forgot-password" className="link" > Forgot password </Link>
+                        <Link to="/forgetpass" className="link" > Forgot password </Link>
                     </div>
 
                     <input className="submit-btn" type="button" value="Log in" onClick={Submit}></input>
