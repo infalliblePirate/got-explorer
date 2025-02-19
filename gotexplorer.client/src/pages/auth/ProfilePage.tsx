@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import authService from './authService';
 
 const ProfilePage = () => {
-
     const cookies = new Cookies();
     const token = cookies.get('token');
     const isAuthenticated = token != null ? true : false;
@@ -20,14 +19,42 @@ const ProfilePage = () => {
         name: "",
         email: ""
     });
-
+    const [changedData, setChangedData] = useState({
+        changedName: "",
+        changedPassword:""
+    });
     useEffect(() => {
         try {
             setUserData(jwtDecode(token));
         } catch (error) {
             console.error('Token decoding failed:', error);
         }
-    });
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setChangedData({
+            ...changedData,
+            [e.target.name]: value
+        });
+    };
+    function changeProfile() {
+        if (changedData.changedName != "") {
+            authserv.update(changedData.changedName, userData.email)
+                .catch((err) => {
+                    console.error(err);
+                });
+        }
+    }
+    function deleteProfile() {
+        try {
+            authserv.delete();
+            navigate("/");
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
     function logOut() {
         authserv.logout();
         navigate("/");
@@ -69,17 +96,19 @@ const ProfilePage = () => {
 
                 <div className="profile-form">
                     <div className="form-group">
-                        <label htmlFor="name">Name</label>
-                        <input id="name" type="text" placeholder="Change your name" />
+                        <label htmlFor="changedName">Name</label>
+                        <input id="changedName" name="changedName" type="text" placeholder="Change your name"  onChange={handleChange} autoComplete="off" readOnly
+                            onFocus={(e) => e.target.removeAttribute('readOnly')} />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input id="password" type="password" placeholder="Change password" />
+                        <label htmlFor="changedPassword">Password</label>
+                        <input id="changedPassword" name="changedPassword" type="password" placeholder="Change password" onChange={handleChange} autoComplete="off" readOnly
+                            onFocus={(e) => e.target.removeAttribute('readOnly')} />
                     </div>
-                    <button className="save-button">Save changes</button>
+                    <button className="save-button" onClick={changeProfile}>Save changes</button>
                     <div className="two-buttons">
                         <button className="logout-button" onClick={logOut}>Log out</button>
-                        <button className="delete-button">Delete account</button>
+                        <button className="delete-button" onClick={deleteProfile}>Delete account</button>
                     </div>
                 </div>
             </div>

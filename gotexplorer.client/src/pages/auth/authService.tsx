@@ -2,13 +2,20 @@ import axios from "axios";
 import Cookies from 'universal-cookie';
 class AuthService {
     cookies = new Cookies(null, { path: '/' });
+    config = {
+        headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
+    };
     login(username: string, password: string) {
         return axios
             .post("api/account/login", { username, password })
             .then((response) => {
                 const token = response.data.token;
+                const imageId = response.data.imageId;
                 if (token) {
                     this.cookies.set('token', token);
+                }
+                if (imageId) {
+                    this.cookies.set('imageId', imageId)
                 }
                 return response.data;
             });
@@ -25,11 +32,41 @@ class AuthService {
             password,
         }).then((response) => {
             const token = response.data.token;
+            const imageId = response.data.imageId;
             if (token) {
                 this.cookies.set('token', token);
             }
+            if (imageId) {
+                this.cookies.set('imageId', imageId)
+            }
             return response.data;
         });
+    }
+    update(username: string, email: string) {
+        const imageId = this.cookies.get("imageId");
+        return axios.put("api/account/update", {
+            username,
+            email,
+            imageId
+        },
+            this.config);
+    }
+    reset_password(email: string) {
+        return axios.put("api/account/password-reset-link", {
+            email
+        });
+    }
+    set_new_pass(id: number, password: string, token: string) {
+        return axios.put("api/account/password-reset", {
+            id,
+            password,
+            token
+        });
+    }
+    delete() {
+        axios.delete("https://localhost:7079/api/account/delete",
+            this.config);
+        this.cookies.remove('token');
     }
 }
 

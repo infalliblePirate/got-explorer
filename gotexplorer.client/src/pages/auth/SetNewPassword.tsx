@@ -1,24 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import warning from "../../assets/images/warning.png";
 import "./Auth.scss";
+import authService from "./authService";
 
 const SetNewPasswordPage = () => {
     useEffect(() => {
         document.body.classList.add("auth-body");
+
         return () => {
             document.body.classList.remove("auth-body");
         };
     }, []);
-
+    const fixToken = (token: string) =>
+        token.replace(/ /g, '+');
+    const [searchParams] = useSearchParams();
+    const [params] = useState({
+        id: parseInt(searchParams.get("id") as string),
+        token: fixToken(searchParams.get("token") as string)
+    });
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
     const [userPassword, setUserPassword] = useState({
         firstPass: "",
         secondPass: ""
     });
     const [showAlert, setShowAlert] = useState(false);
-    const [errMsg, setErrMsg] = useState("");
+    const [errMsg, setErrMsg] = useState([""]);
 
     const [isPasswordVisible, setPasswordVisible] = useState({
         forFirstPass: false,
@@ -27,12 +36,14 @@ const SetNewPasswordPage = () => {
     const togglePasswordVisibility = (fieldName: "forFirstPass" | "forSecondPass") => {
         setPasswordVisible((prev) => ({
             ...prev,
-            [fieldName]: !prev[fieldName], // Toggle visibility for the clicked field
+            [fieldName]: !prev[fieldName],
         }));
     };
 
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;
+    const authserv = authService;
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -42,12 +53,12 @@ const SetNewPasswordPage = () => {
         });
     };
     function ShowMsg(msgtext: string) {
-        setErrMsg(msgtext);
+        setErrMsg(errMsg => [...errMsg, msgtext]);
         setShowAlert(true);
     }
 
     function Submit() {
-        setErrMsg("");
+        setErrMsg([""]);
         setShowAlert(false);
         if (userPassword.firstPass === "" || userPassword.secondPass === "") {
             ShowMsg("Please fill both fields");
@@ -62,7 +73,18 @@ const SetNewPasswordPage = () => {
             ShowMsg("Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol");
             return;
         }
-        console.log(userPassword);
+
+        authserv.set_new_pass(params.id, userPassword.firstPass, params.token)
+            .then(() => {
+                alert("Password is changed!");
+                navigate("/login");
+            })
+            .catch((error: any) => {
+                const errmsgs = error.response.data.errors;
+                errmsgs.forEach((msg: { errorMessage: string; }) => setErrMsg(errMsg => [...errMsg, msg.errorMessage]));
+                setShowAlert(true);
+            });
+
     }
     return (<>{isAuthenticated ? <Navigate to="/"></Navigate> :
         <div className="auth-grid">
