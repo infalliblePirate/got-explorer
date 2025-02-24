@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GotExplorer.DAL.Entities
 {
-    public class Image : IEntity<int>
+    public class Image : IEntity<Guid>
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(100)]
         public string Name { get; set; }

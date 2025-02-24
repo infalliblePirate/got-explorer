@@ -54,6 +54,15 @@ namespace GotExplorer.DAL.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(100)");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "ImageId",
+                table: "AspNetUsers",
+                type: "integer",
+                nullable: false,
+                defaultValue: 1,
+                oldClrType: typeof(int),
+                oldType: "integer");
         }
 
         /// <inheritdoc />
@@ -103,6 +112,15 @@ namespace GotExplorer.DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "character varying(100)",
                 oldMaxLength: 100);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "ImageId",
+                table: "AspNetUsers",
+                type: "integer",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "integer",
+                oldDefaultValue: 1);
         }
     }
 }

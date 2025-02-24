@@ -23,21 +23,6 @@ namespace GotExplorer.DAL.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "game_type", new[] { "standard", "daily" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GameLevel", b =>
-                {
-                    b.Property<int>("GameId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LevelsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("GameId", "LevelsId");
-
-                    b.HasIndex("LevelsId");
-
-                    b.ToTable("GameLevel");
-                });
-
             modelBuilder.Entity("GotExplorer.DAL.Entities.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -46,14 +31,14 @@ namespace GotExplorer.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("GameType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeSpan>("SpentTime")
-                        .HasColumnType("interval");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -65,13 +50,29 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.Image", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Entities.GameLevel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("GameId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<int>("LevelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("integer");
+
+                    b.HasKey("GameId", "LevelId");
+
+                    b.HasIndex("LevelId");
+
+                    b.ToTable("GameLevels");
+                });
+
+            modelBuilder.Entity("GotExplorer.DAL.Entities.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -96,7 +97,7 @@ namespace GotExplorer.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"),
                             Name = "",
                             Path = "",
                             Version = 0u
@@ -184,8 +185,10 @@ namespace GotExplorer.DAL.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ImageId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValue(new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -381,21 +384,6 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("GameLevel", b =>
-                {
-                    b.HasOne("GotExplorer.DAL.Entities.Game", null)
-                        .WithMany()
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GotExplorer.DAL.Entities.Level", null)
-                        .WithMany()
-                        .HasForeignKey("LevelsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("GotExplorer.DAL.Entities.Game", b =>
                 {
                     b.HasOne("GotExplorer.DAL.Entities.User", "User")
@@ -405,6 +393,25 @@ namespace GotExplorer.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GotExplorer.DAL.Entities.GameLevel", b =>
+                {
+                    b.HasOne("GotExplorer.DAL.Entities.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GotExplorer.DAL.Entities.Level", "Level")
+                        .WithMany()
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Level");
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.User", b =>
