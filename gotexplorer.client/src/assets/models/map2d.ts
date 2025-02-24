@@ -5,7 +5,7 @@ export class Map2d {
     private imageBounds: [[number, number], [number, number]];
     private imageUrl: string;
     private mapClickCallback!: (lat: number, lng: number) => void;
-    private markers: L.Marker[] = []; // РњР°СЃРёРІ РґР»СЏ Р·Р±РµСЂС–РіР°РЅРЅСЏ РІСЃС–С… РјР°СЂРєРµСЂС–РІ
+    private markers: L.Marker[] = []; // Масив для зберігання всіх маркерів
 
     constructor(imageUrl: string, imageBounds: [[number, number], [number, number]], containerId: string) {
         this.imageUrl = imageUrl;
@@ -37,12 +37,12 @@ export class Map2d {
         this.map.on('click', this.handleMapClick.bind(this));
     }
 
-     public addMarker(lat: number, lng: number): L.Marker {
-        const marker = L.marker([lat, lng]).addTo(this.map); // Р”РѕРґР°С”РјРѕ РјР°СЂРєРµСЂ РЅР° РєР°СЂС‚Сѓ
-        return marker; // РџРѕРІРµСЂС‚Р°С”РјРѕ РјР°СЂРєРµСЂ
+    public addMarker(lat: number, lng: number): L.Marker {
+        const marker = L.marker([lat, lng]).addTo(this.map); // Додаємо маркер на карту
+        return marker; // Повертаємо маркер
     }
 
-    
+
     public handleMapClick(e: L.LeafletMouseEvent): void {
         const coords = e.latlng;
         if (
@@ -64,20 +64,20 @@ export class Map2d {
             .addTo(this.map)
             .bindPopup(message)
             .openPopup();
-        
-        this.markers.push(marker); // Р”РѕРґР°С”РјРѕ РјР°СЂРєРµСЂ Сѓ РјР°СЃРёРІ
+
+        this.markers.push(marker); // Додаємо маркер у масив
     }
 
-    // РњРµС‚РѕРґ РґР»СЏ РІРёРґР°Р»РµРЅРЅСЏ РІСЃС–С… РјР°СЂРєРµСЂС–РІ
+    // Метод для видалення всіх маркерів
     public clearMarkers(): void {
         this.markers.forEach((marker) => {
             this.map.removeLayer(marker);
         });
-        this.markers = []; // РћС‡РёС‰Р°С”РјРѕ РјР°СЃРёРІ РјР°СЂРєРµСЂС–РІ
+        this.markers = []; // Очищаємо масив маркерів
     }
 
     public removeMarker(marker: L.Marker): void {
-        this.map.removeLayer(marker); // Р’РёРґР°Р»СЏС”РјРѕ РјР°СЂРєРµСЂ Р· РєР°СЂС‚Рё
+        this.map.removeLayer(marker); // Видаляємо маркер з карти
     }
 
 }

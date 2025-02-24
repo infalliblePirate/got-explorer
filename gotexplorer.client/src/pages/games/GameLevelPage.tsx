@@ -1,20 +1,47 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useState } from "react";
 import { Scene } from "../../assets/models/scene";
 import { Map2d } from "../../assets/models/map2d";
 import { GameLogic } from "../../assets/models/GameLogic";
 import './GameLevelPage.scss';
 import "../../../node_modules/leaflet/dist/leaflet.css";
-import Leaderboard, { Player } from './LeaderBoard'; 
-import { Link } from "react-router-dom";
+import GameService from "./GameService";
+import Cookies from "universal-cookie";
+import { Link, useNavigate } from "react-router-dom";
+import Leaderboard, { Player } from "./LeaderBoard";
 
+const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
+    console.log(scene);
+    scene.clearScene();
+    scene.changeCameraPosition(1000, 1000, 1000);
+    gameserv.load_level(id).then((r) => {
+        scene.loadModel(r.data.models[0].path);
+    })
+    scene.animate();
+    return new GameLogic(map);
+}
+let counter = 0;
 const GameLevelPage = () => {
+    const navigate = useNavigate();
     const [showLeaderboard, setShowLeaderboard] = useState(false);
-    const [players, setPlayers] = useState<Player[]>([]); 
+    const [players, setPlayers] = useState<Player[]>([]);
     const [gameLogic, setGameLogic] = useState<GameLogic | null>(null);
-    const [currentScore, setCurrentScore] = useState(0); 
+    const [currentScore, setCurrentScore] = useState(0);
 
-    
+    const gameserv = GameService;
+    const scene = useRef<Scene>();
+    const map = useRef<Map2d>();
+    const cookies = new Cookies();
+    const levels = cookies.get("levelIds");
+
     useEffect(() => {
+        if (cookies.get("gameid") === undefined) {
+            navigate("/startgame");
+        }
+        if (levels === undefined) {
+            navigate(0);
+        }
+
         const container = document.getElementById("three");
         if (!container) {
             console.error("Container for 3D scene not found.");
@@ -22,60 +49,83 @@ const GameLevelPage = () => {
         }
 
         // scene
-        const scene = new Scene(container);
-        scene.loadModel("/assets/the-wall-with-lights.glb");
-        scene.loadBackground("/assets/panorama.jpg");
-        scene.animate();
-
+        scene.current = new Scene(container);
+        if (scene != undefined) {
+            scene.current.loadBackground("/assets/panorama.jpg");
+        }
+        console.log(scene);
         // map2d
-        const imageBounds: [[number, number], [number, number]] = [[0, 0], [1024, 720]];
+        const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
-        const map = new Map2d("/assets/map2.JPG", imageBounds, containerId);
-        
-        const targetLocation = { lat: 770, lng: 360};
-        const radius = 60;
-        const newGameLogic = new GameLogic(map, targetLocation, radius);
-        setGameLogic(newGameLogic); 
-        setPlayers([
-            { rank: 1, name: "Alice", score: 120 },
-            { rank: 2, name: "Bob", score: 100 },
-            { rank: 3, name: "Charlie", score: 90 },
-        ]);
+        map.current = new Map2d("/assets/map.png", imageBounds, containerId);
+        if (scene != undefined) {
+            setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
+        }
     }, []);
 
- const handleSubmitAnswer = () => {
-    if (!gameLogic) {
-        console.error("GameLogic –Ω–µ —ñ–Ω—ñ—Ü—ñ–∞–ª—ñ–∑–æ–≤–∞–Ω–∏–π");
-        return;
-    }
-    if (!gameLogic.hasMarker()) {
-        alert("Please place a marker on the map before submitting your answer."); 
-        return;
-    }
+    const handleSubmitAnswer = async () => {
+        if (!gameLogic) {
+            console.error("GameLogic ÌÂ ≥Ì≥ˆ≥‡Î≥ÁÓ‚‡ÌËÈ");
+            return;
+        }
+        if (!gameLogic.hasMarker) {
+            alert("Please place a marker on the map before submitting your answer.");
+            return;
+        }
+        if (counter != 3) {
+            console.log(gameLogic.getClick());
+            const click = gameLogic.getClick();
+            console.log(click);
+            if (click != null) {
+                const r = gameserv.calculate_level(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
+                console.log(r);
+            }
+            counter += 1;
+        }
+        if (counter < 3) {
+            if (scene.current != undefined && map.current != undefined)
+                setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
+        }
+        if (counter === 3) {
+            try {
+                await gameserv.complete_game();
 
-    gameLogic.submitAnswer(); 
+                console.log("Fetching leaderboard from API...");
+                const response = await gameserv.getLeaderboard();
 
-    const newScore = gameLogic.getScore(); 
-    setCurrentScore(newScore); 
+                console.log("Leaderboard response:", response.data);
 
-    setShowLeaderboard(true); 
-};
+                const leaderboardData: Player[] = response.data.map((playerData: any) => ({
+                    userId: playerData.userId,
+                    username: playerData.username,
+                    score: playerData.score,
+                    startTime: playerData.startTime,
+                    endTime: playerData.endTime,
+                }));
 
-
-  
+                setPlayers(leaderboardData);
+                setCurrentScore(response.data.currentScore);
+                setShowLeaderboard(true);
+            } catch (error) {
+                console.error("Error fetching leaderboard:", error);
+            }
+        }
+    };
     const handleRestartGame = () => {
         if (!gameLogic) {
-            console.error("GameLogic –Ω–µ —ñ–Ω—ñ—Ü—ñ–∞–ª—ñ–∑–æ–≤–∞–Ω–∏–π");
+            console.error("GameLogic ÌÂ ≥Ì≥ˆ≥‡Î≥ÁÓ‚‡ÌËÈ");
             return;
         }
 
-        gameLogic.reset(); 
-        setCurrentScore(0); 
-        setShowLeaderboard(false); 
-    };
+        gameLogic.reset();
+        setCurrentScore(0);
+        setShowLeaderboard(false);
+        gameserv.start_game().then(() => {
+        navigate(0);
 
-     
+        });
+    };
     return (
         <div className="model-and-map-container" id="container">
             <div id="three-container">
@@ -90,7 +140,7 @@ const GameLevelPage = () => {
             {showLeaderboard && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <Leaderboard players={players} currentScore={currentScore}  />
+                        <Leaderboard players={players} currentScore={currentScore} />
                         <div className="modal-buttons">
                             <button
                                 className="restart-button"
@@ -103,7 +153,7 @@ const GameLevelPage = () => {
                                     Go to Homepage
                                 </button>
                             </Link>
-    
+
                         </div>
                     </div>
                 </div>
@@ -111,4 +161,5 @@ const GameLevelPage = () => {
         </div>
     );
 };
+
 export default GameLevelPage;
