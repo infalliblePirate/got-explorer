@@ -57,7 +57,7 @@ const ProfilePage = () => {
                     <h2 className="username">{userData.name}</h2>
                 </div>
 
-                <div className="leaderboard">
+                <div className="profile-leaderboard">
                     <h4>Leader board</h4>
                     <p>
                         1. User23 - 1984 points

@@ -35,7 +35,7 @@ const ForgetPasswordPage = () => {
         }
         console.log(email);
     }
-    return (<>{isAuthenticated ? <Navigate to="/"></Navigate> :
+    return (<>{isAuthenticated ? <Navigate to="/profile"></Navigate> :
         <div className="auth-grid">
             <img className="photo-bg" />
             <div className="col-2">
