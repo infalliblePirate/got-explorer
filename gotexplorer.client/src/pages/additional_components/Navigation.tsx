@@ -2,15 +2,39 @@ import { Link } from "react-router-dom";
 import "../homepage/MainPage.scss";
 import profile from "../../assets/images/profile_img.png";
 import Cookies from "universal-cookie";
+import { useEffect, useState } from "react";
+// import Menu from "../../assets/images/menu.png";
 const Navigation = () => {
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;
+    const [width, setWidth] = useState(window.innerWidth);
+    const [toggleNav, setToggleNav] = useState(false);
 
-    return (<nav>
+    useEffect(()=>{
+        function handleResize() {
+            setWidth(window.innerWidth);
+          }
+          window.addEventListener('resize', handleResize);
+          return () => window.removeEventListener('resize', handleResize);
+    },[]);
+
+    const toggleNavFunc = () => {
+        setToggleNav(!toggleNav);
+      };
+
+    return (<nav >
         <Link to="/">
             <img className="logo" />
         </Link>
-        <div className='menu-info'>
+        {width < 600 &&(
+            <button className="hamburger-btn" onClick={toggleNavFunc}>
+                ☰
+            </button>
+        )} 
+        <button className="hamburger-btn" onClick={toggleNavFunc}>
+                ☰
+            </button>
+        <div className={`menu-info ${toggleNav ? "active" : ""}`}>
             <ul>
                 <li>
                     <Link to="/#info-section" className="link">
