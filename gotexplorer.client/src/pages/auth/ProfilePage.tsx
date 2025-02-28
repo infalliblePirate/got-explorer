@@ -19,9 +19,10 @@ const ProfilePage = () => {
         name: "",
         email: ""
     });
-    const [changedData, setChangedData] = useState({
-        changedName: "",
-        changedPassword:""
+    const [changedName, setChangedName] = useState("");
+    const [changedPasswords, setChangedPasswords] = useState({
+        oldPassword: "",
+        changedPassword: ""
     });
     useEffect(() => {
         try {
@@ -33,17 +34,25 @@ const ProfilePage = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setChangedData({
-            ...changedData,
+        setChangedPasswords({
+            ...changedPasswords,
             [e.target.name]: value
         });
     };
-    function changeProfile() {
-        if (changedData.changedName != "") {
-            authserv.update(changedData.changedName, userData.email)
+    function changeName() {
+        if (changedName != "") {
+            authserv.update(changedName, userData.email)
                 .catch((err) => {
                     console.error(err);
                 });
+        }
+    }
+    function changePassword() {
+        if (changedPasswords.oldPassword != "" && changedPasswords.changedPassword != "") {
+            authserv.update_password(changedPasswords.oldPassword, changedPasswords.changedPassword).then(() => { navigate(0); })
+                .catch((err) => {
+                console.error(err);
+            });
         }
     }
     function deleteProfile() {
@@ -97,15 +106,20 @@ const ProfilePage = () => {
                 <div className="profile-form">
                     <div className="form-group">
                         <label htmlFor="changedName">Name</label>
-                        <input id="changedName" name="changedName" type="text" placeholder="Change your name"  onChange={handleChange} autoComplete="off" readOnly
+                        <input id="changedName" name="changedName" type="text" placeholder="Change your name" onChange={(e) => setChangedName(e.target.value)} autoComplete="off" readOnly
                             onFocus={(e) => e.target.removeAttribute('readOnly')} />
+                        <button className="save-button" onClick={changeName}>Save new username</button>
                     </div>
+                    <hr />
                     <div className="form-group">
-                        <label htmlFor="changedPassword">Password</label>
-                        <input id="changedPassword" name="changedPassword" type="password" placeholder="Change password" onChange={handleChange} autoComplete="off" readOnly
+                        <label htmlFor="oldPassword">Old Password</label>
+                        <input id="oldPassword" name="oldPassword" type="password" placeholder="Enter old password" onChange={handleChange} autoComplete="off" readOnly
                             onFocus={(e) => e.target.removeAttribute('readOnly')} />
+                        <label htmlFor="changedPassword">New Password</label>
+                        <input id="changedPassword" name="changedPassword" type="password" placeholder="Enter new password" onChange={handleChange} autoComplete="off" readOnly
+                            onFocus={(e) => e.target.removeAttribute('readOnly')} />
+                        <button className="save-button" onClick={changePassword}>Save new password</button>
                     </div>
-                    <button className="save-button" onClick={changeProfile}>Save changes</button>
                     <div className="two-buttons">
                         <button className="logout-button" onClick={logOut}>Log out</button>
                         <button className="delete-button" onClick={deleteProfile}>Delete account</button>
