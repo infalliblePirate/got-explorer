@@ -52,14 +52,14 @@ const GameLevelPage = () => {
         // scene
         scene.current = new Scene(container);
         if (scene != undefined) {
-            scene.current.loadBackground("/assets/panorama.jpg");
+            scene.current.loadBackground("/assets/panorama.webp");
         }
         console.log(scene);
         // map2d
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
-        map.current = new Map2d("/assets/map2.JPG", imageBounds, containerId);
+        map.current = new Map2d("/assets/map2.webp", imageBounds, containerId);
         if (scene != undefined) {
             console.log(` levels are ${levels}`);
             setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));

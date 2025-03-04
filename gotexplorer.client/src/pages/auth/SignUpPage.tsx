@@ -3,7 +3,7 @@ import "./Auth.scss";
 import { useState } from "react";
 import Cookies from "universal-cookie";
 import authService from "./authService";
-import warning from "../../assets/images/warning.png";
+import warning from "../../assets/images/warning.webp";
 
 const SignUpPage = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;

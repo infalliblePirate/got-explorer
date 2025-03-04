@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "../homepage/MainPage.scss";
-import profile from "../../assets/images/profile_img.png";
+import profile from "../../assets/images/profile_img.webp";
 import Cookies from "universal-cookie";
 import { useEffect, useState } from "react";
 // import Menu from "../../assets/images/menu.png";

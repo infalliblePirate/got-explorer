@@ -1,5 +1,5 @@
 import TeamMember from "./TeamMember";
-import GOTlogo from "../../assets/images/GOTlogo.png"; 
+import GOTlogo from "../../assets/images/GOTlogo.webp"; 
 
 
 const TeamPage = () => {
