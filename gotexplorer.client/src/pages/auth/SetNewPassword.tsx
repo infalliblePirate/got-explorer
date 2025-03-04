@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
-import warning from "../../assets/images/warning.png";
+import warning from "../../assets/images/warning.webp";
 import "./Auth.scss";
 import authService from "./authService";
 

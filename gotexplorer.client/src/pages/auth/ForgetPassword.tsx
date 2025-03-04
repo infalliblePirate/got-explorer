@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import "./Auth.scss";
 import Cookies from "universal-cookie";
-import warning from "../../assets/images/warning.png";
+import warning from "../../assets/images/warning.webp";
 import authService from "./authService";
 
 const ForgetPasswordPage = () => {

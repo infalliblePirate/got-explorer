@@ -23,7 +23,7 @@ class AuthService {
 
     logout() {
         this.cookies.remove('gameid');
-        this.cookies.remove('levelids');
+        this.cookies.remove('levelIds');
         this.cookies.remove('token');
     }
 

@@ -11,11 +11,11 @@
 .page {
     margin: 0;
     padding: 0;
-    background-image: url(../../assets/images/background.png);
+    background-image: url(../../assets/images/background.webp);
 }
 
 .logo {
-    content: url(../../assets/images/GOTlogo.png);
+    content: url(../../assets/images/GOTlogo.webp);
 }
 
 .link {
@@ -24,7 +24,7 @@
 }
 
 .backg-img {
-    content: url("../../assets/images/background-main-1.png");
+    content: url("../../assets/images/background-main-1.webp");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -34,7 +34,7 @@
 
     @include respond(phone) {
         content: none;
-        background-image: url("../../assets/images/background-adaptive.png");
+        background-image: url("../../assets/images/background-adaptive.webp");
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
@@ -44,7 +44,7 @@
 }
 
 .main-2 {
-    content: url("../../assets/images/background-main-2.png");
+    content: url("../../assets/images/background-main-2.webp");
     display: block;
     width: 100%;
     height: auto;
@@ -289,7 +289,7 @@ nav {
 }
 
 .bg-img {
-    background-image: url(../../assets/images/background.png);
+    background-image: url(../../assets/images/background.webp);
     grid-row: 6;
     grid-column: 1;
     z-index: -1000;
@@ -347,7 +347,7 @@ nav {
 
 .vector,
 .reverse-vector {
-    content: url(../../assets/images/Vector.png);
+    content: url(../../assets/images/Vector.webp);
 }
 
 .vector {
@@ -367,7 +367,7 @@ nav {
 #info_sec {
     display: grid;
     grid-template-columns: 1fr 3fr;
-    background-image: url(../../assets/images/background-prf.png);
+    background-image: url(../../assets/images/background-prf.webp);
     // background-size: cover, cover, cover;
     position: relative;
 
@@ -386,7 +386,7 @@ nav {
         left: 0;
         width: 100%;
         height: 30%;
-        background: url(../../assets/images/Vector.png) no-repeat center center;
+        background: url(../../assets/images/Vector.webp) no-repeat center center;
         background-size: cover;
         z-index: 1;
         pointer-events: none;
@@ -445,15 +445,15 @@ nav {
         }
 
         #eyrie-logo {
-            content: url(../../assets/images/eyrie-logo.png);
+            content: url(../../assets/images/eyrie-logo.webp);
         }
 
         #dragonstone-logo {
-            content: url(../../assets/images/dragonstone-logo.png);
+            content: url(../../assets/images/dragonstone-logo.webp);
         }
 
         #kingslanding-logo {
-            content: url(../../assets/images/kingslanding-logo.png);
+            content: url(../../assets/images/kingslanding-logo.webp);
         }
 
         #eyrie-logo,
@@ -545,7 +545,7 @@ nav {
 .game-start-page {
     position: relative;
     background:
-        url(../../assets/images/white-walkers.png) no-repeat center center;
+        url(../../assets/images/white-walkers.webp) no-repeat center center;
     background-size: cover, cover, cover;
     min-height: 100vh;
     display: flex;
@@ -611,7 +611,7 @@ nav {
         left: 0;
         width: 100%;
         height: 40%;
-        background: url(../../assets/images/Vector.png) no-repeat center center;
+        background: url(../../assets/images/Vector.webp) no-repeat center center;
         background-size: cover;
         transform: rotate(180deg);
         z-index: 0;
@@ -624,7 +624,7 @@ nav {
         left: 0;
         width: 100%;
         height: 40%;
-        background: url(../../assets/images/Vector.png) no-repeat center center;
+        background: url(../../assets/images/Vector.webp) no-repeat center center;
         background-size: cover;
         z-index: 1;
     }
@@ -644,7 +644,7 @@ nav {
         left: 0;
         width: 100%;
         height: 40%;
-        background: url(../../assets/images/Vector.png) no-repeat center center;
+        background: url(../../assets/images/Vector.webp) no-repeat center center;
         background-size: cover;
         transform: rotate(180deg);
         z-index: 1;
@@ -657,7 +657,7 @@ nav {
         left: 0;
         width: 100%;
         height: 100%;
-        background: url(../../assets/images/background.png) no-repeat center center;
+        background: url(../../assets/images/background.webp) no-repeat center center;
         background-size: cover;
         z-index: 0;
     }
