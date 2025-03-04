@@ -20,7 +20,7 @@ const TeamPage = () => {
                 <div className="team-page__grid">
                     <TeamMember
                         name="Uliana Yeshchenko"
-                        role="PM, Frontend developer"
+                        role="PM, Frontend developer, UI/UX designer"
                         description="There are many variations of passages of Lorem Ipsum available"
                         image={uliana}
                         socials={[
@@ -76,7 +76,7 @@ const TeamPage = () => {
                     />
                     <TeamMember
                         name="Anastasia Grinke"
-                        role="3D artist, Fronted developer"
+                        role="3D artist, Fronted developer, UI/UX designer"
                         description="There are many variations of passages of Lorem Ipsum available"
                         image={nastya}
                         socials={[
@@ -86,8 +86,8 @@ const TeamPage = () => {
                         ]}
                     />
                     <TeamMember
-                        name="Maria Yakovenko"
-                        role="3D artist"
+                        name="Mariia Yakovenko"
+                        role="3D artist, UI/UX designer"
                         description="There are many variations of passages of Lorem Ipsum available"
                         image={marie}
                         socials={[
