@@ -5,7 +5,7 @@ export class Map2d {
     private imageBounds: [[number, number], [number, number]];
     private imageUrl: string;
     private mapClickCallback!: (lat: number, lng: number) => void;
-    private markers: L.Marker[] = []; // Масив для зберігання всіх маркерів
+    private markers: L.Marker[] = []; 
 
     constructor(imageUrl: string, imageBounds: [[number, number], [number, number]], containerId: string) {
         this.imageUrl = imageUrl;
@@ -38,8 +38,8 @@ export class Map2d {
     }
 
     public addMarker(lat: number, lng: number): L.Marker {
-        const marker = L.marker([lat, lng]).addTo(this.map); // Додаємо маркер на карту
-        return marker; // Повертаємо маркер
+        const marker = L.marker([lat, lng]).addTo(this.map);
+        return marker; 
     }
 
 
@@ -65,19 +65,19 @@ export class Map2d {
             .bindPopup(message)
             .openPopup();
 
-        this.markers.push(marker); // Додаємо маркер у масив
+        this.markers.push(marker); 
     }
 
-    // Метод для видалення всіх маркерів
+    
     public clearMarkers(): void {
         this.markers.forEach((marker) => {
             this.map.removeLayer(marker);
         });
-        this.markers = []; // Очищаємо масив маркерів
+        this.markers = [];
     }
 
     public removeMarker(marker: L.Marker): void {
-        this.map.removeLayer(marker); // Видаляємо маркер з карти
+        this.map.removeLayer(marker); 
     }
 
 }

@@ -14,6 +14,7 @@ const StartGamePage = () => {
     const handleGameClick = () => {
         if (!isAuthenticated) {
             navigate("/login");
+            return;
         }
 
         if (!cookies.get("gameid")) {

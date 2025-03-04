@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Leaderboard, { Player } from "./LeaderBoard";
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
+    console.log(`level id: ${id}`);
     console.log(scene);
     scene.clearScene();
     scene.changeCameraPosition(1000, 1000, 1000);
@@ -58,18 +59,19 @@ const GameLevelPage = () => {
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
-        map.current = new Map2d("/assets/map.png", imageBounds, containerId);
+        map.current = new Map2d("/assets/map2.JPG", imageBounds, containerId);
         if (scene != undefined) {
+            console.log(` levels are ${levels}`);
             setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
         }
     }, []);
 
     const handleSubmitAnswer = async () => {
         if (!gameLogic) {
-            console.error("GameLogic не ініціалізований");
+            console.error("GameLogic is not initialized");
             return;
         }
-        if (!gameLogic.hasMarker) {
+        if (!gameLogic.hasMarker()) {
             alert("Please place a marker on the map before submitting your answer.");
             return;
         }
@@ -87,8 +89,9 @@ const GameLevelPage = () => {
             if (scene.current != undefined && map.current != undefined)
                 setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
         }
-        if (counter === 3) {
+        else {
             try {
+                counter = 0;
                 await gameserv.complete_game();
 
                 console.log("Fetching leaderboard from API...");
@@ -105,7 +108,7 @@ const GameLevelPage = () => {
                 }));
 
                 setPlayers(leaderboardData);
-                setCurrentScore(response.data.currentScore);
+                setCurrentScore(response.data[0].score);
                 setShowLeaderboard(true);
             } catch (error) {
                 console.error("Error fetching leaderboard:", error);
@@ -114,7 +117,7 @@ const GameLevelPage = () => {
     };
     const handleRestartGame = () => {
         if (!gameLogic) {
-            console.error("GameLogic не ініціалізований");
+            console.error("GameLogic is not initialized");
             return;
         }
 

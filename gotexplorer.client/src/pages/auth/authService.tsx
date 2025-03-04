@@ -22,6 +22,8 @@ class AuthService {
     }
 
     logout() {
+        this.cookies.remove('gameid');
+        this.cookies.remove('levelids');
         this.cookies.remove('token');
     }
 
@@ -66,6 +68,8 @@ class AuthService {
     delete() {
         axios.delete("https://localhost:7079/api/account/delete",
             this.config);
+        this.cookies.remove('gameid');
+        this.cookies.remove('levelids');
         this.cookies.remove('token');
     }
 }
