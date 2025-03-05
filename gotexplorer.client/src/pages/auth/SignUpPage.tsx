@@ -45,7 +45,7 @@ const SignUpPage = () => {
             authserv.signup(userData.username, userData.email, userData.password)
                 .then(() => {
                     alert("Successfull registration");
-                    navigate("/profile");
+                    navigate("/startgame");
                 })
                 .catch((error) => {
                     console.error("Registration failed:", error);
