@@ -47,7 +47,7 @@ const LogInPage = () => {
             authserv.login(userData.username, userData.password)
                 .then(() => {
                     alert("Login successful");
-                    navigate("/profile");
+                    navigate("/startgame");
                 })
                 .catch((error) => {
                     console.error("Registration failed:", error);
