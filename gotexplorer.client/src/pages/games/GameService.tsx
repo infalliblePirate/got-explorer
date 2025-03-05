@@ -2,12 +2,14 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { getAuthConfig } from "../auth/GetAuthConfig";
 
-
 class GameService {
     cookies = new Cookies(null, { path: '/' });
+    config = {
+        headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
+    };
     start_game() {
         return axios
-            .post("http://localhost:5153/api/game/start", null, getAuthConfig())
+            .post("https://localhost:7079/api/game/start", null, getAuthConfig())
             .then((response) => {
                 this.cookies.remove("gameid");
                 this.cookies.set("gameid", response.data.gameId);

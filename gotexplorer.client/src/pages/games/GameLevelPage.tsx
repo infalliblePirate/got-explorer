@@ -28,6 +28,7 @@ const GameLevelPage = () => {
     const [players, setPlayers] = useState<Player[]>([]);
     const [gameLogic, setGameLogic] = useState<GameLogic | null>(null);
     const [currentScore, setCurrentScore] = useState(0);
+    const [isMapExpanded, setIsMapExpanded] = useState(false);
 
     const gameserv = GameService;
     const scene = useRef<Scene>();
@@ -66,6 +67,10 @@ const GameLevelPage = () => {
         }
     }, []);
 
+    const toggleMap = () => {
+        setIsMapExpanded(!isMapExpanded);
+    };
+
     const handleSubmitAnswer = async () => {
         if (!gameLogic) {
             console.error("GameLogic is not initialized");
@@ -85,6 +90,7 @@ const GameLevelPage = () => {
             }
             counter += 1;
         }
+        setIsMapExpanded(!isMapExpanded);
         if (counter < 3) {
             if (scene.current != undefined && map.current != undefined)
                 setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
@@ -135,17 +141,27 @@ const GameLevelPage = () => {
 
         });
     };
-    return (
+      return (
         <div className="model-and-map-container" id="container">
             <div id="three-container">
                 <div className="model-3d-container" id="three"></div>
             </div>
+
             <div id="map-container">
-                <div className="map-2d-container" id="map"></div>
-                <button className="submit-button" onClick={handleSubmitAnswer}>
-                    Submit Answer
-                </button>
+                <div className={`map-2d-container ${isMapExpanded ? "expanded" : "small"}`} id="map" onClick={!isMapExpanded ? toggleMap : undefined}></div>
+
+                {isMapExpanded && (
+                    <>
+                        <button className="close-map-button" onClick={toggleMap}>✖️</button>
+                          <button className="submit-button" onClick={handleSubmitAnswer}>
+                            Submit Answer
+                        </button>
+                    </>
+                )}
+
+                
             </div>
+
             {showLeaderboard && (
                 <div className="modal-overlay">
                     <div className="modal">
@@ -162,7 +178,6 @@ const GameLevelPage = () => {
                                     Go to Homepage
                                 </button>
                             </Link>
-
                         </div>
                     </div>
                 </div>
