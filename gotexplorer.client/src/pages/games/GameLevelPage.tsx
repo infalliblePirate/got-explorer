@@ -52,7 +52,7 @@ const GameLevelPage = () => {
         // scene
         scene.current = new Scene(container);
         if (scene != undefined) {
-            scene.current.loadBackground("/assets/panorama.webp");
+            scene.current.loadBackground("/assets/panorama2.webp");
         }
         console.log(scene);
         // map2d
@@ -92,8 +92,8 @@ const GameLevelPage = () => {
         else {
             try {
                 counter = 0;
-                await gameserv.complete_game();
-
+                const completedGame = await gameserv.complete_game();
+                console.log(completedGame);
                 console.log("Fetching leaderboard from API...");
                 const response = await gameserv.getLeaderboard();
 
@@ -106,9 +106,15 @@ const GameLevelPage = () => {
                     startTime: playerData.startTime,
                     endTime: playerData.endTime,
                 }));
+                
+
+               
 
                 setPlayers(leaderboardData);
-                setCurrentScore(response.data[0].score);
+                if (completedGame && completedGame.score !== undefined) {
+                    setCurrentScore(completedGame.score);
+                }
+                // setCurrentScore(response.data[0].score);
                 setShowLeaderboard(true);
             } catch (error) {
                 console.error("Error fetching leaderboard:", error);

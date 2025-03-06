@@ -74,7 +74,7 @@ class AuthService {
         });
     }
     delete() {
-        axios.delete("https://localhost:7079/api/account/delete", getAuthConfig());
+        axios.delete("http://localhost:5153/api/account/delete", getAuthConfig());
         this.cookies.remove('gameid');
         this.cookies.remove('levelIds');
         this.cookies.remove('token');
