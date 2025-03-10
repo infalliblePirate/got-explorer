@@ -85,7 +85,7 @@ const GameLevelPage = () => {
             const click = gameLogic.getClick();
             console.log(click);
             if (click != null) {
-                const r = gameserv.calculate_level(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
+                const r = await gameserv.calculate_level(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
                 console.log(r);
             }
             counter += 1;
@@ -103,7 +103,6 @@ const GameLevelPage = () => {
                 console.log("Fetching leaderboard from API...");
                 const response = await gameserv.getLeaderboard();
 
-                console.log("Leaderboard response:", response.data);
 
                 const leaderboardData: Player[] = response.data.map((playerData: any) => ({
                     userId: playerData.userId,
@@ -112,15 +111,12 @@ const GameLevelPage = () => {
                     startTime: playerData.startTime,
                     endTime: playerData.endTime,
                 }));
-                
-
-               
-
+                console.log("Leaderboard response:", response.data);
                 setPlayers(leaderboardData);
                 if (completedGame && completedGame.score !== undefined) {
                     setCurrentScore(completedGame.score);
                 }
-                // setCurrentScore(response.data[0].score);
+                
                 setShowLeaderboard(true);
             } catch (error) {
                 console.error("Error fetching leaderboard:", error);
@@ -174,7 +170,7 @@ const GameLevelPage = () => {
                                 Restart Game
                             </button>
                             <Link to="/" className="homepage-link">
-                                <button className="close-button">
+                                <button className="close-button"  onClick={handleRestartGame}>
                                     Go to Homepage
                                 </button>
                             </Link>
