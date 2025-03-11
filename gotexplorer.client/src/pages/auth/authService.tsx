@@ -61,14 +61,6 @@ class AuthService {
         }, getAuthConfig());
 
     }
-    update_password(currentPassword: string, newPassword: string) {
-        return axios.put("api/account/update-password", {
-            currentPassword,
-            newPassword
-        },
-            this.config);
-
-    }
     reset_password(email: string) {
         return axios.put("api/account/password-reset-link", {
             email
