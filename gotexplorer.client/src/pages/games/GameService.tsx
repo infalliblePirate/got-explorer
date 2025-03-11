@@ -2,9 +2,11 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { getAuthConfig } from "../auth/GetAuthConfig";
 
-
 class GameService {
     cookies = new Cookies(null, { path: '/' });
+    config = {
+        headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
+    };
     start_game() {
         return axios
             .post("https://localhost:7079/api/game/start", null, getAuthConfig())
@@ -31,14 +33,15 @@ class GameService {
         const gameid = this.cookies.get("gameid");
         return axios.put(`https://localhost:7079/api/game/${gameid}/complete`,
             null,
-            getAuthConfig()).then(() => {
+            getAuthConfig()).then((response) => {
                 this.cookies.remove("gameid");
                 this.cookies.remove("levelIds");
+                return response.data;
             });
     }
     getLeaderboard() {
         console.log("Making GET request to leaderboard");
-        return axios.get("https://localhost:7079/api/leaderboard", getAuthConfig());
+        return axios.get("https://localhost:7079/api/leaderboard?OrderBy=Asc", getAuthConfig());
     }
 }
 export default new GameService();

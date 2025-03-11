@@ -30,7 +30,8 @@ namespace GotExplorer.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Configuration.AddEnvironmentVariables();
+       
             var jwtSection = builder.Configuration.GetSection("Jwt");
             var jwtOptions = jwtSection.Get<JwtOptions>();
             builder.Services.Configure<JwtOptions>(jwtSection);
