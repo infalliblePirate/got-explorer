@@ -91,6 +91,7 @@ export class Scene {
         const child = this.scene.children[0];
         this.scene.remove(child);
     }
+        THREE.Cache.clear();
     }
     public changeCameraPosition(x: number, y: number, z: number) {
         this.camera.position.set(x, y, z);

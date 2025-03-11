@@ -28,6 +28,7 @@ const GameLevelPage = () => {
     const [players, setPlayers] = useState<Player[]>([]);
     const [gameLogic, setGameLogic] = useState<GameLogic | null>(null);
     const [currentScore, setCurrentScore] = useState(0);
+    const [isMapExpanded, setIsMapExpanded] = useState(false);
 
     const gameserv = GameService;
     const scene = useRef<Scene>();
@@ -52,7 +53,7 @@ const GameLevelPage = () => {
         // scene
         scene.current = new Scene(container);
         if (scene != undefined) {
-            scene.current.loadBackground("/assets/panorama.webp");
+            scene.current.loadBackground("/assets/panorama2.webp");
         }
         console.log(scene);
         // map2d
@@ -65,6 +66,10 @@ const GameLevelPage = () => {
             setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
         }
     }, []);
+
+    const toggleMap = () => {
+        setIsMapExpanded(!isMapExpanded);
+    };
 
     const handleSubmitAnswer = async () => {
         if (!gameLogic) {
@@ -80,11 +85,12 @@ const GameLevelPage = () => {
             const click = gameLogic.getClick();
             console.log(click);
             if (click != null) {
-                const r = gameserv.calculate_level(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
+                const r = await gameserv.calculate_level(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
                 console.log(r);
             }
             counter += 1;
         }
+        setIsMapExpanded(!isMapExpanded);
         if (counter < 3) {
             if (scene.current != undefined && map.current != undefined)
                 setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
@@ -92,12 +98,11 @@ const GameLevelPage = () => {
         else {
             try {
                 counter = 0;
-                await gameserv.complete_game();
-
+                const completedGame = await gameserv.complete_game();
+                console.log(completedGame);
                 console.log("Fetching leaderboard from API...");
                 const response = await gameserv.getLeaderboard();
 
-                console.log("Leaderboard response:", response.data);
 
                 const leaderboardData: Player[] = response.data.map((playerData: any) => ({
                     userId: playerData.userId,
@@ -106,9 +111,12 @@ const GameLevelPage = () => {
                     startTime: playerData.startTime,
                     endTime: playerData.endTime,
                 }));
-
+                console.log("Leaderboard response:", response.data);
                 setPlayers(leaderboardData);
-                setCurrentScore(response.data[0].score);
+                if (completedGame && completedGame.score !== undefined) {
+                    setCurrentScore(completedGame.score);
+                }
+                
                 setShowLeaderboard(true);
             } catch (error) {
                 console.error("Error fetching leaderboard:", error);
@@ -129,17 +137,27 @@ const GameLevelPage = () => {
 
         });
     };
-    return (
+      return (
         <div className="model-and-map-container" id="container">
             <div id="three-container">
                 <div className="model-3d-container" id="three"></div>
             </div>
+
             <div id="map-container">
-                <div className="map-2d-container" id="map"></div>
-                <button className="submit-button" onClick={handleSubmitAnswer}>
-                    Submit Answer
-                </button>
+                <div className={`map-2d-container ${isMapExpanded ? "expanded" : "small"}`} id="map" onClick={!isMapExpanded ? toggleMap : undefined}></div>
+
+                {isMapExpanded && (
+                    <>
+                        <button className="close-map-button" onClick={toggleMap}>✖️</button>
+                          <button className="submit-button" onClick={handleSubmitAnswer}>
+                            Submit Answer
+                        </button>
+                    </>
+                )}
+
+                
             </div>
+
             {showLeaderboard && (
                 <div className="modal-overlay">
                     <div className="modal">
@@ -152,11 +170,10 @@ const GameLevelPage = () => {
                                 Restart Game
                             </button>
                             <Link to="/" className="homepage-link">
-                                <button className="close-button">
+                                <button className="close-button"  onClick={handleRestartGame}>
                                     Go to Homepage
                                 </button>
                             </Link>
-
                         </div>
                     </div>
                 </div>
