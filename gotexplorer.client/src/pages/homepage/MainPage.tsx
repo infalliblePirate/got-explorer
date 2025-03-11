@@ -6,9 +6,13 @@ import Navigation from "../additional_components/Navigation";
 import Footer from "../additional_components/Footer";
 import TeamPage from "./TeamPage";
 import GoToGame from "./GoToGame";
+import Cookies from "universal-cookie";
 const MainPage = () => {
     const navigate = useNavigate(); 
     const location = useLocation();
+    const cookies = new Cookies();
+    const isAuthenticated = cookies.get('token') != null ? true : false;
+
     useEffect(() => {
         if (location.hash) {
             const element = document.querySelector(location.hash);
@@ -17,8 +21,13 @@ const MainPage = () => {
             }
         }
     }, [location]);
-    const handleGameClick = () => navigate("/startgame");
-
+    const handleGameClick = () => {
+        if (isAuthenticated) {
+            navigate("/startgame");
+            return;
+        }
+        navigate("/login");
+    }
    return (
         <div className="page">
             <div className='backg-img'></div>

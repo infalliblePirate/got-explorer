@@ -2,7 +2,7 @@
 import Footer from '../additional_components/Footer';
 import Navigation from '../additional_components/Navigation';
 import './ProfilePage.scss';
-import profileIcon from '../../assets/images/profile-icon.png';
+import profileIcon from '../../assets/images/profile_img.webp';
 import Cookies from 'universal-cookie';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';

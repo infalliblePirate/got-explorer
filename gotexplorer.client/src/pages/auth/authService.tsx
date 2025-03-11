@@ -1,10 +1,9 @@
 import axios from "axios";
 import Cookies from 'universal-cookie';
+import { getAuthConfig } from "./GetAuthConfig";
 class AuthService {
     cookies = new Cookies(null, { path: '/' });
-    config = {
-        headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
-    };
+
     login(username: string, password: string) {
         return axios
             .post("api/account/login", { username, password })
@@ -22,6 +21,8 @@ class AuthService {
     }
 
     logout() {
+        this.cookies.remove('gameid');
+        this.cookies.remove('levelIds');
         this.cookies.remove('token');
     }
 
@@ -49,7 +50,16 @@ class AuthService {
             email,
             imageId
         },
-            this.config);
+            {
+                headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
+            });
+    }
+    update_password(currentPassword: string, newPassword: string) {
+        return axios.put("api/account/update-password", {
+            currentPassword,
+            newPassword
+        }, getAuthConfig());
+
     }
     update_password(currentPassword: string, newPassword: string) {
         return axios.put("api/account/update-password", {
@@ -72,8 +82,9 @@ class AuthService {
         });
     }
     delete() {
-        axios.delete("https://localhost:7079/api/account/delete",
-            this.config);
+        axios.delete("https://localhost:7079/api/account/delete", getAuthConfig());
+        this.cookies.remove('gameid');
+        this.cookies.remove('levelIds');
         this.cookies.remove('token');
     }
 }

@@ -3,7 +3,7 @@ import "./Auth.scss";
 import { useState } from "react";
 import authService from "./authService";
 import Cookies from "universal-cookie";
-import warning from "../../assets/images/warning.png";
+import warning from "../../assets/images/warning.webp";
 
 
 const LogInPage = () => {
@@ -47,7 +47,7 @@ const LogInPage = () => {
             authserv.login(userData.username, userData.password)
                 .then(() => {
                     alert("Login successful");
-                    navigate("/profile");
+                    navigate("/startgame");
                 })
                 .catch((error) => {
                     console.error("Registration failed:", error);

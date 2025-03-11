@@ -1,8 +1,21 @@
+@import '../../index.scss';
+
 .nf-body {
-    background-image: url(../../assets/images/error-404.png);
+    background-image: url(../../assets/images/error-404.webp);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+
+    @include respond(tab-land) {
+        height: calc(100vh - 20px);
+    }
+    @include respond(tab-port) {
+        background-image: url(../../assets/images/404-adapt-tab.webp);
+    }
+    @include respond(phone) {
+        background-image: url(../../assets/images/404-adapt.webp);
+    }
+
 }
 
 * {
@@ -20,14 +33,34 @@
     flex-direction: column;
     color: white;
     place-items: center;
-    height: 100h;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 150px);
 
     h1 {
         font-size: 160px;
+        @include respond(tab-land) {
+            font-size: 130px;
+        }
+        @include respond(tab-port) {
+            font-size: 100px;
+        }
+        @include respond(phone) {
+            font-size: 70px;
+        }
     }
 
     h2 {
         font-size: 100px;
+        @include respond(tab-land) {
+            font-size: 90px;
+        }
+        @include respond(tab-port) {
+            font-size: 80px;
+        }
+        @include respond(phone) {
+            font-size: 70px;
+        }
     }
 
     button {
@@ -42,6 +75,9 @@
         font-size: 24px;
         margin-top: 50px;
         color: white;
+        @include respond(tab-land) {
+            width: 220px;
+        }
 
         &:hover {
             background-color: white;
