@@ -12,6 +12,11 @@ export interface LeaderboardProps {
     players: Player[];
     currentScore: number;
 }
+export interface LeaderboardUser {
+    userId: number;
+    username: string;
+    score: number;
+}
 
 const Leaderboard: React.FC<LeaderboardProps> = ({ players, currentScore }) => {
     return (
