@@ -39,11 +39,11 @@ namespace GotExplorer.API.Controllers
             {
                 return result.ToActionResult<LevelDTO>();
             }
-            //result.Entity.Models = result.Entity.Models.Select(model =>
-            //{
-            //    model.Path = Url.Action(nameof(Model3DController.GetModel3dById), "Model3d", new { id = model.Id }, Request.Scheme);
-            //    return model;
-            //});
+            result.Entity.Models = result.Entity.Models.Select(model =>
+            {
+                model.Path = Url.Action(nameof(Model3DController.GetModel3dById), "Model3d", new { id = model.Id }, Request.Scheme);
+                return model;
+            });
             return result.ToActionResult<LevelDTO>();
         }
 
