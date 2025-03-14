@@ -23,6 +23,7 @@ using FluentValidation;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Validators;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.HttpOverrides;
 namespace GotExplorer.API
 {
     public class Program
@@ -178,6 +179,11 @@ namespace GotExplorer.API
             });
 
             var app = builder.Build();
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
