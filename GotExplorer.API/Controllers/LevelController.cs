@@ -41,7 +41,7 @@ namespace GotExplorer.API.Controllers
             }
             result.Entity.Models = result.Entity.Models.Select(model =>
             {
-                model.Path = Url.Action(nameof(Model3DController.GetModel3dById), "Model3d", new { id = model.Id }, Request.Scheme);
+                model.Path = Url.Action(nameof(Model3DController.GetModel3dById), "Model3d", new { id = model.Id }, "https", Request.Host.Value);
                 return model;
             });
             return result.ToActionResult<LevelDTO>();
