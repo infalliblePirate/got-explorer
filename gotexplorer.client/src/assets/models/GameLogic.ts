@@ -1,5 +1,5 @@
 import { Map2d } from './map2d';
-
+import { toast } from 'sonner';
 export class GameLogic {
     private map: Map2d;
     private score: number;
@@ -39,6 +39,7 @@ export class GameLogic {
 
     public submitAnswer(): string {
         if (!this.lastClick) {
+            toast.error('No selection made! Please click on the map first.')
             return 'No selection made! Please click on the map first.';
         }
         return "";

@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import authService from './authService';
+import { toast } from 'sonner';
 
 const ProfilePage = () => {
     const cookies = new Cookies();
@@ -47,76 +48,88 @@ const ProfilePage = () => {
         }
     }
     function deleteProfile() {
-        try {
-            authserv.delete();
-            navigate("/");
-        }
-        catch (error) {
-            console.log(error);
-        }
+        const deletePromise = new Promise<void>((resolve, reject) => {
+            try {
+                authserv.delete();
+                setTimeout(() => {
+                    resolve();
+                }, 2000);
+            } catch (error) {
+                console.log(error);
+                reject();
+            }
+        });
+
+        toast.promise(deletePromise, {
+            loading: 'Deleting account...',
+            success: 'Account successfully deleted!',
+            error: 'Error deleting account',
+        });
+
+        deletePromise.then(() => navigate("/"));
     }
     function logOut() {
         authserv.logout();
         navigate("/");
     }
     return (<>{isAuthenticated ?
-        <div className="profile-page">
-            <Navigation />
-            <div className="profile-container">
-                <div className="email">
-                    {userData ? (
-                        <p>{userData.email}</p>
-                    )
-                        : (
-                            <p>No email</p>
-                        )
-                    }
-                </div>
-                <div className="profile-header">
-                    <div className="profile-picture-wrapper">
-                        <img
-                            className="profile-picture"
-                            src={profileIcon}
-                            alt="Profile"
-                        />
-                        <button className="change-picture-button">📸</button>
+            <div className="profile-page">
+                <Navigation />
+                <div className="profile-container">
+                    <div className="email">
+                        {userData ? (
+                                <p>{userData.email}</p>
+                            )
+                            : (
+                                <p>No email</p>
+                            )
+                        }
                     </div>
-                    <h2 className="username">{userData.name}</h2>
-                </div>
+                    <div className="profile-header">
+                        <div className="profile-picture-wrapper">
+                            <img
+                                className="profile-picture"
+                                src={profileIcon}
+                                alt="Profile"
+                            />
+                            <button className="change-picture-button">📸</button>
+                        </div>
+                        <h2 className="username">{userData.name}</h2>
+                    </div>
 
-                <div className="profile-leaderboard">
-                    <h4>Leader board</h4>
-                    <p>
-                        1. User23 - 1984 points
-                        <br />
-                        34. You - 578 points
-                    </p>
-                </div>
+                    <div className="profile-leaderboard">
+                        <h4>Leader board</h4>
+                        <p>
+                            1. User23 - 1984 points
+                            <br />
+                            34. You - 578 points
+                        </p>
+                    </div>
 
 
-                <div className="profile-form">
-                    <div className="form-group">
-                        <label htmlFor="changedName">Name</label>
-                        <input id="changedName" name="changedName" type="text" placeholder="Change your name"  onChange={handleChange} autoComplete="off" readOnly
-                            onFocus={(e) => e.target.removeAttribute('readOnly')} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="changedPassword">Password</label>
-                        <input id="changedPassword" name="changedPassword" type="password" placeholder="Change password" onChange={handleChange} autoComplete="off" readOnly
-                            onFocus={(e) => e.target.removeAttribute('readOnly')} />
-                    </div>
-                    <button className="save-button" onClick={changeProfile}>Save changes</button>
-                    <div className="two-buttons">
-                        <button className="logout-button" onClick={logOut}>Log out</button>
-                        <button className="delete-button" onClick={deleteProfile}>Delete account</button>
+                    <div className="profile-form">
+                        <div className="form-group">
+                            <label htmlFor="changedName">Name</label>
+                            <input id="changedName" name="changedName" type="text" placeholder="Change your name"  onChange={handleChange} autoComplete="off" readOnly
+                                   onFocus={(e) => e.target.removeAttribute('readOnly')} />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="changedPassword">Password</label>
+                            <input id="changedPassword" name="changedPassword" type="password" placeholder="Change password" onChange={handleChange} autoComplete="off" readOnly
+                                   onFocus={(e) => e.target.removeAttribute('readOnly')} />
+                        </div>
+                        <button className="save-button" onClick={changeProfile}>Save changes</button>
+                        <div className="two-buttons">
+                            <button className="logout-button" onClick={logOut}>Log out</button>
+                            <button className="delete-button" onClick={deleteProfile}>Delete account</button>
+                        </div>
                     </div>
                 </div>
+                <Footer />
             </div>
-            <Footer />
-        </div>
-        : <Navigate to="/login"></Navigate>
-    }
-    </>
+            : <Navigate to="/login"></Navigate>
+        }
+        </>
     );
 }
 export default ProfilePage;
