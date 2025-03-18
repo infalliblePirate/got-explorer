@@ -124,7 +124,7 @@ const ProfilePage = () => {
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>
-                    {leaderboard.length > 0 && userRank !== null && (
+                    {leaderboard.length > 0 && userRank !== null ? (
                         <>
                             <p className={leaderboard[0].username === userData.name ? "you" : ""}>
                                 1. {leaderboard[0].username === userData.name ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
@@ -147,6 +147,8 @@ const ProfilePage = () => {
                                 </>
                             )}
                         </>
+                    ) : (
+                        <p className="no-play">You haven't played yet</p>
                     )}
                 </div>
 
