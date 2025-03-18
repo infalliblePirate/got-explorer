@@ -4,18 +4,25 @@ import { getAuthConfig } from "./GetAuthConfig";
 class AuthService {
     cookies = new Cookies(null, { path: '/' });
 
-    login(username: string, password: string) {
+   login(username: string, password: string, rememberMe: boolean) {
         return api
             .post("/account/login", { username, password })
             .then((response) => {
                 const token = response.data.token;
                 const imageId = response.data.imageId;
-                if (token) {
-                    this.cookies.set('token', token);
+            if (token) {
+                if (rememberMe) {
+                    this.cookies.set("token", token, { path: "/", maxAge: 60 * 60 * 24 * 10 });
+                    if (imageId) {
+                        this.cookies.set("imageId", imageId, { path: "/", maxAge: 60 * 60 * 24 * 10 });
+                    }
+                } else {
+                    this.cookies.set("token", token, { path: "/" });
+                    if (imageId) {
+                        this.cookies.set("imageId", imageId, { path: "/" });
+                    }
                 }
-                if (imageId) {
-                    this.cookies.set('imageId', imageId)
-                }
+            }
                 return response.data;
             });
     }
@@ -24,6 +31,7 @@ class AuthService {
         this.cookies.remove('gameid');
         this.cookies.remove('levelIds');
         this.cookies.remove('token');
+        this.cookies.remove('imageId');
     }
 
     signup(username: string, email: string, password: string) {

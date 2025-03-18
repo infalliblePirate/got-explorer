@@ -44,7 +44,7 @@ const LogInPage = () => {
         setErrMsg([""]);
         if (passValid && userData.username != "") {
             setShowAlert(false);
-            authserv.login(userData.username, userData.password)
+            authserv.login(userData.username, userData.password, rememberMe)
                 .then(() => {
                     alert("Login successful");
                     navigate("/startgame");
