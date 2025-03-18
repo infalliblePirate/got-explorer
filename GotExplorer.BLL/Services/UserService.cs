@@ -8,9 +8,13 @@ using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services.Results;
 using GotExplorer.BLL.Validators;
 using GotExplorer.DAL.Entities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-
+using Org.BouncyCastle.Asn1.Ocsp;
+using System;
+using Google.Apis.Auth;
 namespace GotExplorer.BLL.Services
 {
     public class UserService : IUserService
@@ -26,6 +30,7 @@ namespace GotExplorer.BLL.Services
         private readonly IValidator<UpdateUserDTO> _updateUserDtoValidator;
         private readonly IValidator<UpdateUserPasswordDTO> _updateUserPasswordDtoValidator;
         private readonly IValidator<ResetPasswordDTO> _resetPasswordDtoValidator;
+        private readonly IValidator<GoogleLoginDTO> _googleLoginDtoValidator;
         public UserService(
             IOptions<FrontendOptions> frontendOptions,
             IJwtService jwtService,
@@ -37,6 +42,7 @@ namespace GotExplorer.BLL.Services
             IValidator<UpdateUserDTO> updateUserDtoValidator,
             IValidator<UpdateUserPasswordDTO> updateUserPasswordDtoValidator,
             IValidator<ResetPasswordDTO> resetPasswordDtoValidator,
+            IValidator<GoogleLoginDTO> googleLoginDtoValidator,
             IEmailService emailService)
         {
             _frontendOptions = frontendOptions.Value;
@@ -50,6 +56,7 @@ namespace GotExplorer.BLL.Services
             _updateUserDtoValidator = updateUserDtoValidator;
             _updateUserPasswordDtoValidator = updateUserPasswordDtoValidator;
             _resetPasswordDtoValidator = resetPasswordDtoValidator;
+            _googleLoginDtoValidator = googleLoginDtoValidator;
         }
 
         public async Task<ValidationWithEntityModel<UserDTO>> LoginAsync(LoginDTO loginDTO)
@@ -82,6 +89,28 @@ namespace GotExplorer.BLL.Services
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
             return new ValidationWithEntityModel<UserDTO>(userDto);
+        }
+
+        public async Task<ValidationWithEntityModel<UserDTO>> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO)
+        {
+            var validationResult = await _googleLoginDtoValidator.ValidateAsync(googleLoginDTO);
+
+            if (!validationResult.IsValid)
+            {
+                return new ValidationWithEntityModel<UserDTO>(validationResult);
+            }
+
+            try
+            {
+                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(googleLoginDTO.IdToken);
+                return await GetOrCreateExternalLoginUserAsync(GoogleLoginDTO.Provider, payload.Subject, payload.Email);
+            }
+            catch (InvalidJwtException)
+            {
+                return new ValidationWithEntityModel<UserDTO>( 
+                    new ValidationFailure(nameof(googleLoginDTO.IdToken), ErrorMessages.GoogleAuthCredentialInvalid) { ErrorCode = ErrorCodes.Unauthorized }
+                );
+            }
         }
 
         public async Task<ValidationWithEntityModel<UserDTO>> RegisterAsync(RegisterDTO registerDTO)
@@ -239,6 +268,40 @@ namespace GotExplorer.BLL.Services
                 return result.ToValidationResult(ErrorCodes.UserDeletionFailed);
             }
             return new ValidationResult();
+        }
+
+        private async Task<ValidationWithEntityModel<UserDTO>> GetOrCreateExternalLoginUserAsync(string provider, string key, string email)
+        {
+            var user = await _userManager.FindByLoginAsync(provider, key);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    UserName = email,
+                };
+                var createdUser = await _userManager.CreateAsync(user);
+
+                if (!createdUser.Succeeded)
+                {
+                    return new ValidationWithEntityModel<UserDTO>(createdUser.ToValidationResult(ErrorCodes.UserCreationFailed));
+                }
+
+                var info = new UserLoginInfo(provider, key, provider.ToUpperInvariant());
+                var addUserLogin = await _userManager.AddLoginAsync(user, info);
+
+                if (!addUserLogin.Succeeded)
+                {
+                    return new ValidationWithEntityModel<UserDTO>(addUserLogin.ToValidationResult(ErrorCodes.UserCreationFailed));
+                }
+            }
+
+            user = await _userManager.FindByEmailAsync(email);
+
+            var userDto = _mapper.Map<UserDTO>(user);
+            userDto.Token = _jwtService.GenerateToken(user);
+            return new ValidationWithEntityModel<UserDTO>(userDto);
         }
     }
 }

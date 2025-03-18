@@ -60,5 +60,8 @@
         public static readonly string InvalidLimit = "Limit must be one or greater.";
         public static readonly string InvalidLeaderboardSortBy = "SortBy must be a valid enum value.";
         public static readonly string InvalidLeaderboardOrderBy = "OrderBy must be a valid enum value.";
+
+        public static readonly string GoogleAuthCredentialInvalid = "Google authentication credential is invalid";
+        public static readonly string GoogleAuthCredentialRequired = "Google authentication credential is required";
     }
 }
