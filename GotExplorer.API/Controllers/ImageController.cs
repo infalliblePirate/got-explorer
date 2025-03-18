@@ -33,6 +33,7 @@ namespace GotExplorer.API.Controllers
         /// <response code="404">Image not found.</response>
         /// <response code="416">Range is not satisfiable.</response>
         /// <response code="500">An unexpected error occurred on the server</response>
+        [RequireHttps]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(VirtualFileResult), 200)]
         [ProducesResponseType(typeof(ValidationResult), 404)]
@@ -78,7 +79,7 @@ namespace GotExplorer.API.Controllers
             }
             var images = result.Entity.Select(image =>
             {
-                image.Path = Url.Action(nameof(GetImageById), "Image", new { id = image.Id }, Request.Scheme);
+                image.Path = Url.Action(nameof(GetImageById), "Image", new { id = image.Id }, "https", Request.Host.Value);
                 return image;
             }).ToList();
             return Ok(images);

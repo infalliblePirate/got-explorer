@@ -1,12 +1,12 @@
-import axios from "axios";
+import api from "../../services/api";
 import Cookies from 'universal-cookie';
 import { getAuthConfig } from "./GetAuthConfig";
 class AuthService {
     cookies = new Cookies(null, { path: '/' });
 
     login(username: string, password: string) {
-        return axios
-            .post("api/account/login", { username, password })
+        return api
+            .post("/account/login", { username, password })
             .then((response) => {
                 const token = response.data.token;
                 const imageId = response.data.imageId;
@@ -27,7 +27,7 @@ class AuthService {
     }
 
     signup(username: string, email: string, password: string) {
-        return axios.post("api/account/register", {
+        return api.post("/account/register", {
             username,
             email,
             password,
@@ -45,7 +45,7 @@ class AuthService {
     }
     update(username: string, email: string) {
         const imageId = this.cookies.get("imageId");
-        return axios.put("api/account/update", {
+        return api.put("/account/update", {
             username,
             email,
             imageId
@@ -55,26 +55,26 @@ class AuthService {
             });
     }
     update_password(currentPassword: string, newPassword: string) {
-        return axios.put("api/account/update-password", {
+        return api.put("/account/update-password", {
             currentPassword,
             newPassword
         }, getAuthConfig());
 
     }
     reset_password(email: string) {
-        return axios.put("api/account/password-reset-link", {
+        return api.put("/account/password-reset-link", {
             email
         });
     }
     set_new_pass(id: number, password: string, token: string) {
-        return axios.put("api/account/password-reset", {
+        return api.put("/account/password-reset", {
             id,
             password,
             token
         });
     }
     delete() {
-        axios.delete("http://localhost:5153/api/account/delete", getAuthConfig());
+        api.delete("/account/delete", getAuthConfig());
         this.cookies.remove('gameid');
         this.cookies.remove('levelIds');
         this.cookies.remove('token');

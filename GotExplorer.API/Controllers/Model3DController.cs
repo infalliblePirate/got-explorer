@@ -32,6 +32,7 @@ namespace GotExplorer.API.Controllers
         /// <response code="404">Model not found.</response>
         /// <response code="416">Range is not satisfiable.</response>
         /// <response code="500">An unexpected error occurred on the server</response>
+        [RequireHttps]
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(VirtualFileResult), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
