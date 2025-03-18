@@ -130,8 +130,8 @@ namespace GotExplorer.BLL.Services
         {
             return sortBy switch
             {
-                LeaderboardSortBy.Time => x => x.Min(s => s.EndTime) - x.Min(s => s.StartTime),
-                LeaderboardSortBy.Score => x => x.Min(s => s.Score),
+                LeaderboardSortBy.Time => x => x.Min(s => s.EndTime - s.StartTime),
+                LeaderboardSortBy.Score => x => x.Max(s => s.Score),
             };
         }
     }
