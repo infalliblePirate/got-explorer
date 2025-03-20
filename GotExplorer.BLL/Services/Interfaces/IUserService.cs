@@ -1,6 +1,7 @@
 ﻿using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services.Results;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authentication;
 
 namespace GotExplorer.BLL.Services.Interfaces
 {
@@ -13,5 +14,6 @@ namespace GotExplorer.BLL.Services.Interfaces
         Task<ValidationResult> UpdatePasswordAsync(UpdateUserPasswordDTO updateUserPasswordDTO);
         Task<ValidationResult> GeneratePasswordResetLinkAsync(string email);
         Task<ValidationResult> ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO);
+        Task<ValidationWithEntityModel<UserDTO>> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO);
     }
 }

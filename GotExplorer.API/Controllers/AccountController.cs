@@ -5,6 +5,8 @@ using GotExplorer.BLL.Services;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services.Results;
 using GotExplorer.DAL.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth.AspNetCore3;
+using Google.Apis.Auth;
 namespace GotExplorer.API.Controllers
 {
     [Route("api/[controller]")]
@@ -26,6 +30,7 @@ namespace GotExplorer.API.Controllers
         {
             _userService = userService;
         }
+
 
         /// <summary>
         /// Register new user.
@@ -61,6 +66,27 @@ namespace GotExplorer.API.Controllers
         {
             var result = await _userService.LoginAsync(loginDTO);
            
+            return result.ToActionResult<UserDTO>();
+        }
+
+
+        /// <summary>
+        /// Authenticates the user using Google.
+        /// </summary>
+        /// <param name="googleLoginDTO">Google authentication credential.</param>
+        /// <response code="200">Authentication succeeded; returns a JWT token for the authenticated user.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="401">Authentication failed due to invalid google credential.</response>
+        /// <response code="500">An unexpected error occurred on the server.</response>       
+        [HttpPost("login/google")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO googleLoginDTO)
+        {
+            var result = await _userService.GoogleLoginAsync(googleLoginDTO);
+
             return result.ToActionResult<UserDTO>();
         }
 
