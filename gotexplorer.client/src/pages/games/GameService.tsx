@@ -41,7 +41,7 @@ class GameService {
     }
     getLeaderboard() {
         console.log("Making GET request to leaderboard");
-        return api.get("/leaderboard?OrderBy=Asc", getAuthConfig());
+        return api.get("/leaderboard?OrderBy=Desc", getAuthConfig());
     }
 }
 export default new GameService();
