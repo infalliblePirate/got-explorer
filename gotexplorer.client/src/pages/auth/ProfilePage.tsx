@@ -9,7 +9,7 @@ import { jwtDecode, JwtPayload  } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import authService from './authService';
 import GameService from '../games/GameService';
-import { LeaderboardUser } from '../games/LeaderBoard';
+import { Player } from '../games/LeaderBoard';
 
 const ProfilePage = () => {
         interface DecodedToken extends JwtPayload {
@@ -31,7 +31,7 @@ const ProfilePage = () => {
         changedPassword: ""
     });
 
-    const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
+    const [leaderboard, setLeaderboard] = useState<Player[]>([]);
     const [userRank, setUserRank] = useState<number | null>(null);
     const [userScore, setUserScore] = useState(0);
     const gameserv = GameService;
@@ -46,10 +46,10 @@ const ProfilePage = () => {
 
             gameserv.getLeaderboard()
                 .then(response => {
-                    const data: LeaderboardUser[] = response.data; 
+                    const data: Player[] = response.data; 
                     setLeaderboard(data);
 
-                    const userIndex = data.findIndex((user: LeaderboardUser) => user.username === decoded.name);
+                    const userIndex = data.findIndex((user: Player) => user.username === decoded.name);
                     if (userIndex !== -1) {
                         setUserRank(userIndex + 1);
                         setUserScore(data[userIndex].score);
