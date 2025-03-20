@@ -29,6 +29,7 @@ const GameLevelPage = () => {
     const [gameLogic, setGameLogic] = useState<GameLogic | null>(null);
     const [currentScore, setCurrentScore] = useState(0);
     const [isMapExpanded, setIsMapExpanded] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
     const gameserv = GameService;
     const scene = useRef<Scene>();
@@ -102,8 +103,8 @@ const GameLevelPage = () => {
                 console.log(completedGame);
                 console.log("Fetching leaderboard from API...");
                 const response = await gameserv.getLeaderboard();
-
-
+                const currentUserId = completedGame.userId;
+                setCurrentUserId(currentUserId);
                 const leaderboardData: Player[] = response.data.map((playerData: any) => ({
                     userId: playerData.userId,
                     username: playerData.username,
@@ -161,7 +162,7 @@ const GameLevelPage = () => {
             {showLeaderboard && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <Leaderboard players={players} currentScore={currentScore} />
+                        <Leaderboard players={players} currentScore={currentScore} currentUserId={currentUserId}/>
                         <div className="modal-buttons">
                             <button
                                 className="restart-button"
