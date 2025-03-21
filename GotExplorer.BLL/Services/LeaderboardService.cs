@@ -23,13 +23,18 @@ namespace GotExplorer.BLL.Services
         private readonly AppDbContext _appDbContext;
         private readonly IValidator<LeaderboardRequestDTO> _leaderboardRequestValidator;
         private readonly IValidator<LeaderboardUserRequestDTO> _leaderboardUserRequestValidator;
+        private readonly IMapper _mapper;
         public LeaderboardService(AppDbContext appDbContext, 
             IValidator<LeaderboardRequestDTO> leaderboardRequestValidator, 
-            IValidator<LeaderboardUserRequestDTO> leaderboardUserRequestValidator)
+            IValidator<LeaderboardUserRequestDTO> leaderboardUserRequestValidator,
+            IMapper mapper)
         {
             _appDbContext = appDbContext;
             _leaderboardRequestValidator = leaderboardRequestValidator;
             _leaderboardUserRequestValidator = leaderboardUserRequestValidator;
+            _mapper = mapper;
+
+
         }
 
         public async Task<ValidationWithEntityModel<List<LeaderboardRecordDTO>>> GetLeaderboardAsync(LeaderboardRequestDTO requestDTO)
@@ -41,7 +46,7 @@ namespace GotExplorer.BLL.Services
             }
 
             var leaderboard = await _appDbContext.Games.Include(x => x.User)
-                .Where(game => game.EndTime != null)
+                .Where(game => game.EndTime != null && game.GameType == _mapper.Map<GameType>(requestDTO.GameType))
                 .Select(x => new LeaderboardRecordDTO()
                 {
                     UserId = x.UserId,
@@ -69,8 +74,10 @@ namespace GotExplorer.BLL.Services
                 return new ValidationWithEntityModel<LeaderboardUserDTO>(validationResult);
             }
 
+            var gameType = _mapper.Map<GameType>(requestDTO.GameType);
+
             var userRecord = _appDbContext.Games.Include(x => x.User)
-                .Where(game => game.EndTime != null && game.UserId == requestDTO.UserId)
+                .Where(game => game.EndTime != null && game.UserId == requestDTO.UserId && game.GameType == gameType)
                 .Select(x => new LeaderboardUserDTO()
                 {
                     UserId = x.UserId,
@@ -93,7 +100,7 @@ namespace GotExplorer.BLL.Services
             }
 
             var leaderboard = _appDbContext.Games
-                .Where(game => game.EndTime != null)
+                .Where(game => game.EndTime != null && game.GameType == gameType)
                 .Select(x => new
                 {
                     UserId = x.UserId,

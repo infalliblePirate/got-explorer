@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Extensions.EnumMapping;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.DAL.Entities;
 namespace GotExplorer.BLL.Mapper
@@ -73,6 +74,14 @@ namespace GotExplorer.BLL.Mapper
 
             CreateMap<Game, GameResultDTO>()
                 .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Id));
+
+            CreateMap<GameType, GameTypeDto>()
+                .ConvertUsingEnumMapping(opt =>
+                {
+                    opt.MapValue(GameType.Standard, GameTypeDto.Standard);
+                    opt.MapValue(GameType.Daily, GameTypeDto.Daily);
+                })
+                .ReverseMap();
         }
     }
 }
