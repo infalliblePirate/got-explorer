@@ -3,7 +3,7 @@ import "./Auth.scss";
 import { useState } from "react";
 import authService from "./authService";
 import Cookies from "universal-cookie";
-import warning from "../../assets/images/warning.webp";
+import { toast } from 'sonner';
 
 
 const LogInPage = () => {
@@ -18,15 +18,14 @@ const LogInPage = () => {
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;
 
+
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
-
-    const [showAlert, setShowAlert] = useState(false);
-    const [errMsg, setErrMsg] = useState([""]);
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!isPasswordVisible);
     };
+
     const toggleRememberMe = () => {
         setRememberMe(!rememberMe);
     };
@@ -38,93 +37,110 @@ const LogInPage = () => {
             [e.target.name]: value
         });
     };
-    function Submit() {
+
+    const submit = () => {
         const passValid = PWD_REGEX.test(userData.password);
 
-        setErrMsg([""]);
-        if (passValid && userData.username != "") {
-            setShowAlert(false);
+
+        if (passValid && userData.username !== "") {
             authserv.login(userData.username, userData.password, rememberMe)
                 .then(() => {
-                    alert("Login successful");
+                    toast.success("Login successful!", {
+                        style: {
+                            backgroundColor: '#cfc15d', 
+                            color: 'white'
+                        }
+                    });
                     navigate("/startgame");
                 })
                 .catch((error) => {
-                    console.error("Registration failed:", error);
-                    setErrMsg(errMsg => [...errMsg, error.response.data.errors[0].errorMessage]);
-                    setShowAlert(true);
+                    console.error("Login failed:", error);
+                    const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
+                    toast.error(errorMsg, {
+                        style: {
+                            backgroundColor: '#5d8ecf', 
+                            color: 'white'
+                        }
+                    });
                 });
-        }
-        else {
+        } else {
             if (!passValid) {
-                setErrMsg(errMsg => [...errMsg, "Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol"]);
+                toast.error("Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol", {
+                    style: {
+                        backgroundColor: '#5d8ecf', 
+                        color: 'white'
+                    }
+                });
             }
-            if (userData.username == "") {
-                setErrMsg(errMsg => [...errMsg, "Username is empty\n"]);
+            if (userData.username === "") {
+                toast.error("Username is empty", {
+                    style: {
+                        backgroundColor: '#5d8ecf', 
+                        color: 'white'
+                    }
+                });
             }
-            setShowAlert(true);
         }
-    }
-    return (<>{isAuthenticated ? <Navigate to="/"></Navigate> :
-        <div className="auth-grid">
-            <img className="photo-bg" />
-            <div className="col-2">
-                <img className="logo" />
-                {showAlert &&
-                    <div className="warning-alert">
-                        <img src={warning}></img>
-                        {errMsg.map((err) => (
-                            <p>{err}</p>
-                        ))}
-                    </div>
-                }
-                <div className="greeting">
-                    Nice to see you
-                </div>
-                <form>
-                    <label>Login</label>
-                    <div id="email-container">
-                        <input
-                            id="username"
-                            name="username"
-                            placeholder="Username"
-                            required
-                            autoComplete="off"
-                            defaultValue={userData.username}
-                            onChange={handleChange} />
-                    </div>
-                    <label>Password</label>
-                    <div id="pass-container">
-                        <input id="pass"
-                            name="password"
-                            type={isPasswordVisible ? 'text' : 'password'} placeholder="Password"
-                            required
-                            autoComplete="off"
-                            defaultValue={userData.password}
-                            onChange={handleChange} />
-                        <button type="button" onClick={togglePasswordVisibility}>
-                            <img id="pass-eye-img" />
-                        </button>
-                    </div>
-                    <div id="rmmbr-btn-container">
-                        <label className="remember-me">
-                            <input
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={toggleRememberMe}
-                            />
-                            Remember me
-                        </label>
-                        <Link to="/forgetpass" className="link" > Forgot password </Link>
-                    </div>
+    };
 
-                    <input className="submit-btn" type="button" value="Log in" onClick={Submit}></input>
-                </form>
-                <Link to="/signup" className="link">Don't have an account? Sign up</Link>
-            </div>
-        </div>
-    }
-    </>
+    return (
+        <>
+            {isAuthenticated ? <Navigate to="/" /> :
+                <div className="auth-grid">
+                    <img className="photo-bg" />
+                    <div className="col-2">
+                        <img className="logo" />
+                        <div className="greeting">
+                            Nice to see you
+                        </div>
+                        <form>
+                            <label>Login</label>
+                            <div id="email-container">
+                                <input
+                                    id="username"
+                                    name="username"
+                                    placeholder="Username"
+                                    required
+                                    autoComplete="off"
+                                    value={userData.username}
+                                    onChange={handleChange} />
+                            </div>
+                            <label>Password</label>
+                            <div id="pass-container">
+                                <input
+                                    id="pass"
+                                    name="password"
+                                    type={isPasswordVisible ? 'text' : 'password'}
+                                    placeholder="Password"
+                                    required
+                                    autoComplete="off"
+                                    value={userData.password}
+                                    onChange={handleChange} />
+                                <button type="button" onClick={togglePasswordVisibility}>
+                                    <img id="pass-eye-img" />
+                                </button>
+                            </div>
+                            <div id="rmmbr-btn-container">
+                                <label className="remember-me">
+                                    <input
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={toggleRememberMe}
+                                    />
+                                    Remember me
+                                </label>
+                                <Link to="/forgetpass" className="link"> Forgot password </Link>
+                            </div>
+
+                            <input className="submit-btn" type="button" value="Log in" onClick={submit}></input>
+                        </form>
+                        <Link to="/signup" className="link">Don't have an account? Sign up</Link>
+                    </div>
+                </div>
+            }
+        </>
     );
-}
+};
+
 export default LogInPage;
+

@@ -14,6 +14,7 @@ import "./index.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import GameLevelPage from './pages/games/GameLevelPage.tsx';
 import NotFoundPage from './pages/additional_components/NotFoundPage.tsx';
+import { Toaster } from 'sonner'; 
 
 export default function App() {
     return (
@@ -27,13 +28,13 @@ export default function App() {
                 <Route path="forgetpass" element={<ForgetPasswordPage />} />
                 <Route path="setnewpass" element={<SetNewPasswordPage />} />
                 <Route path="lvl/game" element={<GameLevelPage />} />
-                <Route path="*" element={<NotFoundPage/>} />
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
+            <Toaster position="top-center" /> {}
         </BrowserRouter>
     );
 }
+
 // @ts-expect-error
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
-
-
