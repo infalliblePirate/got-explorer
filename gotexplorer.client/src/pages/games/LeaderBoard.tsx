@@ -11,9 +11,12 @@ export interface Player {
 export interface LeaderboardProps {
     players: Player[];
     currentScore: number;
+    currentUserId: number | null;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ players, currentScore }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ players, currentScore, currentUserId }) => {
+    const currentUserIndex = players.findIndex(player => player.userId === currentUserId);
+    const topPlayers = players.slice(0, 5);
     return (
         <div className="leaderboard">
             <div className="leaderboard__current-score">
@@ -31,13 +34,30 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players, currentScore }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {players.map((player, index) => (
-                            <tr key={player.userId} className="leaderboard__row">
+                        {topPlayers.map((player, index) => (
+                            <tr key={player.userId} className={`leaderboard__row ${player.userId === currentUserId ? "you" : ""}`}>
                                 <td className="leaderboard__cell">{index + 1}</td>
-                                <td className="leaderboard__cell">{player.username}</td>
+                                <td className="leaderboard__cell">{player.userId === currentUserId ? "You" : player.username}</td>
                                 <td className="leaderboard__cell">{player.score}</td>
                             </tr>
                         ))}
+                       {currentUserIndex >= 6 && ( 
+                            <>
+                                <tr>
+                                    <td className="leaderboard__cell"></td>
+                                    <td className="leaderboard__cell">...</td>
+                                    <td className="leaderboard__cell"></td>
+                                </tr>
+                            </>
+                        )}
+                        {currentUserIndex >= 5 && (
+                            <tr key={players[currentUserIndex].userId} className="leaderboard__row you">
+                                <td className="leaderboard__cell">{currentUserIndex + 1}</td>
+                                <td className="leaderboard__cell">You</td>
+                                <td className="leaderboard__cell">{players[currentUserIndex].score}</td>
+                            </tr>
+                        )}
+
                     </tbody>
                 </table>
             ) : (

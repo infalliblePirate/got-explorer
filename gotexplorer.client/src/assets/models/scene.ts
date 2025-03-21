@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export class Scene {
@@ -30,7 +31,6 @@ export class Scene {
 
         this.setupLight();
 
-
         window.addEventListener('resize', () => this.onWindowResize());
     }
 
@@ -57,11 +57,16 @@ export class Scene {
 
     public loadModel(modelPath: string) {
         const loader = new GLTFLoader();
+        const dracoLoader = new DRACOLoader();
+
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/'); 
+        dracoLoader.setDecoderConfig({ type: 'js' });
+        loader.setDRACOLoader(dracoLoader);
+
         loader.load(
             modelPath,
             (gltf: GLTFLoader) => {
                 this.scene.add(gltf.scene);
-
             },
             undefined,
             (error: Error) => {
@@ -86,6 +91,7 @@ export class Scene {
         const child = this.scene.children[0];
         this.scene.remove(child);
     }
+        THREE.Cache.clear();
     }
     public changeCameraPosition(x: number, y: number, z: number) {
         this.camera.position.set(x, y, z);

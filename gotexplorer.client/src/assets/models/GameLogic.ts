@@ -25,9 +25,9 @@ export class GameLogic {
         this.lastMarker = this.map.addMarker(lat, lng);
 
         // show the coordinates
-        if (this.lastMarker) {
-            this.lastMarker.bindPopup(`Coordinates: (${lat.toFixed(2)}, ${lng.toFixed(2)})`).openPopup();
-        }
+        // if (this.lastMarker) {
+        //     this.lastMarker.bindPopup(`Coordinates: (${lat.toFixed(2)}, ${lng.toFixed(2)})`).openPopup();
+        // }
 
         this.lastClick = { lat, lng };
     }

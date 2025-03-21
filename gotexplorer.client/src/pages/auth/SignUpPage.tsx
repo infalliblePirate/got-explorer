@@ -5,6 +5,7 @@ import Cookies from "universal-cookie";
 import authService from "./authService";
 import { toast } from "sonner";
 
+
 const SignUpPage = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
     const EML_REGEX = /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -48,7 +49,7 @@ const SignUpPage = () => {
                             color: 'white'
                         }
                     });
-                    navigate("/profile");
+                    navigate("/startgame");
                 })
                 .catch((error) => {
                     console.error("Registration failed:", error);

@@ -1,3 +1,4 @@
+@import '../../index.scss';
 body {
     margin: 0;
 }
@@ -21,35 +22,68 @@ body {
     z-index: 0;
 }
 
-#map-container {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 25vw;
-    height: 50vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.8);
-}
-
-#map,
 #three {
     width: 100%;
     height: 100%;
 }
 
-#map-container:hover {
-    width: 35vw;
-    height: 60vh;
+#map-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.map-2d-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    max-width: 80vw; 
+    max-height: 80vh; 
+
+    &.small {
+        width: 20vw;
+        height: 20vh;
+        cursor: pointer;
+    }
+
+    &.expanded {
+        width: 80vw;
+        height: 80vh;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.close-map-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+   
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    z-index: 10000;
+
+    &:hover {
+        background: rgb(226, 152, 152);
+    }
 }
 
 .submit-button {
-    position: absolute;
-    bottom: 10px;
-    right: auto;
     padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
     font-family: 'GOTfont';
     font-size: 16px;
     font-weight: bold;
@@ -61,18 +95,17 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s, background-color 0.2s;
-    z-index: 10000;
+
+    &:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+    }
+
+    &:active {
+        transform: scale(1.05);
+    }
 }
 
-.submit-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.1);
-}
-
-.submit-button:active {
-    transform: scale(1.05);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
 
 .modal-overlay {
     position: fixed;
@@ -147,11 +180,11 @@ body {
         }
 
         & tbody {
+            & tr.you {
+                font-weight: bold;
+                color: #0056b3;
+            }
             & tr {
-                &:hover {
-                    background-color: #e0e0e0;
-                }
-
                 & td {
                     font-family: 'GOTfont';
                     padding: 10px;
@@ -164,6 +197,67 @@ body {
             }
         }
     }
+
+    @include respond(tab-land) {
+        min-width: 700px;
+        padding: 40px;
+
+        &__current-score {
+            font-size: 18px;
+        }
+
+        &__title {
+            font-size: 22px;
+        }
+
+        &__table {
+            font-size: 16px;
+        }
+    }
+
+    @include respond(tab-port) {
+        min-width: 500px;
+        padding: 30px;
+
+        &__current-score {
+            font-size: 16px;
+        }
+
+        &__title {
+            font-size: 20px;
+        }
+
+        &__table {
+            font-size: 14px;
+
+            & thead th,
+            & tbody td {
+                padding: 8px;
+            }
+        }
+    }
+
+    @include respond(phone) {
+        min-width: 300px;
+        padding: 20px;
+
+        &__current-score {
+            font-size: 14px;
+        }
+
+        &__title {
+            font-size: 18px;
+        }
+
+        &__table {
+            font-size: 12px;
+
+            & thead th,
+            & tbody td {
+                padding: 6px;
+            }
+        }
+    }
 }
 
 .modal-buttons {
@@ -171,6 +265,10 @@ body {
     gap: 20px;
     justify-content: center;
     margin-top: 20px;
+
+    @include respond(phone) {
+        gap: 10px;
+    }
 }
 
 .restart-button,
@@ -188,5 +286,10 @@ body {
 
     &:hover {
         background-color: #003d80;
+    }
+
+    @include respond(phone) {
+        font-size: 14px;
+        padding: 8px 16px;
     }
 }

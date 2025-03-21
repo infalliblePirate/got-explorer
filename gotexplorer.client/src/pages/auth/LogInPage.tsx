@@ -5,6 +5,7 @@ import authService from "./authService";
 import Cookies from "universal-cookie";
 import { toast } from 'sonner';
 
+
 const LogInPage = () => {
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
     const [userData, setUserData] = useState({
@@ -40,23 +41,24 @@ const LogInPage = () => {
     const submit = () => {
         const passValid = PWD_REGEX.test(userData.password);
 
+
         if (passValid && userData.username !== "") {
-            authserv.login(userData.username, userData.password)
+            authserv.login(userData.username, userData.password, rememberMe)
                 .then(() => {
                     toast.success("Login successful!", {
                         style: {
-                            backgroundColor: '#cfc15d', // Green color
+                            backgroundColor: '#cfc15d', 
                             color: 'white'
                         }
                     });
-                    navigate("/profile");
+                    navigate("/startgame");
                 })
                 .catch((error) => {
                     console.error("Login failed:", error);
                     const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
                     toast.error(errorMsg, {
                         style: {
-                            backgroundColor: '#5d8ecf', // Red color
+                            backgroundColor: '#5d8ecf', 
                             color: 'white'
                         }
                     });
@@ -65,7 +67,7 @@ const LogInPage = () => {
             if (!passValid) {
                 toast.error("Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol", {
                     style: {
-                        backgroundColor: '#5d8ecf', // Red color
+                        backgroundColor: '#5d8ecf', 
                         color: 'white'
                     }
                 });
@@ -73,7 +75,7 @@ const LogInPage = () => {
             if (userData.username === "") {
                 toast.error("Username is empty", {
                     style: {
-                        backgroundColor: '#5d8ecf', // Red color
+                        backgroundColor: '#5d8ecf', 
                         color: 'white'
                     }
                 });

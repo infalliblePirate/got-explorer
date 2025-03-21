@@ -1,0 +1,39 @@
+name: Build and Deploy to Production
+
+on:
+    workflow_dispatch:
+        
+jobs:
+    build:
+        name: Build Application
+        runs-on: ubuntu-latest
+        steps:
+           - name: Pull Code
+             uses: actions/checkout@v4
+           - name: Setup .NET
+             uses: actions/setup-dotnet@v4
+             with:
+                 dotnet-version: '8.0.x'
+           - name: Setup Node.js
+             uses: actions/setup-node@v4
+             with:
+                 node-version: '20'
+           - name: Restore .NET Dependecies
+             run: dotnet restore
+           - name: Install Node.js Dependencies
+             run: npm install
+             working-directory: gotexplorer.client
+           - name: Create Production Build
+             run: dotnet publish -c Release --no-restore
+           - name: Push to Production
+             run: |
+                echo "$ssh_key" > ~/ssh_key
+                chmod 600 ~/ssh_key
+                rsync -e "ssh -i ~/ssh_key -o StrictHostKeyChecking=no" -avzr ./GotExplorer.API/bin/Release/net8.0/publish/* "$user"@"$target_ip":/var/www/gotexplorer
+             env:
+                ssh_key: ${{ secrets.CICD_SSH }}
+                user: ${{ secrets.CICD_USER }}
+                target_ip: ${{ secrets.PRODUCTION_IP }}
+             
+
+                
