@@ -10,5 +10,6 @@ namespace GotExplorer.BLL.DTOs
         public int? Limit { get; set; }
         public LeaderboardSortBy SortBy { get; set; } = LeaderboardSortBy.Score;
         public OrderBy OrderBy { get; set; } = OrderBy.Desc;
+        public GameTypeDto GameType { get; set; } = GameTypeDto.Standard;
     }
 }

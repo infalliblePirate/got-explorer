@@ -22,6 +22,11 @@ namespace GotExplorer.BLL.Validators
                 .IsInEnum()
                 .WithErrorCode(ErrorCodes.Invalid)
                 .WithMessage(ErrorMessages.InvalidLeaderboardOrderBy);
+
+            RuleFor(x => x.GameType)
+                .IsInEnum()
+                .WithErrorCode(ErrorCodes.Invalid)
+                .WithErrorCode(ErrorMessages.InvalidGameType);
         }
     }
 }
