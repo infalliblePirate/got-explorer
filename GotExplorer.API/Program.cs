@@ -36,6 +36,7 @@ namespace GotExplorer.API
             var jwtSection = builder.Configuration.GetSection("Jwt");
             var jwtOptions = jwtSection.Get<JwtOptions>();
             builder.Services.Configure<JwtOptions>(jwtSection);
+            var googleAuthSettings = builder.Configuration.GetSection("Authentication:Google").Get<GoogleAuthenticationSettings>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -50,7 +51,13 @@ namespace GotExplorer.API
                     ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 };
+            })
+            .AddGoogleOpenIdConnect(options =>
+            {
+                options.ClientId = googleAuthSettings.ClientId;
+                options.ClientSecret = googleAuthSettings.ClientSecret;
             });
+
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -117,6 +124,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<CompleteGameDTO>, CompleteGameDTOValidator>();
             builder.Services.AddScoped<IValidator<LeaderboardRequestDTO>, LeaderboardRequestDTOValidator>();
             builder.Services.AddScoped<IValidator<LeaderboardUserRequestDTO>, LeaderboardUserRequestDTOValidator>();
+            builder.Services.AddScoped<IValidator<GoogleLoginDTO>, GoogleLoginDtoValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

@@ -4,9 +4,11 @@ import Navigation from '../additional_components/Navigation';
 import './ProfilePage.scss';
 import Cookies from 'universal-cookie';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload  } from 'jwt-decode';
 import { useEffect, useRef, useState } from 'react';
 import authService from './authService';
+import GameService from '../games/GameService';
+import { Player } from '../games/LeaderBoard';
 
 const Popover = ({ onSelectImage, popoverRef }: { onSelectImage: (imageId: string) => void; popoverRef: React.RefObject<HTMLDivElement>; }) => {
     const [children, setChildren] = useState<JSX.Element[]>([]);
@@ -40,12 +42,16 @@ const PossiblePicture = ({ id, source, onSelect }: { id: string, source: string,
     </button>
 }
 const ProfilePage = () => {
+        interface DecodedToken extends JwtPayload {
+        name: string;
+        email: string;
+    }
     const cookies = new Cookies();
     const token = cookies.get('token');
     const isAuthenticated = token != null ? true : false;
     const authserv = authService;
     const navigate = useNavigate();
-    const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState<DecodedToken>({
         name: "",
         email: ""
     });
@@ -57,7 +63,11 @@ const ProfilePage = () => {
     const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
     const [popover, setPopover] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);
-
+    const [leaderboard, setLeaderboard] = useState<Player[]>([]);
+    const [userRank, setUserRank] = useState<number | null>(null);
+    const [userScore, setUserScore] = useState(0);
+    const gameserv = GameService;
+    
     const handleClickOutside = (event: MouseEvent) => {
         if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
             setPopover(false); 
@@ -67,7 +77,24 @@ const ProfilePage = () => {
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
         try {
-            setUserData(jwtDecode(token));
+            const decoded = jwtDecode<DecodedToken>(token);
+            setUserData({
+                name: decoded.name,
+                email: decoded.email 
+            });
+
+            gameserv.getLeaderboard()
+                .then(response => {
+                    const data: Player[] = response.data; 
+                    setLeaderboard(data);
+
+                    const userIndex = data.findIndex((user: Player) => user.username === decoded.name);
+                    if (userIndex !== -1) {
+                        setUserRank(userIndex + 1);
+                        setUserScore(data[userIndex].score);
+                    }
+                })
+                .catch(error => console.error("Error fetching leaderboard:", error));
         } catch (error) {
             console.error('Token decoding failed:', error);
         }
@@ -185,12 +212,34 @@ const ProfilePage = () => {
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>
-                    <p>
-                        1. User23 - 1984 points
-                        <br />
-                        34. You - 578 points
-                    </p>
+                    {leaderboard.length > 0 && userRank !== null ? (
+                        <>
+                            <p className={leaderboard[0].username === userData.name ? "you" : ""}>
+                                1. {leaderboard[0].username === userData.name ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
+                            </p>
+                            {userRank !== 1 && (
+                                <>
+                                    {userRank === 2 && (
+                                        <p className="you">
+                                            2. You - {userScore} points
+                                        </p>
+                                    )}
+                                    {userRank > 2 && (
+                                        <>
+                                            <p>...</p>
+                                            <p className="you">
+                                                {userRank}. You - {userScore} points
+                                            </p>
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <p className="no-play">You haven't played yet</p>
+                    )}
                 </div>
+
 
 
                 <div className="profile-form">

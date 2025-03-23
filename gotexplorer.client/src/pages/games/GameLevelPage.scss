@@ -1,3 +1,4 @@
+@import '../../index.scss';
 body {
     margin: 0;
 }
@@ -179,11 +180,11 @@ body {
         }
 
         & tbody {
+            & tr.you {
+                font-weight: bold;
+                color: #0056b3;
+            }
             & tr {
-                &:hover {
-                    background-color: #e0e0e0;
-                }
-
                 & td {
                     font-family: 'GOTfont';
                     padding: 10px;
@@ -196,6 +197,67 @@ body {
             }
         }
     }
+
+    @include respond(tab-land) {
+        min-width: 700px;
+        padding: 40px;
+
+        &__current-score {
+            font-size: 18px;
+        }
+
+        &__title {
+            font-size: 22px;
+        }
+
+        &__table {
+            font-size: 16px;
+        }
+    }
+
+    @include respond(tab-port) {
+        min-width: 500px;
+        padding: 30px;
+
+        &__current-score {
+            font-size: 16px;
+        }
+
+        &__title {
+            font-size: 20px;
+        }
+
+        &__table {
+            font-size: 14px;
+
+            & thead th,
+            & tbody td {
+                padding: 8px;
+            }
+        }
+    }
+
+    @include respond(phone) {
+        min-width: 300px;
+        padding: 20px;
+
+        &__current-score {
+            font-size: 14px;
+        }
+
+        &__title {
+            font-size: 18px;
+        }
+
+        &__table {
+            font-size: 12px;
+
+            & thead th,
+            & tbody td {
+                padding: 6px;
+            }
+        }
+    }
 }
 
 .modal-buttons {
@@ -203,6 +265,10 @@ body {
     gap: 20px;
     justify-content: center;
     margin-top: 20px;
+
+    @include respond(phone) {
+        gap: 10px;
+    }
 }
 
 .restart-button,
@@ -220,5 +286,10 @@ body {
 
     &:hover {
         background-color: #003d80;
+    }
+
+    @include respond(phone) {
+        font-size: 14px;
+        padding: 8px 16px;
     }
 }
