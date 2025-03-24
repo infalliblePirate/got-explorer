@@ -189,6 +189,7 @@ const ProfilePage = () => {
                         <button className="delete-button" onClick={deleteProfile}>Delete account</button>
                     </div>
                 </div>
+            </div>
                 <Footer />
             </div>
             : <Navigate to="/login"></Navigate>
