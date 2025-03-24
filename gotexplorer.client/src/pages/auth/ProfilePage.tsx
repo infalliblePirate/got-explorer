@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { jwtDecode, JwtPayload  } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import authService from './authService';
+import { toast } from 'sonner';
 import GameService from '../games/GameService';
 import { Player } from '../games/LeaderBoard';
 
@@ -85,42 +86,54 @@ const ProfilePage = () => {
         }
     }
     function deleteProfile() {
-        try {
-            authserv.delete();
-            navigate("/");
-        }
-        catch (error) {
-            console.log(error);
-        }
+        const deletePromise = new Promise<void>((resolve, reject) => {
+            try {
+                authserv.delete();
+                setTimeout(() => {
+                    resolve();
+                }, 2000);
+            } catch (error) {
+                console.log(error);
+                reject();
+            }
+        });
+
+        toast.promise(deletePromise, {
+            loading: 'Deleting account...',
+            success: 'Account successfully deleted!',
+            error: 'Error deleting account',
+        });
+
+        deletePromise.then(() => navigate("/"));
     }
     function logOut() {
         authserv.logout();
         navigate("/");
     }
     return (<>{isAuthenticated ?
-        <div className="profile-page">
-            <Navigation />
-            <div className="profile-container">
-                <div className="email">
-                    {userData ? (
-                        <p>{userData.email}</p>
-                    )
-                        : (
-                            <p>No email</p>
-                        )
-                    }
-                </div>
-                <div className="profile-header">
-                    <div className="profile-picture-wrapper">
-                        <img
-                            className="profile-picture"
-                            src={profileIcon}
-                            alt="Profile"
-                        />
-                        <button className="change-picture-button">📸</button>
+            <div className="profile-page">
+                <Navigation />
+                <div className="profile-container">
+                    <div className="email">
+                        {userData ? (
+                                <p>{userData.email}</p>
+                            )
+                            : (
+                                <p>No email</p>
+                            )
+                        }
                     </div>
-                    <h2 className="username">{userData.name}</h2>
-                </div>
+                    <div className="profile-header">
+                        <div className="profile-picture-wrapper">
+                            <img
+                                className="profile-picture"
+                                src={profileIcon}
+                                alt="Profile"
+                            />
+                            <button className="change-picture-button">📸</button>
+                        </div>
+                        <h2 className="username">{userData.name}</h2>
+                    </div>
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>
@@ -177,11 +190,11 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
-        </div>
-        : <Navigate to="/login"></Navigate>
-    }
-    </>
+                <Footer />
+            </div>
+            : <Navigate to="/login"></Navigate>
+        }
+        </>
     );
 }
 export default ProfilePage;

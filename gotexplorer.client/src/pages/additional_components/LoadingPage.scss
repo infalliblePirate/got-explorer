@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'GOTfont';
+  src: url("../../assets/fonts/Game of Thrones.ttf") format('truetype');
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+.loading-container p {
+  font-family: 'GOTfont', sans-serif;
+  font-size: 30px;
+  color: #FFCD41;
+}
+.loading-spinner {
+  width: 150px;
+  height: 150px;
+  background: url('../../assets/images/loading.svg') no-repeat center center;
+  background-size: contain;
+  margin-bottom: 20px;
+}
