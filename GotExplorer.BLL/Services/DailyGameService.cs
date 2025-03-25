@@ -35,9 +35,9 @@ namespace GotExplorer.BLL.Services
             DateTime today = DateTime.Today.ToUniversalTime();
             DateTime tomorrow = today.AddDays(1).ToUniversalTime();
 
-            var playedGamesToday = _appDbContext.Games.Where(g => g.GameType == GameType.Daily && g.StartTime >= today && g.EndTime <= tomorrow).Any();
+            var playedGameToday = await _appDbContext.Games.Where(g => g.GameType == GameType.Daily && g.StartTime >= today && g.EndTime <= tomorrow).AnyAsync();
 
-            if (playedGamesToday) {
+            if (playedGameToday) {
                 return new ValidationWithEntityModel<NewGameDTO>(
                     new ValidationFailure(userId, ErrorMessages.DailyGamePlayLimitExceeded) { ErrorCode = ErrorCodes.PlayLimitExceeded }
                 );
