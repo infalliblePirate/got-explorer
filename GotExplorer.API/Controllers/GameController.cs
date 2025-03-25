@@ -108,12 +108,14 @@ namespace GotExplorer.API.Controllers
         /// <response code="400">Invalid request data.</response>
         /// <response code="401">Authentication failed due to invalid JWT.</response>
         /// <response code="403">User does not have sufficient permissions.</response>
+        /// <response code="429">User has reached daily limit of games</response>
         /// <response code="500">An unexpected error occurred on the server.</response>       
         [HttpPost("start/daily")]
         [ProducesResponseType(typeof(NewGameDTO), 200)]
         [ProducesResponseType(typeof(ValidationResult), 400)]
         [ProducesResponseType(typeof(ValidationResult), 401)]
         [ProducesResponseType(typeof(ValidationResult), 403)]
+        [ProducesResponseType(typeof(ValidationResult), 429)]
         [ProducesResponseType(typeof(ValidationResult), 500)]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> StartDailyGame()
