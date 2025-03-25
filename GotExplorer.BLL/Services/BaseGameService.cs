@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services.Results;
@@ -13,24 +13,18 @@ using AutoMapper;
 
 namespace GotExplorer.BLL.Services
 {
-    public class GameService : IGameService
+    public abstract class BaseGameService : IGameService
     {
-        private readonly AppDbContext _appDbContext;
-        private readonly IValidator<CompleteGameDTO> _completeGameValidator;
-        private readonly UserManager<User> _userManager;
-        private readonly GameOptions _gameOptions;
-        private readonly IMapper _mapper;
+        protected readonly AppDbContext _appDbContext;
+        protected readonly UserManager<User> _userManager;
+        protected readonly IMapper _mapper;
 
-        public GameService(
-            IOptions<GameOptions> gameOptions, 
-            AppDbContext appDbContext, 
+        public BaseGameService(
+            AppDbContext appDbContext,
             UserManager<User> userManager,
-            IMapper mapper,
-            IValidator<CompleteGameDTO> completeGameValidator)
+            IMapper mapper)
         {
-            _gameOptions = gameOptions.Value;
             _appDbContext = appDbContext;
-            _completeGameValidator = completeGameValidator;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -44,7 +38,7 @@ namespace GotExplorer.BLL.Services
             if (game == null)
             {
                 return new ValidationWithEntityModel<GameResultDTO>(
-                    new ValidationFailure(nameof(gameId), ErrorMessages.GameServiceGameNotFound) {  ErrorCode = ErrorCodes.NotFound }
+                    new ValidationFailure(nameof(gameId), ErrorMessages.GameServiceGameNotFound) { ErrorCode = ErrorCodes.NotFound }
                 );
             }
 
@@ -99,23 +93,15 @@ namespace GotExplorer.BLL.Services
                 );
             }
 
-            var levels = _appDbContext.Levels.OrderBy(r => Guid.NewGuid()).Take(_gameOptions.LevelsPerGame).ToList();
-
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
             var newGameDto = new NewGameDTO();
-            newGameDto.LevelIds = levels.Select(e => e.Id);
+            var game = await GetGameAsync(user);
+            newGameDto.LevelIds = game.Levels.Select(e => e.Id);
 
             try
             {
                 _appDbContext.Attach(user);
-                _appDbContext.AttachRange(levels);
-                var game = new Game()
-                {
-                    User = user,
-                    StartTime = DateTime.UtcNow,
-                    GameType = GameType.Standard,
-                    Levels = levels
-                };
+                _appDbContext.AttachRange(game.Levels);
 
                 await _appDbContext.Games.AddAsync(game);
                 await _appDbContext.SaveChangesAsync();
@@ -138,5 +124,7 @@ namespace GotExplorer.BLL.Services
 
             return new ValidationWithEntityModel<NewGameDTO>(newGameDto);
         }
+
+        protected abstract Task<Game> GetGameAsync(User user);
     }
 }

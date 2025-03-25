@@ -94,7 +94,8 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddScoped<IModel3DService, Model3DService>();
             builder.Services.AddScoped<ILevelService, LevelService>();
-            builder.Services.AddScoped<IGameService, GameService>();
+            builder.Services.AddKeyedScoped<IGameService, StandardGameService>("standard");
+            builder.Services.AddKeyedScoped<IGameService, DailyGameService>("daily");
             builder.Services.AddScoped<IGameLevelService, GameLevelService>();
             builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
