@@ -64,5 +64,7 @@
 
         public static readonly string GoogleAuthCredentialInvalid = "Google authentication credential is invalid";
         public static readonly string GoogleAuthCredentialRequired = "Google authentication credential is required";
+
+        public static readonly string DailyGamePlayLimitExceeded = "You have already played the game today. Please try again tomorrow.";
     }
 }

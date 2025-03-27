@@ -35,5 +35,7 @@
         public const string GameStartFailed = nameof(GameStartFailed);
         public const string GameCompletionFailed = nameof(GameCompletionFailed);
         public const string GameAlreadyCompleted = nameof(GameAlreadyCompleted);
+
+        public const string PlayLimitExceeded = nameof(PlayLimitExceeded);
     }
 }
