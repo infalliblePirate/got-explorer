@@ -4,6 +4,7 @@ import { useState } from "react";
 import Cookies from "universal-cookie";
 import authService from "./authService";
 import { toast } from "sonner";
+import { GoogleLogin } from "@react-oauth/google";
 
 
 const SignUpPage = () => {
@@ -35,6 +36,28 @@ const SignUpPage = () => {
         });
     };
 
+    const SubmitGoogle = (token: string) => {
+        authserv.login_google(token)
+            .then(() => {
+                toast.success("Successful registration!", {
+                    style: {
+                        backgroundColor: '#cfc15d',
+                        color: 'white'
+                    }
+                });
+                navigate("/startgame");
+            })
+            .catch((error) => {
+                console.error("Registration failed:", error);
+                const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
+                toast.error(errorMsg, {
+                    style: {
+                        backgroundColor: '#5d8ecf',
+                        color: 'white'
+                    }
+                });
+            });
+    }
 
     const Submit = () => {
         const passValid = PWD_REGEX.test(userData.password);
@@ -112,6 +135,17 @@ const SignUpPage = () => {
                             <input className="submit-btn" type="button" value="Sign Up" onClick={Submit}></input>
                         </form>
                         <Link to="/login" className="link">Already have an account? Sign in</Link>
+                        <hr></hr>
+                        <div className="google">
+                            <GoogleLogin
+                                onSuccess={r => {
+                                    SubmitGoogle(r.credential as string);
+                                }}
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             }

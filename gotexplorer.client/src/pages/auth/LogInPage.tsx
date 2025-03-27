@@ -4,6 +4,7 @@ import { useState } from "react";
 import authService from "./authService";
 import Cookies from "universal-cookie";
 import { toast } from 'sonner';
+import { GoogleLogin } from "@react-oauth/google";
 
 
 const LogInPage = () => {
@@ -37,6 +38,28 @@ const LogInPage = () => {
             [e.target.name]: value
         });
     };
+    const SubmitGoogle = (token: string) => {
+        authserv.login_google(token)
+            .then(() => {
+                toast.success("Successful registration!", {
+                    style: {
+                        backgroundColor: '#cfc15d',
+                        color: 'white'
+                    }
+                });
+                navigate("/startgame");
+            })
+            .catch((error) => {
+                console.error("Registration failed:", error);
+                const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
+                toast.error(errorMsg, {
+                    style: {
+                        backgroundColor: '#5d8ecf',
+                        color: 'white'
+                    }
+                });
+            });
+    }
 
     const submit = () => {
         const passValid = PWD_REGEX.test(userData.password);
@@ -47,7 +70,7 @@ const LogInPage = () => {
                 .then(() => {
                     toast.success("Login successful!", {
                         style: {
-                            backgroundColor: '#cfc15d', 
+                            backgroundColor: '#cfc15d',
                             color: 'white'
                         }
                     });
@@ -58,7 +81,7 @@ const LogInPage = () => {
                     const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
                     toast.error(errorMsg, {
                         style: {
-                            backgroundColor: '#5d8ecf', 
+                            backgroundColor: '#5d8ecf',
                             color: 'white'
                         }
                     });
@@ -67,7 +90,7 @@ const LogInPage = () => {
             if (!passValid) {
                 toast.error("Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol", {
                     style: {
-                        backgroundColor: '#5d8ecf', 
+                        backgroundColor: '#5d8ecf',
                         color: 'white'
                     }
                 });
@@ -75,7 +98,7 @@ const LogInPage = () => {
             if (userData.username === "") {
                 toast.error("Username is empty", {
                     style: {
-                        backgroundColor: '#5d8ecf', 
+                        backgroundColor: '#5d8ecf',
                         color: 'white'
                     }
                 });
@@ -135,6 +158,17 @@ const LogInPage = () => {
                             <input className="submit-btn" type="button" value="Log in" onClick={submit}></input>
                         </form>
                         <Link to="/signup" className="link">Don't have an account? Sign up</Link>
+                        <hr></hr>
+                        <div className="google">
+                            <GoogleLogin
+                                onSuccess={r => {
+                                    SubmitGoogle(r.credential as string);
+                                }}
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             }
