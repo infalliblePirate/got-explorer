@@ -1,29 +1,28 @@
 import api from "../../services/api";
 import Cookies from 'universal-cookie';
 import { getAuthConfig } from "./GetAuthConfig";
-import { jwtDecode } from "jwt-decode";
 class AuthService {
     cookies = new Cookies(null, { path: '/' });
 
-   login(username: string, password: string, rememberMe: boolean) {
+    login(username: string, password: string, rememberMe: boolean) {
         return api
             .post("/account/login", { username, password })
             .then((response) => {
                 const token = response.data.token;
                 const imageId = response.data.imageId;
-            if (token) {
-                if (rememberMe) {
-                    this.cookies.set("token", token, { path: "/", maxAge: 60 * 60 * 24 * 10 });
-                    if (imageId) {
-                        this.cookies.set("imageId", imageId, { path: "/", maxAge: 60 * 60 * 24 * 10 });
-                    }
-                } else {
-                    this.cookies.set("token", token, { path: "/" });
-                    if (imageId) {
-                        this.cookies.set("imageId", imageId, { path: "/" });
+                if (token) {
+                    if (rememberMe) {
+                        this.cookies.set("token", token, { path: "/", maxAge: 60 * 60 * 24 * 10 });
+                        if (imageId) {
+                            this.cookies.set("imageId", imageId, { path: "/", maxAge: 60 * 60 * 24 * 10 });
+                        }
+                    } else {
+                        this.cookies.set("token", token, { path: "/" });
+                        if (imageId) {
+                            this.cookies.set("imageId", imageId, { path: "/" });
+                        }
                     }
                 }
-            }
                 return response.data;
             });
     }
@@ -52,8 +51,23 @@ class AuthService {
             return response.data;
         });
     }
-    update(username: string | null, email: string | null) {
-        const imageId = this.cookies.get("changedImage") || this.cookies.get("imageId");
+    login_google(idToken: string) {
+        return api.post("/account/login/google", {
+            idToken
+        }).then((response) => {
+            const token = response.data.token;
+            const imageId = response.data.imageId;
+            if (token) {
+                this.cookies.set('token', token);
+            }
+            if (imageId) {
+                this.cookies.set('imageId', imageId)
+            }
+            return response.data;
+        });
+    }
+    update(username: string, email: string) {
+        const imageId = this.cookies.get("imageId");
         return api.put("/account/update", {
             username,
             email,
@@ -61,44 +75,6 @@ class AuthService {
         },
             {
                 headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
-            }).then(()=>{
-                if (this.cookies.get("changedImage") || this.cookies.get("imageId")) {
-                    this.cookies.set("imageId", imageId);
-                    this.cookies.remove("changedImage");
-                }
-            });
-    }
-
-    extractUsernameFromToken(token: string): string | null {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded:any = jwtDecode(token);
-            return decoded.username; 
-        } catch (error) {
-            console.error("Invalid token", error);
-            return null;
-        }
-    }
-    update_photo() {
-        const imageId = this.cookies.get("changedImage") || this.cookies.get("imageId");
-        let username: string | null = null;
-        let email: string | null = null;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const decoded:any = jwtDecode(this.cookies.get("token"));
-        username = decoded.username;
-        email = decoded.email;
-        return api.put("/account/update", {
-            username,
-            email,
-            imageId
-        },
-            {
-                headers: { Authorization: `Bearer ${this.cookies.get('token')}` }
-            }).then(() => {
-                if (this.cookies.get("changedImage") || this.cookies.get("imageId")) {
-                    this.cookies.set("imageId", imageId);
-                    this.cookies.remove("changedImage");
-                }
             });
     }
     update_password(currentPassword: string, newPassword: string) {
@@ -125,20 +101,6 @@ class AuthService {
         this.cookies.remove('gameid');
         this.cookies.remove('levelIds');
         this.cookies.remove('token');
-    }
-    get_images() {
-        return api.get("/image")
-            .then((r) => {
-                return r.data;
-            });
-    }
-    get_image(id: string) {
-        return api.get(`/image/${id}`, {
-            responseType: "blob", 
-        })
-            .then((r) => {
-                return URL.createObjectURL(r.data);
-            });
     }
 }
 
