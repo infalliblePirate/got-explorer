@@ -37,6 +37,10 @@
                 font-size: 32px;
             }
         }
+        .buttons {
+            display: flex;
+            gap: 24px;
+        }
         
         .button-start {
             display: block;
