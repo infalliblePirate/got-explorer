@@ -24,6 +24,7 @@ using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Validators;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Security.Cryptography.X509Certificates;
 namespace GotExplorer.API
 {
     public class Program
@@ -96,6 +97,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<ILevelService, LevelService>();
             builder.Services.AddKeyedScoped<IGameService, StandardGameService>("standard");
             builder.Services.AddKeyedScoped<IGameService, DailyGameService>("daily");
+            builder.Services.AddScoped<IDemoGameService, DemoGameService>();
             builder.Services.AddScoped<IGameLevelService, GameLevelService>();
             builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
@@ -122,6 +124,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<CreateLevelDTO>, CreateLevelValidator>();
             builder.Services.AddScoped<IValidator<UpdateLevelDTO>, UpdateLevelValidator>();
             builder.Services.AddScoped<IValidator<CalculateScoreDTO>, CalculateScoreDTOValidator>();
+            builder.Services.AddScoped<IValidator<CalculateLevelScoreDTO>, CalculateLevelScoreDtoValidator>();
             builder.Services.AddScoped<IValidator<CompleteGameDTO>, CompleteGameDTOValidator>();
             builder.Services.AddScoped<IValidator<LeaderboardRequestDTO>, LeaderboardRequestDTOValidator>();
             builder.Services.AddScoped<IValidator<LeaderboardUserRequestDTO>, LeaderboardUserRequestDTOValidator>();

@@ -5,6 +5,8 @@ using GotExplorer.BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation.Results;
+using GotExplorer.DAL.Entities;
+using GotExplorer.BLL.Services.Results;
 namespace GotExplorer.API.Controllers
 {
     [Route("api/[controller]")]
@@ -14,14 +16,17 @@ namespace GotExplorer.API.Controllers
         private readonly IGameService _standardGameService;
         private readonly IGameService _dailyGameService;
         private readonly IGameLevelService _gameLevelService;
+        private readonly IDemoGameService _demoGameService;
 
         public GameController(
             [FromKeyedServices("standard")] IGameService standardGameService,
             [FromKeyedServices("daily")] IGameService dailyGameService,
+            IDemoGameService demoGameService,
             IGameLevelService gameLevelService)
         {
             _standardGameService = standardGameService;
             _dailyGameService = dailyGameService;
+            _demoGameService = demoGameService;
             _gameLevelService = gameLevelService;
         }
 
@@ -102,6 +107,24 @@ namespace GotExplorer.API.Controllers
         }
 
         /// <summary>
+        /// Calculate the score for a specific level.
+        /// </summary>
+        /// <response code="200">Score calculated successfully.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="404">Level not found.</response>
+        /// <response code="500">An unexpected error occurred on the server.</response>
+        [HttpPut("calculateLevelScore")]
+        [ProducesResponseType(typeof(LevelScoreDTO), 200)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
+        public async Task<IActionResult> CalculateScore([FromBody] CalculateLevelScoreDTO calculateScoreDTO)
+        {
+            var result = await _gameLevelService.CalculateScoreAsync(calculateScoreDTO);
+            return result.ToActionResult<LevelScoreDTO>();
+        }
+
+        /// <summary>
         /// Start a new daily game. Require Authorization.
         /// </summary>
         /// <response code="200">A new game was successfully created.</response>
@@ -147,6 +170,25 @@ namespace GotExplorer.API.Controllers
             var userId = User.GetClaimValue("Id");
             var result = await _dailyGameService.CompleteGameAsync(id, int.Parse(userId));
             return result.ToActionResult<GameResultDTO>();
+        }
+
+
+        /// <summary>
+        /// Start a new daily game.
+        /// </summary>
+        /// <response code="200">A new game was successfully created.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="500">An unexpected error occurred on the server.</response>     
+        [AllowAnonymous]
+        [HttpPost("start/demo")]
+        [ProducesResponseType(typeof(NewDemoGameDTO), 200)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
+        public async Task<IActionResult> StartDemoGame()
+        {
+            var result = await _demoGameService.StartGameAsync();
+            return result.ToActionResult<NewDemoGameDTO>();
         }
     }
 }

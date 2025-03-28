@@ -2,6 +2,7 @@
 {
     public class GameOptions
     {
+        public int LevelsPerDemoGame { get; set; }
         public int LevelsPerGame { get; set; }
         public int ProximityRadius { get; set; }
         public int ScoreWithinRadius { get; set; }
