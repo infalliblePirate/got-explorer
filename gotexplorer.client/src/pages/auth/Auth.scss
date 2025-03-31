@@ -56,7 +56,7 @@
         form {
             width: 100%;
             margin: 10px;
-            margin-top: 24px;
+            margin-top: 10px;
             margin-bottom: 0;
 
             .register-label {
@@ -74,7 +74,7 @@
                 padding: 10px 0 10px 10px;
                 border-radius: 8px;
                 margin-top: 10px;
-                margin-bottom: 24px;
+                margin-bottom: 10px;
                 background-color: #E5E5E5;
                 border: 5px;
                 font-size: 20px;
@@ -145,7 +145,6 @@
             }
 
             .submit-btn {
-
                 width: 100%;
                 height: 50px;
                 margin-top: 40px;
@@ -162,6 +161,20 @@
         .link {
             color: inherit;
             text-decoration: none;
+        }
+
+        .google {
+            text-align: center;
+        }
+
+        hr {
+            width: 100%;
+            margin: 10px;
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 2px solid #00283C;
+            padding: 0;
         }
     }
 
@@ -260,9 +273,9 @@
             }
         }
     }
-    
+
     .toast.success {
-        background-color: #28a745; 
+        background-color: #28a745;
         color: white;
         border-radius: 8px;
         padding: 10px;

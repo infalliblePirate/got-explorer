@@ -65,6 +65,7 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.GameCompletionFailed => StatusCodes.Status500InternalServerError,
                 ErrorCodes.GameLevelUpdateFailed => StatusCodes.Status500InternalServerError,
                 ErrorCodes.GameAlreadyCompleted => StatusCodes.Status409Conflict,
+                ErrorCodes.PlayLimitExceeded => StatusCodes.Status429TooManyRequests,
                 _ => StatusCodes.Status500InternalServerError,
             };
             return result;

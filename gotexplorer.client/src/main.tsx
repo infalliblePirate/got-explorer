@@ -14,26 +14,29 @@ import "./index.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import GameLevelPage from './pages/games/GameLevelPage.tsx';
 import NotFoundPage from './pages/additional_components/NotFoundPage.tsx';
-import { Toaster } from 'sonner'; 
-import DailyGamePage from './pages/games/DailyGamePage.tsx';
+import { Toaster } from 'sonner';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import DailyGamePage from './pages/games/DailyGamePage.tsx';  
 
 export default function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route index element={<MainPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="startgame" element={<StartGamePage />} />
-                <Route path="signup" element={<SignUpPage />} />
-                <Route path="login" element={<LogInPage />} />
-                <Route path="forgetpass" element={<ForgetPasswordPage />} />
-                <Route path="setnewpass" element={<SetNewPasswordPage />} />
-                <Route path="lvl/game" element={<GameLevelPage />} />
-                <Route path="lvl/dailygame" element={<DailyGamePage />} />
-                <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-            <Toaster position="top-center" /> {}
-        </BrowserRouter>
+        <GoogleOAuthProvider clientId={process.env.CLIENT_GOOGLE_ID as string}>
+            <BrowserRouter>
+                <Routes>
+                    <Route index element={<MainPage />} />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="startgame" element={<StartGamePage />} />
+                    <Route path="signup" element={<SignUpPage />} />
+                    <Route path="login" element={<LogInPage />} />
+                    <Route path="forgetpass" element={<ForgetPasswordPage />} />
+                    <Route path="setnewpass" element={<SetNewPasswordPage />} />
+                    <Route path="lvl/game" element={<GameLevelPage />} />
+                    <Route path="lvl/dailygame" element={<DailyGamePage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+                <Toaster position="top-center" /> { }
+            </BrowserRouter>
+        </GoogleOAuthProvider>
     );
 }
 

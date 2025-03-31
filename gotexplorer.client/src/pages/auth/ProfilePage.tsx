@@ -2,16 +2,46 @@
 import Footer from '../additional_components/Footer';
 import Navigation from '../additional_components/Navigation';
 import './ProfilePage.scss';
-import profileIcon from '../../assets/images/profile_img.webp';
 import Cookies from 'universal-cookie';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { jwtDecode, JwtPayload  } from 'jwt-decode';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import authService from './authService';
 import { toast } from 'sonner';
 import GameService from '../games/GameService';
 import { Player } from '../games/LeaderBoard';
 
+const Popover = ({ onSelectImage, popoverRef }: { onSelectImage: (imageId: string) => void; popoverRef: React.RefObject<HTMLDivElement>; }) => {
+    const [children, setChildren] = useState<JSX.Element[]>([]);
+    const getImages = async () => {
+        const authserv = authService;
+        const r = await authserv.get_images();
+        r.forEach((item: any) => {
+            if (item.name != "") {
+                setChildren((prevChildren) => [...prevChildren, <PossiblePicture key={item.id} id={item.id} source={item.path} onSelect={onSelectImage} />]);
+
+            }
+        })
+    }
+    useEffect(() => {
+        getImages();
+    }, [])
+    return (<div id="popover" className="popover" ref={popoverRef}>
+        {children}
+    </div>);
+}
+const PossiblePicture = ({ id, source, onSelect }: { id: string, source: string, onSelect: (id: string) => void }) => {
+    const cookies = new Cookies();
+    const handleMouseEvent = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        cookies.set("changedImage", (e.target as Element).id);
+        onSelect(id);
+    };
+
+    return <button onClick={handleMouseEvent}>
+        <img id={id} src={source} />
+    </button>
+}
 const ProfilePage = () => {
         interface DecodedToken extends JwtPayload {
         name: string;
@@ -33,14 +63,23 @@ const ProfilePage = () => {
         oldPassword: "",
         changedPassword: ""
     });
-
+    const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+    const [popover, setPopover] = useState(false);
+    const popoverRef = useRef<HTMLDivElement>(null);
     const [leaderboard, setLeaderboard] = useState<Player[]>([]);
     const [userRank, setUserRank] = useState<number | null>(null);
     const [userScore, setUserScore] = useState(0);
     const [dailyLeaderboard, setDailyLeaderboard] = useState<Player[]>([]);
     const gameserv = GameService;
     
-   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+            setPopover(false); 
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
         try {
             const decoded = jwtDecode<DecodedToken>(token);
             setUserData({
@@ -68,7 +107,49 @@ const ProfilePage = () => {
         } catch (error) {
             console.error('Token decoding failed:', error);
         }
+        const fetchImage = () => {
+            try {
+                if (!cookies.get("changedImage")) {
+                    authserv.get_image(cookies.get("imageId")).
+                        then((resp) => {
+                            setImageSrc(resp);
+                        });
+                }
+                else {
+                    authserv.get_image(cookies.get("changedImage")).
+                        then((resp) => {
+                            setImageSrc(resp);
+                        });
+                }
+            } catch (error) {
+                console.error("Error fetching image:", error);
+            }
+        };
+
+        fetchImage();
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            if (cookies.get("changedImage") != undefined && cookies.get("changedImage") != cookies.get("imageId")) {
+                try {
+                    authserv.update_photo();
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            }
+        }
     }, []);
+
+    const handleImageSelect = (imageId: string) => {
+        try {
+            authserv.get_image(imageId).
+                then((resp) => {
+                    setImageSrc(resp);
+                });
+        } catch (error) {
+            console.error("Error fetching image:", error);
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -77,6 +158,9 @@ const ProfilePage = () => {
             [e.target.name]: value
         });
     };
+    const handlePopout = () => {
+        setPopover(!popover);
+    }
     function changeName() {
         if (changedName != "") {
             authserv.update(changedName, userData.email)
@@ -89,8 +173,8 @@ const ProfilePage = () => {
         if (changedPasswords.oldPassword != "" && changedPasswords.changedPassword != "") {
             authserv.update_password(changedPasswords.oldPassword, changedPasswords.changedPassword).then(() => { navigate(0); })
                 .catch((err) => {
-                console.error(err);
-            });
+                    console.error(err);
+                });
         }
     }
     function deleteProfile() {
@@ -119,29 +203,34 @@ const ProfilePage = () => {
         navigate("/");
     }
     return (<>{isAuthenticated ?
-            <div className="profile-page">
-                <Navigation />
-                <div className="profile-container">
-                    <div className="email">
-                        {userData ? (
-                                <p>{userData.email}</p>
-                            )
-                            : (
-                                <p>No email</p>
-                            )
+
+        <div className="profile-page">
+            <Navigation />
+            <div className="profile-container">
+                <div className="email">
+                    {userData ? (
+                        <p>{userData.email}</p>
+                    )
+                        : (
+                            <p>No email</p>
+                        )
+                    }
+                </div>
+                <div className="profile-header">
+                    <div className="profile-picture-wrapper popover-container">
+                        <img
+                            className="profile-picture"
+                            src={imageSrc}
+                            alt="Profile"
+                        />
+                        {
+                            popover &&
+                            <Popover onSelectImage={handleImageSelect} popoverRef={popoverRef} />
                         }
-                    </div>
-                    <div className="profile-header">
-                        <div className="profile-picture-wrapper">
-                            <img
-                                className="profile-picture"
-                                src={profileIcon}
-                                alt="Profile"
-                            />
-                            <button className="change-picture-button">📸</button>
-                        </div>
-                        <h2 className="username">{userData.name}</h2>
-                    </div>
+                        <button className="change-picture-button" onClick={handlePopout}>📸</button>
+                     </div>
+                     <h2 className="username">{userData.name}</h2>
+                 </div>
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>

@@ -29,7 +29,7 @@ namespace GotExplorer.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<ValidationWithEntityModel<GameResultDTO>> CompleteGameAsync(int gameId, int userId)
+        public virtual async Task<ValidationWithEntityModel<GameResultDTO>> CompleteGameAsync(int gameId, int userId)
         {
             var game = await _appDbContext.Games
                 .Include(g => g.Levels)
@@ -82,7 +82,7 @@ namespace GotExplorer.BLL.Services
             return new ValidationWithEntityModel<GameResultDTO>(gameResult);
         }
 
-        public async Task<ValidationWithEntityModel<NewGameDTO>> StartGameAsync(string userId)
+        public virtual async Task<ValidationWithEntityModel<NewGameDTO>> StartGameAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -93,6 +93,11 @@ namespace GotExplorer.BLL.Services
                 );
             }
 
+            return await StartGameTransactionAsync(user);
+        }
+
+        protected async Task<ValidationWithEntityModel<NewGameDTO>> StartGameTransactionAsync(User user)
+        {
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
             var newGameDto = new NewGameDTO();
             var game = await GetGameAsync(user);
