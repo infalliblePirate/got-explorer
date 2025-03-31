@@ -19,20 +19,28 @@ namespace GotExplorer.BLL.Services
         private readonly AppDbContext _appDbContext;
         private readonly UserManager<User> _userManager;
         private readonly IValidator<CalculateScoreDTO> _calculateScoreValidator;
+        private readonly IValidator<CalculateLevelScoreDTO> _calculateLevelScoreValidator;
         private readonly GameOptions _gameOptions;
         private readonly IMapper _mapper;
 
-        public GameLevelService(IOptions<GameOptions> gameOptions, AppDbContext appDbContext, UserManager<User> userManager, IValidator<CalculateScoreDTO> calculateScoreValidator, IMapper mapper)
+        public GameLevelService(
+            IOptions<GameOptions> gameOptions,
+            AppDbContext appDbContext,
+            UserManager<User> userManager,
+            IValidator<CalculateScoreDTO> calculateScoreValidator,
+            IValidator<CalculateLevelScoreDTO> calculateLevelScoreValidator,
+            IMapper mapper)
         {
             _gameOptions = gameOptions.Value;
             _appDbContext = appDbContext;
             _calculateScoreValidator = calculateScoreValidator;
+            _calculateLevelScoreValidator = calculateLevelScoreValidator;
             _userManager = userManager;
             _mapper = mapper;
         }
 
          public async Task<ValidationWithEntityModel<UpdateGameLevelDTO>> CalculateScoreAsync(CalculateScoreDTO calculateScoreDTO)
-        {
+         {
             var validationResult = await _calculateScoreValidator.ValidateAsync(calculateScoreDTO);
             if (!validationResult.IsValid)
             {
@@ -105,6 +113,31 @@ namespace GotExplorer.BLL.Services
                         ErrorCode = ErrorCodes.GameLevelUpdateFailed
                     });
             }
+        }
+
+        public async Task<ValidationWithEntityModel<LevelScoreDTO>> CalculateScoreAsync(CalculateLevelScoreDTO calculateScoreDTO)
+        {
+            var validationResult = await _calculateLevelScoreValidator.ValidateAsync(calculateScoreDTO);
+
+            if (!validationResult.IsValid)
+            {
+                return new ValidationWithEntityModel<LevelScoreDTO>(validationResult);
+            }
+            var level = await _appDbContext.Levels.FindAsync(calculateScoreDTO.LevelId);
+
+            if (level == null)
+            {
+                return new ValidationWithEntityModel<LevelScoreDTO>(
+                        new ValidationFailure(nameof(calculateScoreDTO.LevelId), ErrorMessages.GameLevelServiceGameLevelNotFound, calculateScoreDTO.LevelId) { ErrorCode = ErrorCodes.NotFound }
+                    );
+                   
+            }
+
+            int score = CalculateLevelScore(level.X, level.Y, calculateScoreDTO.X, calculateScoreDTO.Y);
+            var levelScore = new LevelScoreDTO();
+            levelScore.LevelId = level.Id;
+            levelScore.Score = score;
+            return new ValidationWithEntityModel<LevelScoreDTO>(levelScore);
         }
 
         private double CalculateDistance(double correctX, double correctY, double chosedX, double chosedY)

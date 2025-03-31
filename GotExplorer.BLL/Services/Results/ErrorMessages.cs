@@ -27,6 +27,7 @@
 
         public static readonly string GameLevelServiceGameLevelNotFound = "Game does not have any levels associated with it.";
         public static readonly string GameLevelServiceFailedToSaveScore = "Failed to save the score for the specified game level.";
+        public static readonly string ValueMustBeBetween = "Value must be between {0} and {1}";
 
         public static readonly string LeaderboardServiceFailedToSaveScore = "Failed to save score for the specified user.";
         public static readonly string LeaderboardServiceRecordsNotFound = "No leaderboard records found.";
