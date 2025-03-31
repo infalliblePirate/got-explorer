@@ -46,6 +46,7 @@ const ProfilePage = () => {
         interface DecodedToken extends JwtPayload {
         name: string;
         email: string;
+        Id: number | null;
     }
     const cookies = new Cookies();
     const token = cookies.get('token');
@@ -54,7 +55,8 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState<DecodedToken>({
         name: "",
-        email: ""
+        email: "",
+        Id: null
     });
     const [changedName, setChangedName] = useState("");
     const [changedPasswords, setChangedPasswords] = useState({
@@ -67,6 +69,7 @@ const ProfilePage = () => {
     const [leaderboard, setLeaderboard] = useState<Player[]>([]);
     const [userRank, setUserRank] = useState<number | null>(null);
     const [userScore, setUserScore] = useState(0);
+    const [dailyLeaderboard, setDailyLeaderboard] = useState<Player[]>([]);
     const gameserv = GameService;
     
     const handleClickOutside = (event: MouseEvent) => {
@@ -81,21 +84,26 @@ const ProfilePage = () => {
             const decoded = jwtDecode<DecodedToken>(token);
             setUserData({
                 name: decoded.name,
-                email: decoded.email 
+                email: decoded.email,
+                Id: Number(decoded.Id)
             });
-
             gameserv.getLeaderboard()
                 .then(response => {
                     const data: Player[] = response.data; 
                     setLeaderboard(data);
-
-                    const userIndex = data.findIndex((user: Player) => user.username === decoded.name);
+                    const userIndex = data.findIndex((user: Player) => user.userId === Number(decoded.Id));
                     if (userIndex !== -1) {
                         setUserRank(userIndex + 1);
                         setUserScore(data[userIndex].score);
                     }
                 })
                 .catch(error => console.error("Error fetching leaderboard:", error));
+            gameserv.getLeaderboardDaily()
+            .then(response => {
+                const data: Player[] = response.data;
+                setDailyLeaderboard(data);
+            })
+            .catch(error => console.error("Error fetching daily leaderboard:", error));
         } catch (error) {
             console.error('Token decoding failed:', error);
         }
@@ -226,32 +234,54 @@ const ProfilePage = () => {
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>
-                    {leaderboard.length > 0 && userRank !== null ? (
-                        <>
-                            <p className={leaderboard[0].username === userData.name ? "you" : ""}>
-                                1. {leaderboard[0].username === userData.name ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
-                            </p>
-                            {userRank !== 1 && (
-                                <>
-                                    {userRank === 2 && (
-                                        <p className="you">
-                                            2. You - {userScore} points
-                                        </p>
-                                    )}
-                                    {userRank > 2 && (
-                                        <>
-                                            <p>...</p>
+                    <div className="leaderboard-container">
+                        <div className="leaderboard-left">
+                            <h5>Standard Leaderboard</h5>
+                        {leaderboard.length > 0 && userRank !== null ? (
+                            <>
+                                <p className={leaderboard[0].userId === userData.Id ? "you" : ""}>
+                                    1. {leaderboard[0].userId === userData.Id ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
+                                </p>
+                                {userRank !== 1 && (
+                                    <>
+                                        {userRank === 2 && (
                                             <p className="you">
-                                                {userRank}. You - {userScore} points
+                                                2. You - {userScore} points
                                             </p>
-                                        </>
+                                        )}
+                                        {userRank > 2 && (
+                                            <>
+                                                <p>...</p>
+                                                <p className="you">
+                                                    {userRank}. You - {userScore} points
+                                                </p>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <p className="no-play">You haven't played yet</p>
+                        )}                             
+                        </div>
+                        <div className="divider"></div>
+                        <div className="leaderboard-right">
+                            <h5>Daily Game</h5>
+                            {dailyLeaderboard.length > 0 ? (
+                                <>
+                                    {dailyLeaderboard.map((user, index) => 
+                                        user.userId === userData.Id && (
+                                            <p key={user.userId} className="you">
+                                                {index + 1}. You - {user.score} points
+                                            </p>
+                                        )
                                     )}
                                 </>
+                            ) : (
+                                <p className="no-play">You haven't played the daily game yet</p>
                             )}
-                        </>
-                    ) : (
-                        <p className="no-play">You haven't played yet</p>
-                    )}
+                        </div>
+                     </div>   
                 </div>
 
 

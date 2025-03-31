@@ -29,6 +29,15 @@ class GameService {
             y
         }, getAuthConfig());
     }
+    calculate_level_daily(levelId: number, x: number, y: number) {
+        const gameid = this.cookies.get("dailyGameId");
+        console.log(gameid);
+        return api.put(`/game/${gameid}/calculatescore`, {
+            levelId,
+            x,
+            y
+        }, getAuthConfig());
+    }
     complete_game() {
         const gameid = this.cookies.get("gameid");
         return api.put(`/game/${gameid}/complete`,
@@ -43,5 +52,39 @@ class GameService {
         console.log("Making GET request to leaderboard");
         return api.get("/leaderboard?OrderBy=Desc", getAuthConfig());
     }
+    start_daily_game() {
+        return api
+            .post("/game/start/daily", null, getAuthConfig())
+            .then((response) => {
+                this.cookies.remove("dailyGameId");
+                this.cookies.set("dailyGameId", response.data.gameId);
+                this.cookies.set("dailyLevelIds", response.data.levelIds);
+                console.log("Daily game started:", response.data.gameId);
+                return response.data;
+            })
+            .catch((error) => {
+                console.error("Error starting daily game:", error.response?.data);
+                throw error;
+            });
+    }
+    complete_daily_game() {
+        const dailyGameId = this.cookies.get("dailyGameId");
+        return api.put(`/game/${dailyGameId}/complete/daily`, null, getAuthConfig())
+            .then((response) => {
+                this.cookies.remove("dailyGameId");
+                this.cookies.remove("dailyLevelIds");
+                console.log("Daily game completed:", response.data);
+                return response.data;
+            })
+            .catch((error) => {
+                console.error("Error completing daily game:", error.response?.data);
+                throw error;
+            });
+    }
+    getLeaderboardDaily() {
+        console.log("Making GET request to leaderboard");
+        return api.get("/leaderboard?GameType=Daily&OrderBy=Desc", getAuthConfig());
+    }
+
 }
 export default new GameService();

@@ -16,6 +16,7 @@ import GameLevelPage from './pages/games/GameLevelPage.tsx';
 import NotFoundPage from './pages/additional_components/NotFoundPage.tsx';
 import { Toaster } from 'sonner';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import DailyGamePage from './pages/games/DailyGamePage.tsx';  
 
 export default function App() {
     return (
@@ -30,6 +31,7 @@ export default function App() {
                     <Route path="forgetpass" element={<ForgetPasswordPage />} />
                     <Route path="setnewpass" element={<SetNewPasswordPage />} />
                     <Route path="lvl/game" element={<GameLevelPage />} />
+                    <Route path="lvl/dailygame" element={<DailyGamePage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
                 <Toaster position="top-center" /> { }
