@@ -556,23 +556,23 @@ nav {
     &__content {
         max-width: 600px;
         z-index: 2;
-        font-size: 36px;
-        margin-left: 36px;
+        font-size: 32px;
+        margin-left: 24px;
 
         p {
             font-family: "Marcellus SC", serif;
         }
 
         @include respond(tab-land) {
-            font-size: 32px;
+            font-size: 30px;
         }
 
         @include respond(tab-port) {
-            font-size: 28px;
+            font-size: 26px;
         }
 
         @include respond(phone) {
-            font-size: 24px;
+            font-size: 22px;
         }
     }
 

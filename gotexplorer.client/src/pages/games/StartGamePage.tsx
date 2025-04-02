@@ -3,7 +3,8 @@ import Footer from "../additional_components/Footer";
 import Navigation from "../additional_components/Navigation";
 import GameService from "./GameService";
 import './StartGamePage.scss';
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
 const StartGamePage = () => {
     const gameserv = GameService;
@@ -41,8 +42,8 @@ const StartGamePage = () => {
                     navigate("/lvl/dailygame");
                 })
                 .catch((error) => {
-                    if (error.response?.status === 409) {
-                        alert("You have already played today's game!");
+                    if (error.response?.status === 429) {
+                        toast.error("You have already played today's game!");
                     } else {
                         console.error("Error starting daily game:", error);
                     }
@@ -51,20 +52,46 @@ const StartGamePage = () => {
         }
         navigate("/lvl/dailygame");
     };
+    
+    const handleDemoGameClick = () => {
+        const hasDemoPlayed = cookies.get('demoPlayed');
+    
+        if (hasDemoPlayed) {
+            toast.info("You've already played our demo game. Please register to continue playing!");
+            navigate("/login");
+            return;
+        }
+        
+        gameserv.start_demo_game()
+            .then(() => {
+                cookies.set('demoPlayed', 'true', { maxAge: 365 * 24 * 60 * 60 });
+                navigate("/lvl/demogame");
+            })
+            .catch((error) => {
+                console.error("Error starting demo game:", error);
+                toast.error("Failed to start demo game.");
+            });
+    };
     return (
-        <>{isAuthenticated ?
+        <>
             <div className="start-game-page">
                 <Navigation />
                 <div className="main-content">
                     <div className="text">LET'S EXPLORE THE WORLD</div>
-                    <div className="buttons">
-                        <button className="button-start" onClick={handleGameClick}>STANDART</button>
-                        <button className="button-start" onClick={handleDailyGameClick}>DAILY GAME</button>
-                    </div>
+                    {isAuthenticated ? (
+                        <div className="buttons">
+                            <button className="button-start" onClick={handleGameClick}>STANDARD</button>
+                            <button className="button-start" onClick={handleDailyGameClick}>DAILY GAME</button>
+                        </div>
+                    ) : (
+                        <div className="buttons">
+                            <button className="button-start" onClick={handleDemoGameClick}>START DEMO GAME</button>
+                        </div>
+                    )}
                 </div>
                 <Footer />
-            </div > :
-            <Navigate to="/login"></Navigate>}
+            </div > 
+
         </>);
 }
 
