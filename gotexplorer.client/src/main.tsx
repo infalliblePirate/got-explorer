@@ -20,7 +20,7 @@ import DailyGamePage from './pages/games/DailyGamePage.tsx';
 
 export default function App() {
     return (
-        <GoogleOAuthProvider clientId={import.meta.env.CLIENT_GOOGLE_ID as string}>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_GOOGLE_ID}>
             <BrowserRouter>
                 <Routes>
                     <Route index element={<MainPage />} />
