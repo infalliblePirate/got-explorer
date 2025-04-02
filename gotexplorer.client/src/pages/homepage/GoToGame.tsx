@@ -11,10 +11,12 @@ const GoToGame = () => {
     <div className="game-start-page">
       <div className="game-start-page__content">
         <p>
-          Dolor sit amet, consectetur adipiscing elit. Etiam laoreet maximus
-          metus a fringilla. Vivamus placerat condimentum ultricies malesuada.
-          Vivamus placerat eros id pretium dignissim. Suspendisse eget lacus
-          malesuada libero auctor tempor eu vehicula tortor.
+          In the great game, as in Westeros, you only get one move a day. One
+          decision. One chance. Each morning, a new challenge rises — as
+          unpredictable as the winds beyond the Wall and as cunning as a
+          Lannister’s smile. <br /> <br /> When you play the game of thrones,
+          you win or you die.” Well... maybe not die.{" "}
+          <i>But you’ll definitely have to wait ‘til tomorrow.</i>
         </p>
         <button className="game-start-page__button" onClick={handleGameClick}>
           PLAY THE GAME NOW

@@ -9,6 +9,7 @@ import GameService from "./GameService";
 import Cookies from "universal-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import Leaderboard, { Player } from "./LeaderBoard";
+import { toast } from 'sonner';
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
     console.log(`level id: ${id}`);
@@ -78,7 +79,7 @@ const GameLevelPage = () => {
             return;
         }
         if (!gameLogic.hasMarker()) {
-            alert("Please place a marker on the map before submitting your answer.");
+            toast.info("Please place a marker on the map before submitting your answer.");
             return;
         }
         if (counter != 3) {
