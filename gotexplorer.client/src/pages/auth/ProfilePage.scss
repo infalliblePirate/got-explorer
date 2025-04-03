@@ -167,10 +167,12 @@ body {
             text-align: center;
             font-size: 36px;
         }
-         .leaderboard-container {
+
+        .leaderboard-container {
             display: flex;
             justify-content: space-around;
             gap: 20px;
+
             .leaderboard-left,
             .leaderboard-right {
                 flex: 1;
@@ -209,6 +211,10 @@ body {
                 background-color: #fff;
                 margin: 0 10px;
             }
+
+            @include respond (tab-land) {
+                flex-direction: column;
+            }
         }
 
 
@@ -244,6 +250,11 @@ body {
             border: 0;
             border-top: 2px solid #00283C;
             padding: 0;
+
+            @include respond (tab-land) {
+                width: 100%;
+                margin: 1em 0;
+            }
         }
 
         @include respond (phone) {
@@ -262,10 +273,6 @@ body {
             label {
                 margin-bottom: 5px;
                 color: #333;
-
-                @include respond (phone) {
-                    margin-left: 40px;
-                }
             }
 
             input {
@@ -294,7 +301,6 @@ body {
                 }
 
                 @include respond(phone) {
-                    width: 80%;
                     height: 50px;
                 }
             }
@@ -312,6 +318,10 @@ body {
             font-size: 20px;
             box-sizing: border-box;
 
+            @include respond (tab-land) {
+                font-size: 15px;
+            }
+
             @include respond (phone) {
                 font-size: 15px;
             }
@@ -327,7 +337,6 @@ body {
 
             @include respond (phone) {
                 place-self: center;
-                width: 60%;
                 height: 35px;
             }
         }
