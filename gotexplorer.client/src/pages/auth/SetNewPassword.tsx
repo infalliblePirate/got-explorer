@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
-import warning from "../../assets/images/warning.webp";
 import "./Auth.scss";
 import authService from "./authService";
+import { toast } from "sonner";
 
 const SetNewPasswordPage = () => {
     useEffect(() => {
@@ -26,8 +26,6 @@ const SetNewPasswordPage = () => {
         firstPass: "",
         secondPass: ""
     });
-    const [showAlert, setShowAlert] = useState(false);
-    const [errMsg, setErrMsg] = useState([""]);
 
     const [isPasswordVisible, setPasswordVisible] = useState({
         forFirstPass: false,
@@ -52,37 +50,34 @@ const SetNewPasswordPage = () => {
             [e.target.name]: value
         });
     };
-    function ShowMsg(msgtext: string) {
-        setErrMsg(errMsg => [...errMsg, msgtext]);
-        setShowAlert(true);
-    }
 
     function Submit() {
-        setErrMsg([""]);
-        setShowAlert(false);
         if (userPassword.firstPass === "" || userPassword.secondPass === "") {
-            ShowMsg("Please fill both fields");
+            toast.error("Please fill both fields");
             return;
         }
         if (userPassword.firstPass !== userPassword.secondPass) {
-            ShowMsg("Passwords are not the same");
+            toast.error("Passwords are not the same");
             return;
         }
         const passValid = PWD_REGEX.test(userPassword.firstPass);
         if (!passValid) {
-            ShowMsg("Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol");
+            toast.error(
+              "Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol"
+            );
             return;
         }
 
         authserv.set_new_pass(params.id, userPassword.firstPass, params.token)
             .then(() => {
-                alert("Password is changed!");
+                toast.success("Password is changed!");
                 navigate("/login");
             })
             .catch((error: any) => {
                 const errmsgs = error.response.data.errors;
-                errmsgs.forEach((msg: { errorMessage: string; }) => setErrMsg(errMsg => [...errMsg, msg.errorMessage]));
-                setShowAlert(true);
+                errmsgs.forEach((msg: { errorMessage: string }) => {
+                  toast.error(msg.errorMessage);
+                });
             });
 
     }
@@ -91,12 +86,6 @@ const SetNewPasswordPage = () => {
             <img className="photo-bg" />
             <div className="col-2">
                 <img className="logo" />
-                {showAlert &&
-                    <div className="warning-alert">
-                        <img src={warning}></img>
-                        <p>{errMsg}</p>
-                    </div>
-                }
                 <div className="greeting">
                     Set a new password
                 </div>
