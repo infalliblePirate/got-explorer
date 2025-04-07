@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, Link, useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import "./Auth.scss";
 import authService from "./authService";
@@ -85,7 +85,7 @@ const SetNewPasswordPage = () => {
         <div className="auth-grid">
             <img className="photo-bg" />
             <div className="col-2">
-                <img className="logo" />
+                <Link to="/"><img className="logo" /></Link>
                 <div className="greeting">
                     Set a new password
                 </div>

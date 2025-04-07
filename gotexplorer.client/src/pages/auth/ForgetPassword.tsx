@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link} from "react-router-dom";
 import "./Auth.scss";
 import Cookies from "universal-cookie";
 import authService from "./authService";
@@ -46,7 +46,7 @@ const ForgetPasswordPage = () => {
         <div className="auth-grid">
             <img className="photo-bg" />
             <div className="col-2">
-                <img className="logo" />
+                <Link to="/"><img className="logo" /></Link>
                 <div className="greeting">
                     Forgot password
                 </div>
