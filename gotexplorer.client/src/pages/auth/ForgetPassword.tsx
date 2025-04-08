@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import "./Auth.scss";
 import Cookies from "universal-cookie";
-import warning from "../../assets/images/warning.webp";
 import authService from "./authService";
+import { toast } from "sonner";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 const ForgetPasswordPage = () => {
     useEffect(() => {
@@ -15,9 +16,6 @@ const ForgetPasswordPage = () => {
 
     const EML_REGEX = /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     const [email, setEmail] = useState('');
-    const [showAlert, setShowAlert] = useState(false);
-    const [errMsg, setErrMsg] = useState([""]);
-
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;
     const authserv = authService;
@@ -29,11 +27,14 @@ const ForgetPasswordPage = () => {
 
     function Submit() {
         const emailValid = EML_REGEX.test(email);
-        setErrMsg([""]);
-        setShowAlert(false);
+
         if (!emailValid) {
-            setErrMsg(errMsg => [...errMsg, "Please enter valid email"]);
-            setShowAlert(true);
+            toast.error(`Please enter valid email`, {
+                style: {
+                    backgroundColor: '#5d8ecf',
+                    color: 'white'
+                }
+            });
             return;
         }
         authserv.reset_password(email)
@@ -41,9 +42,12 @@ const ForgetPasswordPage = () => {
                 alert("Link is sent to your email!");
             })
             .catch((error) => {
-                const errmsgs = error.response.data.errors;
-                errmsgs.forEach((msg: { errorMessage: string; }) => setErrMsg(errMsg => [...errMsg, msg.errorMessage]));
-                setShowAlert(true);
+                toast.error(`Error reseting password: ${ErrorHandle(error.response.data.errors)}`, {
+                    style: {
+                        backgroundColor: '#5d8ecf',
+                        color: 'white'
+                    }
+                });
             })
     }
     return (<>{isAuthenticated ? <Navigate to="/profile"></Navigate> :
@@ -51,12 +55,6 @@ const ForgetPasswordPage = () => {
             <img className="photo-bg" />
             <div className="col-2">
                 <img className="logo" />
-                {showAlert &&
-                    <div className="warning-alert">
-                        <img src={warning}></img>
-                        <p>{errMsg}</p>
-                    </div>
-                }
                 <div className="greeting">
                     Forgot password
                 </div>

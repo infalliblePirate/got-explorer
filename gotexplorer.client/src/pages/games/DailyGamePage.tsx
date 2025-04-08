@@ -9,10 +9,10 @@ import GameService from "./GameService";
 import Cookies from "universal-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import Leaderboard, { Player } from "./LeaderBoard";
+import ErrorHandle from "../../utils/ErrorHandle";
+import { toast } from "sonner";
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
-    console.log(`level id: ${id}`);
-    console.log(scene);
     scene.clearScene();
     scene.changeCameraPosition(1000, 1000, 1000);
     gameserv.load_level(id).then((r) => {
@@ -21,6 +21,7 @@ const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService
     scene.animate();
     return new GameLogic(map);
 }
+// eslint-disable-next-line prefer-const
 let counter = 0;
 const DailyGamePage = () => {
     const navigate = useNavigate();
@@ -45,7 +46,12 @@ const DailyGamePage = () => {
 
         const container = document.getElementById("three");
         if (!container) {
-            console.error("Container for 3D scene not found.");
+            toast.error("Container for 3D scene not found.", {
+                style: {
+                    backgroundColor: '#5d8ecf',
+                    color: 'white'
+                }
+            });
             return;
         }
 
@@ -54,14 +60,12 @@ const DailyGamePage = () => {
         if (scene != undefined) {
             scene.current.loadBackground("/assets/panorama2.webp");
         }
-        console.log(scene);
         // map2d
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
         map.current = new Map2d("/assets/map2.webp", imageBounds, containerId);
         if (scene != undefined) {
-            console.log(` levels are ${levels}`);
             setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
         }
     }, []);
@@ -72,28 +76,27 @@ const DailyGamePage = () => {
 
     const handleSubmitAnswer = async () => {
         if (!gameLogic) {
-            console.error("GameLogic is not initialized");
+            toast.error("GameLogic is not initialized", {
+                style: {
+                    backgroundColor: '#5d8ecf',
+                    color: 'white'
+                }
+            });
             return;
         }
         if (!gameLogic.hasMarker()) {
             alert("Please place a marker on the map before submitting your answer.");
             return;
         }
-   
-        console.log(gameLogic.getClick());
         const click = gameLogic.getClick();
-        console.log(click);
         if (click != null) {
-            const r = await gameserv.calculate_level_daily(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
-            console.log(r);
+             gameserv.calculate_level_daily(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
         }
       
         setIsMapExpanded(!isMapExpanded);
      
         try {
             const completedGame = await gameserv.complete_daily_game();
-            console.log(completedGame);
-            console.log("Fetching leaderboard from API...");
             const response = await gameserv.getLeaderboardDaily();
             const currentUserId = completedGame.userId;
             setCurrentUserId(currentUserId);
@@ -104,15 +107,19 @@ const DailyGamePage = () => {
                 startTime: playerData.startTime,
                 endTime: playerData.endTime,
             }));
-            console.log("Leaderboard response:", response.data);
             setPlayers(leaderboardData);
             if (completedGame && completedGame.score !== undefined) {
                 setCurrentScore(completedGame.score);
             }
             
             setShowLeaderboard(true);
-        } catch (error) {
-            console.error("Error fetching leaderboard:", error);
+        } catch (error : any) {
+            toast.error(`Error fetching leaderboard: ${ErrorHandle(error.response.data.errors)}`, {
+                style: {
+                    backgroundColor: '#5d8ecf',
+                    color: 'white'
+                }
+            });
         }
 
     };

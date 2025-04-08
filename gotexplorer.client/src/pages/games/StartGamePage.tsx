@@ -4,6 +4,8 @@ import Navigation from "../additional_components/Navigation";
 import GameService from "./GameService";
 import './StartGamePage.scss';
 import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
+import ErrorHandle from "../../utils/ErrorHandle";
 
 const StartGamePage = () => {
     const gameserv = GameService;
@@ -23,7 +25,12 @@ const StartGamePage = () => {
                     navigate("/lvl/game");
                 })
                 .catch((error) => {
-                    console.log(error);
+                    toast.error(`Couldn't start the game: ${ErrorHandle(error.response.data.errors)}`, {
+                        style: {
+                            backgroundColor: '#5d8ecf',
+                            color: 'white'
+                        }
+                    });
                 });
             return;
         }
@@ -42,9 +49,19 @@ const StartGamePage = () => {
                 })
                 .catch((error) => {
                     if (error.response?.status === 409) {
-                        alert("You have already played today's game!");
+                        toast.error("You have already played today's game!", {
+                            style: {
+                                backgroundColor: '#5d8ecf',
+                                color: 'white'
+                            }
+                        });
                     } else {
-                        console.error("Error starting daily game:", error);
+                        toast.error(`Error starting daily game: ${ErrorHandle(error.response.data.errors)}`, {
+                            style: {
+                                backgroundColor: '#5d8ecf',
+                                color: 'white'
+                            }
+                        });
                     }
                 });
             return;
