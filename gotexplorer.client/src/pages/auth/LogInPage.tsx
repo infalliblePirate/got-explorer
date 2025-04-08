@@ -109,7 +109,7 @@ const LogInPage = () => {
                 <div className="auth-grid">
                     <img className="photo-bg" />
                     <div className="col-2">
-                        <img className="logo" />
+                        <Link to="/"><img className="logo" /> </Link>
                         <div className="greeting">
                             Nice to see you
                         </div>

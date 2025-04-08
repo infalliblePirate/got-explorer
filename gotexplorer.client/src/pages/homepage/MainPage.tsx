@@ -6,12 +6,9 @@ import Navigation from "../additional_components/Navigation";
 import Footer from "../additional_components/Footer";
 import TeamPage from "./TeamPage";
 import GoToGame from "./GoToGame";
-import Cookies from "universal-cookie";
 const MainPage = () => {
     const navigate = useNavigate(); 
     const location = useLocation();
-    const cookies = new Cookies();
-    const isAuthenticated = cookies.get('token') != null ? true : false;
 
     useEffect(() => {
         if (location.hash) {
@@ -22,11 +19,7 @@ const MainPage = () => {
         }
     }, [location]);
     const handleGameClick = () => {
-        if (isAuthenticated) {
-            navigate("/startgame");
-            return;
-        }
-        navigate("/login");
+        navigate("/startgame");
     }
    return (
         <div className="page">
