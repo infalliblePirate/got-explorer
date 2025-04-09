@@ -1,5 +1,14 @@
 import * as L from 'leaflet';
 
+const customIcon = new L.Icon({
+  iconUrl: '/assets/marker-icon.png',
+  iconRetinaUrl: '/assets/marker-icon-2x.png', 
+  shadowUrl: '/assets/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 export class Map2d {
     private map: L.Map;
     private imageBounds: [[number, number], [number, number]];
@@ -38,7 +47,8 @@ export class Map2d {
     }
 
     public addMarker(lat: number, lng: number): L.Marker {
-        const marker = L.marker([lat, lng]).addTo(this.map);
+        const marker = L.marker([lat, lng], { icon: customIcon }).addTo(this.map);
+          this.markers.push(marker);
         return marker; 
     }
 

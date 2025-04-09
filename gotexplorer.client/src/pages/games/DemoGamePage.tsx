@@ -7,7 +7,7 @@ import "./GameLevelPage.scss";
 import "../../../node_modules/leaflet/dist/leaflet.css";
 import GameService from "./GameService";
 import Cookies from "universal-cookie";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
@@ -111,8 +111,12 @@ const DemoGamePage = () => {
                         <h2>Demo Completed</h2>
                         <p>You have finished the demo game. To continue playing, please register or log in.</p>
                         <div className="modal-buttons">
-                            <Link to="/register"><button className="close-button">Register</button></Link>
-                            <Link to="/login"><button className="close-button">Log In</button></Link>
+                            <button className="close-button" onClick={() => navigate("/signup", { replace: true })}>
+                                Register
+                            </button>
+                            <button className="close-button" onClick={() => navigate("/login", { replace: true })}>
+                                Log In
+                            </button>
                         </div>
                     </div>
                 </div>
