@@ -10,6 +10,7 @@ import authService from './authService';
 import { toast } from 'sonner';
 import GameService from '../games/GameService';
 import { Player } from '../games/LeaderBoard';
+import { useProfileImage } from "./ImageContex"; 
 
 const Popover = ({ onSelectImage, popoverRef }: { onSelectImage: (imageId: string) => void; popoverRef: React.RefObject<HTMLDivElement>; }) => {
     const [children, setChildren] = useState<JSX.Element[]>([]);
@@ -71,6 +72,7 @@ const ProfilePage = () => {
     const [userScore, setUserScore] = useState(0);
     const [dailyLeaderboard, setDailyLeaderboard] = useState<Player[]>([]);
     const gameserv = GameService;
+    const { setProfileImage, refreshProfileImage } = useProfileImage();
     
     const handleClickOutside = (event: MouseEvent) => {
         if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -128,16 +130,22 @@ const ProfilePage = () => {
 
         fetchImage();
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            if (cookies.get("changedImage") != undefined && cookies.get("changedImage") != cookies.get("imageId")) {
-                try {
-                    authserv.update_photo();
-                }
-                catch (error) {
-                    console.error(error);
-                }
-            }
-        }
+          document.removeEventListener("mousedown", handleClickOutside);
+          const changed = cookies.get("changedImage");
+          const current = cookies.get("imageId");
+
+          if (changed && changed !== current) {
+            authserv
+              .update_photo()
+                .then(() => {
+                refreshProfileImage(); 
+              })
+              .catch((error) => {
+                console.error("Failed to update photo:", error);
+              });
+          }
+        };
+
     }, []);
 
     const handleImageSelect = (imageId: string) => {
@@ -145,6 +153,7 @@ const ProfilePage = () => {
             authserv.get_image(imageId).
                 then((resp) => {
                     setImageSrc(resp);
+                    setProfileImage(resp);  
                 });
         } catch (error) {
             console.error("Error fetching image:", error);
