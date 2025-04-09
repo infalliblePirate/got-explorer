@@ -16,6 +16,9 @@ export class Map2d {
             maxZoom: 2,
             center: this.calculateCenter(imageBounds),
             zoom: 1,
+            maxBounds: imageBounds,
+            bounceAtZoomLimits: false,
+            inertia: true
         });
 
         this.addImageOverlay();
@@ -35,6 +38,37 @@ export class Map2d {
 
     private setupEventListeners(): void {
         this.map.on('click', this.handleMapClick.bind(this));
+        
+        this.map.on('zoomend', () => {
+            if (this.map.getZoom() === this.map.getMinZoom()) {
+                this.map.dragging.disable();
+            } else {
+                this.map.dragging.enable();
+            }
+        });
+        
+        this.map.on('moveend', () => {
+            if (!this.isMapWithinOuterBounds()) {
+                this.map.panInsideBounds(this.imageBounds, { animate: true });
+            }
+        });
+
+        this.map.on('drag', () => {
+            this.map.panInsideBounds(this.imageBounds, { animate: false });
+        });
+        
+        if (this.map.getZoom() === this.map.getMinZoom()) {
+            this.map.dragging.disable();
+        }
+    }
+
+    private isMapWithinOuterBounds(): boolean {
+        const mapBounds = this.map.getBounds();
+        const sw = mapBounds.getSouthWest();
+        const ne = mapBounds.getNorthEast();
+        
+        return (sw.lat >= this.imageBounds[0][0] && sw.lng >= this.imageBounds[0][1] &&
+                ne.lat <= this.imageBounds[1][0] && ne.lng <= this.imageBounds[1][1]);
     }
 
     public addMarker(lat: number, lng: number): L.Marker {
@@ -67,8 +101,8 @@ export class Map2d {
 
         this.markers.push(marker); 
     }
-
     
+
     public clearMarkers(): void {
         this.markers.forEach((marker) => {
             this.map.removeLayer(marker);
@@ -80,4 +114,8 @@ export class Map2d {
         this.map.removeLayer(marker); 
     }
 
+    public handleContainerResize(): void {
+        this.map.invalidateSize();
+        this.map.setView(this.calculateCenter(this.imageBounds), this.map.getZoom());
+    }
 }
