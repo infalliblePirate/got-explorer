@@ -35,7 +35,7 @@ const GameLevelPage = () => {
     const gameserv = GameService;
     const scene = useRef<Scene>();
     const map = useRef<Map2d>();
-    const map2dRef = useRef<Map2d | null>(null); // for resizing
+    const map2dRef = useRef<Map2d | null>(null); 
     const cookies = new Cookies();
     const levels = cookies.get("levelIds");
 

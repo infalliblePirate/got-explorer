@@ -35,6 +35,7 @@ const DailyGamePage = () => {
     const gameserv = GameService;
     const scene = useRef<Scene>();
     const map = useRef<Map2d>();
+    const map2dRef = useRef<Map2d | null>(null); 
     const cookies = new Cookies();
     const levels = cookies.get("dailyLevelIds");
 
@@ -60,15 +61,29 @@ const DailyGamePage = () => {
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
-        map.current = new Map2d("/assets/map2.webp", imageBounds, containerId);
-        if (scene != undefined) {
+        
+        const newMap = new Map2d("/assets/map2.webp", imageBounds, containerId);
+        map.current = newMap;
+        map2dRef.current = newMap;
+
+        if (scene.current !== undefined) {
             console.log(` levels are ${levels}`);
-            setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
+            setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, newMap));
         }
+
+        return () => {
+        };
     }, []);
+    useEffect(() => {
+      if (map2dRef.current) {
+        setTimeout(() => {
+          map2dRef.current!.handleContainerResize();
+        }, 300);
+      }
+    }, [isMapExpanded]);
 
     const toggleMap = () => {
-        setIsMapExpanded(!isMapExpanded);
+        setIsMapExpanded((prev) => !prev);
     };
 
     const handleSubmitAnswer = async () => {
@@ -89,7 +104,7 @@ const DailyGamePage = () => {
             console.log(r);
         }
       
-        setIsMapExpanded(!isMapExpanded);
+        setIsMapExpanded(false);
      
         try {
             const completedGame = await gameserv.complete_daily_game();
