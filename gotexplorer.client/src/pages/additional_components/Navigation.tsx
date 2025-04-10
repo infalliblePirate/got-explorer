@@ -50,7 +50,7 @@ const Navigation = () => {
                 <li>
                     {isAuthenticated ? <>
                         <Link to="/profile">
-                            <img src={profileImage ?? undefined} style={{ width: "48px" }}></img>
+                            <img src={profileImage ?? undefined} style={{ width: "48px", borderRadius: "50%"}}></img>
                         </Link>
                     </> :
                         <Link to="/login" className="link">
