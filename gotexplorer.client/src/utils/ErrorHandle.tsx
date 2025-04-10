@@ -3,7 +3,7 @@
 const ErrorHandle = (errorlist: any) => {
     let line = "";
     errorlist.forEach((item: any) => {
-        line += item.errorMessage;
+        line += item.errorMessage + " ";
     })
     return line;
 }
