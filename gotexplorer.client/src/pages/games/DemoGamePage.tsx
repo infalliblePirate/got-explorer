@@ -7,7 +7,7 @@ import "./GameLevelPage.scss";
 import "../../../node_modules/leaflet/dist/leaflet.css";
 import GameService from "./GameService";
 import Cookies from "universal-cookie";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
@@ -31,6 +31,7 @@ const DemoGamePage = () => {
     const gameserv = GameService;
     const scene = useRef<Scene>();
     const map = useRef<Map2d>();
+    const map2dRef = useRef<Map2d | null>(null);
     const cookies = new Cookies();
     const levels = cookies.get("dailyDemoIds");
     const hasDemoPlayed = cookies.get('demoPlayed');
@@ -54,15 +55,32 @@ const DemoGamePage = () => {
         scene.current.loadBackground("/assets/panorama2.webp");
 
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
-        map.current = new Map2d("/assets/map2.webp", imageBounds, "map");
+        
+        const containerId = "map";
 
-        if (scene.current && map.current) {
-            setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
+        const newMap = new Map2d("/assets/map2.webp", imageBounds, containerId);
+        map.current = newMap;
+        map2dRef.current = newMap;
+
+        if (scene.current !== undefined) {
+          console.log(` levels are ${levels}`);
+          setGameLogic(
+            UploadLevelModel(scene.current, levels[counter], gameserv, newMap)
+          );
         }
+
+        return () => {};
     }, []);
+    useEffect(() => {
+      if (map2dRef.current) {
+        setTimeout(() => {
+          map2dRef.current!.handleContainerResize();
+        }, 300);
+      }
+    }, [isMapExpanded]);
 
     const toggleMap = () => {
-        setIsMapExpanded(!isMapExpanded);
+        setIsMapExpanded((prev) => !prev);
     };
 
     const handleSubmitAnswer = async () => {
@@ -111,8 +129,12 @@ const DemoGamePage = () => {
                         <h2>Demo Completed</h2>
                         <p>You have finished the demo game. To continue playing, please register or log in.</p>
                         <div className="modal-buttons">
-                            <Link to="/register"><button className="close-button">Register</button></Link>
-                            <Link to="/login"><button className="close-button">Log In</button></Link>
+                            <button className="close-button" onClick={() => navigate("/signup", { replace: true })}>
+                                Register
+                            </button>
+                            <button className="close-button" onClick={() => navigate("/login", { replace: true })}>
+                                Log In
+                            </button>
                         </div>
                     </div>
                 </div>

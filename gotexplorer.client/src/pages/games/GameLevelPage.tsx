@@ -41,6 +41,7 @@ const GameLevelPage = () => {
     const gameserv = GameService;
     const scene = useRef<Scene>();
     const map = useRef<Map2d>();
+    const map2dRef = useRef<Map2d | null>(null); 
     const cookies = new Cookies();
     const levels = cookies.get("levelIds");
 
@@ -65,24 +66,38 @@ const GameLevelPage = () => {
 
         // scene
         scene.current = new Scene(container);
-        if (scene != undefined) {
+        if (scene !== undefined) {
             scene.current.loadBackground("/assets/panorama2.webp");
         }
         // map2d
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
-        map.current = new Map2d("/assets/map2.webp", imageBounds, containerId);
-        if (scene != undefined) {
-            setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
+        const newMap = new Map2d("/assets/map2.webp", imageBounds, containerId);
+        map.current = newMap;
+        map2dRef.current = newMap;
+
+        if (scene.current !== undefined) {
+            setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, newMap));
         }
+
+        return () => {
+        };
     }, []);
 
+    useEffect(() => {
+        if (map2dRef.current) {
+            setTimeout(() => {
+                map2dRef.current!.handleContainerResize();
+            }, 300);
+        }
+    }, [isMapExpanded]);
+
     const toggleMap = () => {
-        setIsMapExpanded(!isMapExpanded);
+        setIsMapExpanded(prev => !prev);
     };
 
-    const handleSubmitAnswer = async () => {
+const handleSubmitAnswer = async () => {
         if (!gameLogic) {
             toast.error("GameLogic is not initialized", {
                 style: {
@@ -103,7 +118,7 @@ const GameLevelPage = () => {
             }
             counter += 1;
         }
-        setIsMapExpanded(!isMapExpanded);
+        setIsMapExpanded(false);
         if (counter < 3) {
             if (scene.current != undefined && map.current != undefined)
                 setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, map.current));
@@ -164,7 +179,10 @@ const GameLevelPage = () => {
             </div>
 
             <div id="map-container">
-                <div className={`map-2d-container ${isMapExpanded ? "expanded" : "small"}`} id="map" onClick={!isMapExpanded ? toggleMap : undefined}></div>
+                <div className={`map-2d-container ${isMapExpanded ? "expanded" : "small"}`}
+                    id="map"
+                    onClick={!isMapExpanded ? toggleMap : undefined}
+                ></div>
 
                 {isMapExpanded && (
                     <>

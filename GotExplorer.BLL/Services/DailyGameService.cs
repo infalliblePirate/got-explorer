@@ -35,7 +35,7 @@ namespace GotExplorer.BLL.Services
             DateTime today = DateTime.Today.ToUniversalTime();
             DateTime tomorrow = today.AddDays(1).ToUniversalTime();
 
-            var playedGameToday = await _appDbContext.Games.Where(g => g.GameType == GameType.Daily && g.StartTime >= today && g.EndTime <= tomorrow).AnyAsync();
+            var playedGameToday = await _appDbContext.Games.Where(g => g.GameType == GameType.Daily && g.UserId == user.Id && g.StartTime >= today && g.EndTime <= tomorrow).AnyAsync();
 
             if (playedGameToday) {
                 return new ValidationWithEntityModel<NewGameDTO>(
