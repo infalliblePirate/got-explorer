@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import "../homepage/MainPage.scss";
-import profile from "../../assets/images/profile_img.webp";
 import Cookies from "universal-cookie";
 import { useEffect, useState } from "react";
+import { useProfileImage } from "../auth/ImageContex";
 // import Menu from "../../assets/images/menu.png";
 const Navigation = () => {
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;
     const [width, setWidth] = useState(window.innerWidth);
     const [toggleNav, setToggleNav] = useState(false);
+    const { profileImage } = useProfileImage();
 
     useEffect(()=>{
         function handleResize() {
@@ -49,7 +50,7 @@ const Navigation = () => {
                 <li>
                     {isAuthenticated ? <>
                         <Link to="/profile">
-                            <img src={profile} style={{ width: "48px" }}></img>
+                            <img src={profileImage ?? undefined} style={{ width: "48px", borderRadius: "50%"}}></img>
                         </Link>
                     </> :
                         <Link to="/login" className="link">

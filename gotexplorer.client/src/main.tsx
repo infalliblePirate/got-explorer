@@ -18,6 +18,7 @@ import { Toaster } from 'sonner';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import DailyGamePage from './pages/games/DailyGamePage.tsx';
 import DemoGamePage from './pages/games/DemoGamePage.tsx';
+import { ProfileImageProvider } from "./pages/auth/ImageContex.tsx";
 
 export default function App() {
     return (
@@ -44,4 +45,9 @@ export default function App() {
 
 // @ts-expect-error
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+root.render(
+  <ProfileImageProvider>
+    <App />
+  </ProfileImageProvider>
+);
+
