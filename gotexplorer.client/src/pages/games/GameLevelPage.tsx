@@ -93,7 +93,7 @@ const GameLevelPage = () => {
             return;
         }
         if (!gameLogic.hasMarker()) {
-            alert("Please place a marker on the map before submitting your answer.");
+            toast.info("Please place a marker on the map before submitting your answer.");
             return;
         }
         if (counter != 3) {

@@ -79,6 +79,23 @@ class GameService {
     getLeaderboardDaily() {
         return api.get("/leaderboard?GameType=Daily&OrderBy=Desc", getAuthConfig());
     }
+    start_demo_game() {
+        if (this.cookies.get('demoPlayed')) {
+            return Promise.reject({ message: "Demo already played" });
+        }
+        return api
+            .post("/game/start/demo", null, getAuthConfig())
+            .then((response) => {
+                this.cookies.remove("dailyDemoIds");
+                this.cookies.set("dailyDemoIds", response.data.levelIds);
+                console.log("Demo game started:", response.data);
+                return response.data;
+            })
+            .catch((error) => {
+                console.error("Error starting daily game:", error.response?.data);
+                throw error;
+            });
+    }
 
 }
 export default new GameService();

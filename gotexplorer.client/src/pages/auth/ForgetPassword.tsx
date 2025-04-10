@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link} from "react-router-dom";
 import "./Auth.scss";
 import Cookies from "universal-cookie";
 import authService from "./authService";
@@ -27,7 +27,6 @@ const ForgetPasswordPage = () => {
 
     function Submit() {
         const emailValid = EML_REGEX.test(email);
-
         if (!emailValid) {
             toast.error(`Please enter valid email`, {
                 style: {
@@ -39,7 +38,7 @@ const ForgetPasswordPage = () => {
         }
         authserv.reset_password(email)
             .then(() => {
-                alert("Link is sent to your email!");
+                toast.success("Link is sent to your email!");
             })
             .catch((error) => {
                 toast.error(`Error reseting password: ${ErrorHandle(error.response.data.errors)}`, {
@@ -54,7 +53,7 @@ const ForgetPasswordPage = () => {
         <div className="auth-grid">
             <img className="photo-bg" />
             <div className="col-2">
-                <img className="logo" />
+                <Link to="/"><img className="logo" /></Link>
                 <div className="greeting">
                     Forgot password
                 </div>

@@ -85,7 +85,7 @@ const DailyGamePage = () => {
             return;
         }
         if (!gameLogic.hasMarker()) {
-            alert("Please place a marker on the map before submitting your answer.");
+            toast.info("Please place a marker on the map before submitting your answer.");
             return;
         }
         const click = gameLogic.getClick();
