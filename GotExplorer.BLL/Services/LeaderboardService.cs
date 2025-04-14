@@ -15,6 +15,7 @@ using System.Linq.Expressions;
 using System;
 using System.Linq;
 using System.Globalization;
+using System.Xml.Linq;
 
 namespace GotExplorer.BLL.Services
 {
@@ -33,8 +34,6 @@ namespace GotExplorer.BLL.Services
             _leaderboardRequestValidator = leaderboardRequestValidator;
             _leaderboardUserRequestValidator = leaderboardUserRequestValidator;
             _mapper = mapper;
-
-
         }
 
         public async Task<ValidationWithEntityModel<List<LeaderboardRecordDTO>>> GetLeaderboardAsync(LeaderboardRequestDTO requestDTO)
@@ -44,9 +43,12 @@ namespace GotExplorer.BLL.Services
             {
                 return new ValidationWithEntityModel<List<LeaderboardRecordDTO>>(validationResult);
             }
+            var gameType = _mapper.Map<GameType>(requestDTO.GameType);
+
 
             var leaderboard = await _appDbContext.Games.Include(x => x.User)
-                .Where(game => game.EndTime != null && game.GameType == _mapper.Map<GameType>(requestDTO.GameType))
+                .Where(game => game.EndTime != null && game.GameType == gameType)
+                .Where(GetDateFilter(gameType))
                 .Select(x => new LeaderboardRecordDTO()
                 {
                     UserId = x.UserId,
@@ -78,6 +80,7 @@ namespace GotExplorer.BLL.Services
 
             var userRecord = _appDbContext.Games.Include(x => x.User)
                 .Where(game => game.EndTime != null && game.UserId == requestDTO.UserId && game.GameType == gameType)
+                .Where(GetDateFilter(gameType))
                 .Select(x => new LeaderboardUserDTO()
                 {
                     UserId = x.UserId,
@@ -140,6 +143,16 @@ namespace GotExplorer.BLL.Services
                 LeaderboardSortBy.Time => x => x.Min(s => s.EndTime - s.StartTime),
                 LeaderboardSortBy.Score => x => x.Max(s => s.Score),
             };
+        }
+        private Expression<Func<Game, bool>> GetDateFilter(GameType gameType)
+        {
+            if (gameType == GameType.Daily)
+            {
+                DateTime today = DateTime.Today.ToUniversalTime();
+                DateTime tomorrow = today.AddDays(1).ToUniversalTime();
+                return g => g.StartTime >= today && g.EndTime <= tomorrow;
+            }
+            return g => true;
         }
     }
 }
