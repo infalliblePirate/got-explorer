@@ -5,6 +5,7 @@ import authService from "./authService";
 import Cookies from "universal-cookie";
 import { toast } from 'sonner';
 import { GoogleLogin } from "@react-oauth/google";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 
 const LogInPage = () => {
@@ -50,9 +51,7 @@ const LogInPage = () => {
                 navigate("/startgame");
             })
             .catch((error) => {
-                console.error("Registration failed:", error);
-                const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
-                toast.error(errorMsg, {
+                toast.error(`Error in google login:  ${ErrorHandle(error.response.data.errors)}`, {
                     style: {
                         backgroundColor: '#5d8ecf',
                         color: 'white'
@@ -77,9 +76,7 @@ const LogInPage = () => {
                     navigate("/startgame");
                 })
                 .catch((error) => {
-                    console.error("Login failed:", error);
-                    const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
-                    toast.error(errorMsg, {
+                    toast.error(`Error fetching image: ${ErrorHandle(error.response.data.errors)}`, {
                         style: {
                             backgroundColor: '#5d8ecf',
                             color: 'white'
@@ -165,7 +162,12 @@ const LogInPage = () => {
                                     SubmitGoogle(r.credential as string);
                                 }}
                                 onError={() => {
-                                    console.log('Login Failed');
+                                    toast.error("Gmail login failed", {
+                                        style: {
+                                            backgroundColor: '#5d8ecf',
+                                            color: 'white'
+                                        }
+                                    });
                                 }}
                             />
                         </div>
