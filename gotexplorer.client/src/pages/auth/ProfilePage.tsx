@@ -4,13 +4,12 @@ import Navigation from '../additional_components/Navigation';
 import './ProfilePage.scss';
 import Cookies from 'universal-cookie';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { jwtDecode, JwtPayload  } from 'jwt-decode';
 import { useEffect, useRef, useState } from 'react';
 import authService from './authService';
 import { toast } from 'sonner';
 import GameService from '../games/GameService';
 import { Player } from '../games/LeaderBoard';
-import ErrorHandle from '../../utils/ErrorHandle';
 
 const Popover = ({ onSelectImage, popoverRef }: { onSelectImage: (imageId: string) => void; popoverRef: React.RefObject<HTMLDivElement>; }) => {
     const [children, setChildren] = useState<JSX.Element[]>([]);
@@ -44,7 +43,7 @@ const PossiblePicture = ({ id, source, onSelect }: { id: string, source: string,
     </button>
 }
 const ProfilePage = () => {
-    interface DecodedToken extends JwtPayload {
+        interface DecodedToken extends JwtPayload {
         name: string;
         email: string;
         Id: number | null;
@@ -72,10 +71,10 @@ const ProfilePage = () => {
     const [userScore, setUserScore] = useState(0);
     const [dailyLeaderboard, setDailyLeaderboard] = useState<Player[]>([]);
     const gameserv = GameService;
-
+    
     const handleClickOutside = (event: MouseEvent) => {
         if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
-            setPopover(false);
+            setPopover(false); 
         }
     };
 
@@ -90,7 +89,7 @@ const ProfilePage = () => {
             });
             gameserv.getLeaderboard()
                 .then(response => {
-                    const data: Player[] = response.data;
+                    const data: Player[] = response.data; 
                     setLeaderboard(data);
                     const userIndex = data.findIndex((user: Player) => user.userId === Number(decoded.Id));
                     if (userIndex !== -1) {
@@ -98,30 +97,15 @@ const ProfilePage = () => {
                         setUserScore(data[userIndex].score);
                     }
                 })
-                .catch(error => toast.error(`Error fetching leaderboard: ${ErrorHandle(error.response.data.errors)}`, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
-                }));
+                .catch(error => console.error("Error fetching leaderboard:", error));
             gameserv.getLeaderboardDaily()
-                .then(response => {
-                    const data: Player[] = response.data;
-                    setDailyLeaderboard(data);
-                })
-                .catch(error => toast.error(`Error fetching leaderboard: ${ErrorHandle(error.response.data.errors)}`, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
-                }));
-        } catch (error : any) {
-            toast.error(`Token decoding failed: ${ErrorHandle(error.response.data.errors)}`, {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
+            .then(response => {
+                const data: Player[] = response.data;
+                setDailyLeaderboard(data);
+            })
+            .catch(error => console.error("Error fetching daily leaderboard:", error));
+        } catch (error) {
+            console.error('Token decoding failed:', error);
         }
         const fetchImage = () => {
             try {
@@ -137,13 +121,8 @@ const ProfilePage = () => {
                             setImageSrc(resp);
                         });
                 }
-            } catch (error : any) {
-                toast.error(`Error fetching image: ${ErrorHandle(error.response.data.errors)}`, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
-                });
+            } catch (error) {
+                console.error("Error fetching image:", error);
             }
         };
 
@@ -154,13 +133,8 @@ const ProfilePage = () => {
                 try {
                     authserv.update_photo();
                 }
-                catch (error : any) {
-                    toast.error(`Error saving image: ${ErrorHandle(error.response.data.errors)}`, {
-                        style: {
-                            backgroundColor: '#5d8ecf',
-                            color: 'white'
-                        }
-                    });
+                catch (error) {
+                    console.error(error);
                 }
             }
         }
@@ -172,13 +146,8 @@ const ProfilePage = () => {
                 then((resp) => {
                     setImageSrc(resp);
                 });
-        } catch (error: any) {
-            toast.error(`Error fetching image: ${ErrorHandle(error.response.data.errors)}`, {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
+        } catch (error) {
+            console.error("Error fetching image:", error);
         }
     };
 
@@ -195,43 +164,17 @@ const ProfilePage = () => {
     function changeName() {
         if (changedName != "") {
             authserv.update(changedName, userData.email)
-                .catch((error) => {
-                    toast.error(`Error in changing name: ${ErrorHandle(error.response.data.errors)}`, {
-                        style: {
-                            backgroundColor: '#5d8ecf',
-                            color: 'white'
-                        }
-                    });
+                .catch((err) => {
+                    console.error(err);
                 });
-        }
-        else {
-            toast.error("Please enter new username for updating!", {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
         }
     }
     function changePassword() {
         if (changedPasswords.oldPassword != "" && changedPasswords.changedPassword != "") {
             authserv.update_password(changedPasswords.oldPassword, changedPasswords.changedPassword).then(() => { navigate(0); })
-                .catch((error) => {
-                    toast.error(`Error in changing passowrd: ${ErrorHandle(error.response.data.errors)}`, {
-                        style: {
-                            backgroundColor: '#5d8ecf',
-                            color: 'white'
-                        }
-                    });
+                .catch((err) => {
+                    console.error(err);
                 });
-        }
-        else {
-            toast.error("Please fill out both passwords", {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
         }
     }
     function deleteProfile() {
@@ -241,13 +184,8 @@ const ProfilePage = () => {
                 setTimeout(() => {
                     resolve();
                 }, 2000);
-            } catch (error: any) {
-                toast.error(`Could not delete the profile: ${ErrorHandle(error.response.data.errors)}`, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
-                });
+            } catch (error) {
+                console.log(error);
                 reject();
             }
         });
@@ -290,48 +228,48 @@ const ProfilePage = () => {
                             <Popover onSelectImage={handleImageSelect} popoverRef={popoverRef} />
                         }
                         <button className="change-picture-button" onClick={handlePopout}>📸</button>
-                    </div>
-                    <h2 className="username">{userData.name}</h2>
-                </div>
+                     </div>
+                     <h2 className="username">{userData.name}</h2>
+                 </div>
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>
                     <div className="leaderboard-container">
                         <div className="leaderboard-left">
                             <h5>Standard Leaderboard</h5>
-                            {leaderboard.length > 0 && userRank !== null ? (
-                                <>
-                                    <p className={leaderboard[0].userId === userData.Id ? "you" : ""}>
-                                        1. {leaderboard[0].userId === userData.Id ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
-                                    </p>
-                                    {userRank !== 1 && (
-                                        <>
-                                            {userRank === 2 && (
+                        {leaderboard.length > 0 && userRank !== null ? (
+                            <>
+                                <p className={leaderboard[0].userId === userData.Id ? "you" : ""}>
+                                    1. {leaderboard[0].userId === userData.Id ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
+                                </p>
+                                {userRank !== 1 && (
+                                    <>
+                                        {userRank === 2 && (
+                                            <p className="you">
+                                                2. You - {userScore} points
+                                            </p>
+                                        )}
+                                        {userRank > 2 && (
+                                            <>
+                                                <p>...</p>
                                                 <p className="you">
-                                                    2. You - {userScore} points
+                                                    {userRank}. You - {userScore} points
                                                 </p>
-                                            )}
-                                            {userRank > 2 && (
-                                                <>
-                                                    <p>...</p>
-                                                    <p className="you">
-                                                        {userRank}. You - {userScore} points
-                                                    </p>
-                                                </>
-                                            )}
-                                        </>
-                                    )}
-                                </>
-                            ) : (
-                                <p className="no-play">You haven't played yet</p>
-                            )}
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <p className="no-play">You haven't played yet</p>
+                        )}                             
                         </div>
                         <div className="divider"></div>
                         <div className="leaderboard-right">
                             <h5>Daily Game</h5>
                             {dailyLeaderboard.length > 0 ? (
                                 <>
-                                    {dailyLeaderboard.map((user, index) =>
+                                    {dailyLeaderboard.map((user, index) => 
                                         user.userId === userData.Id && (
                                             <p key={user.userId} className="you">
                                                 {index + 1}. You - {user.score} points
@@ -343,7 +281,7 @@ const ProfilePage = () => {
                                 <p className="no-play">You haven't played the daily game yet</p>
                             )}
                         </div>
-                    </div>
+                     </div>   
                 </div>
 
 
@@ -371,11 +309,11 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
-        </div>
-        : <Navigate to="/login"></Navigate>
-    }
-    </>
+                <Footer />
+            </div>
+            : <Navigate to="/login"></Navigate>
+        }
+        </>
     );
 }
 export default ProfilePage;

@@ -21,7 +21,7 @@ import DemoGamePage from './pages/games/DemoGamePage.tsx';
 
 export default function App() {
     return (
-        <GoogleOAuthProvider clientId="1085693336158 - 2h6o9i0euhm4afclpjbm1a06bi6k5o07.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_GOOGLE_ID}>
             <BrowserRouter>
                 <Routes>
                     <Route index element={<MainPage />} />
