@@ -3,9 +3,8 @@ import Footer from "../additional_components/Footer";
 import Navigation from "../additional_components/Navigation";
 import GameService from "./GameService";
 import './StartGamePage.scss';
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
-import ErrorHandle from "../../utils/ErrorHandle";
 
 const StartGamePage = () => {
     const gameserv = GameService;
@@ -25,12 +24,7 @@ const StartGamePage = () => {
                     navigate("/lvl/game");
                 })
                 .catch((error) => {
-                    toast.error(`Couldn't start the game: ${ErrorHandle(error.response.data.errors)}`, {
-                        style: {
-                            backgroundColor: '#5d8ecf',
-                            color: 'white'
-                        }
-                    });
+                    console.log(error);
                 });
             return;
         }
@@ -48,20 +42,10 @@ const StartGamePage = () => {
                     navigate("/lvl/dailygame");
                 })
                 .catch((error) => {
-                    if (error.response?.status === 409) {
-                        toast.error("You have already played today's game!", {
-                            style: {
-                                backgroundColor: '#5d8ecf',
-                                color: 'white'
-                            }
-                        });
+                    if (error.response?.status === 429) {
+                        toast.error("You have already played today's game!");
                     } else {
-                        toast.error(`Error starting daily game: ${ErrorHandle(error.response.data.errors)}`, {
-                            style: {
-                                backgroundColor: '#5d8ecf',
-                                color: 'white'
-                            }
-                        });
+                        console.error("Error starting daily game:", error);
                     }
                 });
             return;

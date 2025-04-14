@@ -4,7 +4,6 @@ import "./Auth.scss";
 import Cookies from "universal-cookie";
 import authService from "./authService";
 import { toast } from "sonner";
-import ErrorHandle from "../../utils/ErrorHandle";
 
 const ForgetPasswordPage = () => {
     useEffect(() => {
@@ -16,6 +15,7 @@ const ForgetPasswordPage = () => {
 
     const EML_REGEX = /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     const [email, setEmail] = useState('');
+
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;
     const authserv = authService;
@@ -28,12 +28,7 @@ const ForgetPasswordPage = () => {
     function Submit() {
         const emailValid = EML_REGEX.test(email);
         if (!emailValid) {
-            toast.error(`Please enter valid email`, {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
+            toast.error("Please enter a valid email");
             return;
         }
         authserv.reset_password(email)
@@ -41,11 +36,9 @@ const ForgetPasswordPage = () => {
                 toast.success("Link is sent to your email!");
             })
             .catch((error) => {
-                toast.error(`Error reseting password: ${ErrorHandle(error.response.data.errors)}`, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
+                const errmsgs = error.response.data.errors;
+                errmsgs.forEach((msg: { errorMessage: string }) => {
+                  toast.error(msg.errorMessage);
                 });
             })
     }

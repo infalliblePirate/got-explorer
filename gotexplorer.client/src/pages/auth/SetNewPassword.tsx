@@ -5,7 +5,6 @@ import Cookies from "universal-cookie";
 import "./Auth.scss";
 import authService from "./authService";
 import { toast } from "sonner";
-import ErrorHandle from "../../utils/ErrorHandle";
 
 const SetNewPasswordPage = () => {
     useEffect(() => {
@@ -27,6 +26,7 @@ const SetNewPasswordPage = () => {
         firstPass: "",
         secondPass: ""
     });
+
     const [isPasswordVisible, setPasswordVisible] = useState({
         forFirstPass: false,
         forSecondPass: false
@@ -50,33 +50,21 @@ const SetNewPasswordPage = () => {
             [e.target.name]: value
         });
     };
+
     function Submit() {
         if (userPassword.firstPass === "" || userPassword.secondPass === "") {
-            toast.error("Please fill both fields", {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
+            toast.error("Please fill both fields");
             return;
         }
         if (userPassword.firstPass !== userPassword.secondPass) {
-            toast.error("Passwords are not the same", {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
+            toast.error("Passwords are not the same");
             return;
         }
         const passValid = PWD_REGEX.test(userPassword.firstPass);
         if (!passValid) {
-            toast.error("Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol", {
-                style: {
-                    backgroundColor: '#5d8ecf',
-                    color: 'white'
-                }
-            });
+            toast.error(
+              "Password should contain 1 uppercase letter; 1 lowercase letter; 1 digit; 1 special symbol"
+            );
             return;
         }
 
@@ -86,11 +74,9 @@ const SetNewPasswordPage = () => {
                 navigate("/login");
             })
             .catch((error: any) => {
-                toast.error(`Error fetching image: ${ErrorHandle(error.response.data.errors)}`, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
+                const errmsgs = error.response.data.errors;
+                errmsgs.forEach((msg: { errorMessage: string }) => {
+                  toast.error(msg.errorMessage);
                 });
             });
 
