@@ -5,6 +5,7 @@ import Cookies from "universal-cookie";
 import "./Auth.scss";
 import authService from "./authService";
 import { toast } from "sonner";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 const SetNewPasswordPage = () => {
     useEffect(() => {
@@ -74,10 +75,7 @@ const SetNewPasswordPage = () => {
                 navigate("/login");
             })
             .catch((error: any) => {
-                const errmsgs = error.response.data.errors;
-                errmsgs.forEach((msg: { errorMessage: string }) => {
-                  toast.error(msg.errorMessage);
-                });
+                toast.error(`Registration failed:${ErrorHandle(error.response.data.errors)}`);
             });
 
     }

@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
-    console.log(`level id: ${id}`);
     scene.clearScene();
     scene.changeCameraPosition(1000, 1000, 1000);
     gameserv.load_level(id).then((r) => {
@@ -25,7 +24,7 @@ let counter = 0;
 
 const DemoGamePage = () => {
     const navigate = useNavigate();
-    const [gameLogic, setGameLogic] = useState<GameLogic | null>(null); 
+    const [gameLogic, setGameLogic] = useState<GameLogic | null>(null);
     const [isMapExpanded, setIsMapExpanded] = useState(false);
     const [showEndGame, setShowEndGame] = useState(false);
     const gameserv = GameService;
@@ -47,7 +46,7 @@ const DemoGamePage = () => {
 
         const container = document.getElementById("three");
         if (!container) {
-            console.error("Container for 3D scene not found.");
+            toast.error("Container for 3D scene not found.");
             return;
         }
 
@@ -55,7 +54,7 @@ const DemoGamePage = () => {
         scene.current.loadBackground("/assets/panorama2.webp");
 
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
-        
+
         const containerId = "map";
 
         const newMap = new Map2d("/assets/map2.webp", imageBounds, containerId);
@@ -63,20 +62,23 @@ const DemoGamePage = () => {
         map2dRef.current = newMap;
 
         if (scene.current !== undefined) {
-          console.log(` levels are ${levels}`);
-          setGameLogic(
-            UploadLevelModel(scene.current, levels[counter], gameserv, newMap)
-          );
+            setGameLogic(
+                UploadLevelModel(scene.current, levels[counter], gameserv, newMap)
+            );
+        }
+        else {
+            toast.error('Cannot view scene');
+            return;
         }
 
-        return () => {};
+        return () => { };
     }, []);
     useEffect(() => {
-      if (map2dRef.current) {
-        setTimeout(() => {
-          map2dRef.current!.handleContainerResize();
-        }, 300);
-      }
+        if (map2dRef.current) {
+            setTimeout(() => {
+                map2dRef.current!.handleContainerResize();
+            }, 300);
+        }
     }, [isMapExpanded]);
 
     const toggleMap = () => {
@@ -85,7 +87,7 @@ const DemoGamePage = () => {
 
     const handleSubmitAnswer = async () => {
         if (!gameLogic) {
-            console.error("GameLogic is not initialized");
+            toast.error("GameLogic is not initialized");
             return;
         }
         if (!gameLogic.hasMarker()) {

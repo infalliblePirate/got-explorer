@@ -5,6 +5,7 @@ import Cookies from "universal-cookie";
 import authService from "./authService";
 import { toast } from "sonner";
 import { GoogleLogin } from "@react-oauth/google";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 
 const SignUpPage = () => {
@@ -48,7 +49,7 @@ const SignUpPage = () => {
                 navigate("/startgame");
             })
             .catch((error) => {
-                console.error("Registration failed:", error);
+                toast.error("Registration failed:", error);
                 const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
                 toast.error(errorMsg, {
                     style: {
@@ -75,14 +76,7 @@ const SignUpPage = () => {
                     navigate("/startgame");
                 })
                 .catch((error) => {
-                    console.error("Registration failed:", error);
-                    const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
-                    toast.error(errorMsg, {
-                        style: {
-                            backgroundColor: '#5d8ecf',
-                            color: 'white'
-                        }
-                    });
+                    toast.error(`Registration failed:${ErrorHandle(error.response.data.errors)}`);
                 });
         } else {
             if (!passValid) {
@@ -142,7 +136,7 @@ const SignUpPage = () => {
                                     SubmitGoogle(r.credential as string);
                                 }}
                                 onError={() => {
-                                    console.log('Login Failed');
+                                    toast.error("Google login failed");
                                 }}
                             />
                         </div>

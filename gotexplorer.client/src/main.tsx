@@ -22,7 +22,7 @@ import { ProfileImageProvider } from "./pages/auth/ImageContex.tsx";
 
 export default function App() {
     return (
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_GOOGLE_ID}>
+        <GoogleOAuthProvider clientId='1085693336158-2h6o9i0euhm4afclpjbm1a06bi6k5o07.apps.googleusercontent.com'>
             <BrowserRouter>
                 <Routes>
                     <Route index element={<MainPage />} />

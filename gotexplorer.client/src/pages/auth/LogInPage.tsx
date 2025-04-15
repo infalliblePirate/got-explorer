@@ -5,6 +5,7 @@ import authService from "./authService";
 import Cookies from "universal-cookie";
 import { toast } from 'sonner';
 import { GoogleLogin } from "@react-oauth/google";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 
 const LogInPage = () => {
@@ -50,14 +51,7 @@ const LogInPage = () => {
                 navigate("/startgame");
             })
             .catch((error) => {
-                console.error("Registration failed:", error);
-                const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
-                toast.error(errorMsg, {
-                    style: {
-                        backgroundColor: '#5d8ecf',
-                        color: 'white'
-                    }
-                });
+                toast.error(`Google login failed: ${ErrorHandle(error.response.data.errors)}`);
             });
     }
 
@@ -77,14 +71,7 @@ const LogInPage = () => {
                     navigate("/startgame");
                 })
                 .catch((error) => {
-                    console.error("Login failed:", error);
-                    const errorMsg = error.response?.data?.errors[0]?.errorMessage || "An error occurred.";
-                    toast.error(errorMsg, {
-                        style: {
-                            backgroundColor: '#5d8ecf',
-                            color: 'white'
-                        }
-                    });
+                    toast.error(`Login failed: ${ErrorHandle(error.response.data.errors)}`);
                 });
         } else {
             if (!passValid) {
@@ -165,7 +152,7 @@ const LogInPage = () => {
                                     SubmitGoogle(r.credential as string);
                                 }}
                                 onError={() => {
-                                    console.log('Login Failed');
+                                    toast.error(`Google login failed`);
                                 }}
                             />
                         </div>

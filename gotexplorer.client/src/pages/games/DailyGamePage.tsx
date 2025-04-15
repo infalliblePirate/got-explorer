@@ -10,10 +10,9 @@ import Cookies from "universal-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import Leaderboard, { Player } from "./LeaderBoard";
 import { toast } from 'sonner';
+import ErrorHandle from "../../utils/ErrorHandle";
 
 const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService, map: Map2d): GameLogic => {
-    console.log(`level id: ${id}`);
-    console.log(scene);
     scene.clearScene();
     scene.changeCameraPosition(1000, 1000, 1000);
     gameserv.load_level(id).then((r) => {
@@ -22,6 +21,7 @@ const UploadLevelModel = (scene: Scene, id: number, gameserv: typeof GameService
     scene.animate();
     return new GameLogic(map);
 }
+// eslint-disable-next-line prefer-const
 let counter = 0;
 const DailyGamePage = () => {
     const navigate = useNavigate();
@@ -35,7 +35,7 @@ const DailyGamePage = () => {
     const gameserv = GameService;
     const scene = useRef<Scene>();
     const map = useRef<Map2d>();
-    const map2dRef = useRef<Map2d | null>(null); 
+    const map2dRef = useRef<Map2d | null>(null);
     const cookies = new Cookies();
     const levels = cookies.get("dailyLevelIds");
 
@@ -47,7 +47,7 @@ const DailyGamePage = () => {
 
         const container = document.getElementById("three");
         if (!container) {
-            console.error("Container for 3D scene not found.");
+            toast.error("Container for 3D scene not found.");
             return;
         }
 
@@ -56,30 +56,36 @@ const DailyGamePage = () => {
         if (scene != undefined) {
             scene.current.loadBackground("/assets/panorama2.webp");
         }
-        console.log(scene);
+        else {
+            toast.error('Cannot view scene');
+            return;
+        }
         // map2d
         const imageBounds: [[number, number], [number, number]] = [[0, 0], [1080, 720]];
 
         const containerId = 'map';
-        
+
         const newMap = new Map2d("/assets/map2.webp", imageBounds, containerId);
         map.current = newMap;
         map2dRef.current = newMap;
 
         if (scene.current !== undefined) {
-            console.log(` levels are ${levels}`);
             setGameLogic(UploadLevelModel(scene.current, levels[counter], gameserv, newMap));
+        }
+        else {
+            toast.error('Cannot view scene');
+            return;
         }
 
         return () => {
         };
     }, []);
     useEffect(() => {
-      if (map2dRef.current) {
-        setTimeout(() => {
-          map2dRef.current!.handleContainerResize();
-        }, 300);
-      }
+        if (map2dRef.current) {
+            setTimeout(() => {
+                map2dRef.current!.handleContainerResize();
+            }, 300);
+        }
     }, [isMapExpanded]);
 
     const toggleMap = () => {
@@ -88,28 +94,23 @@ const DailyGamePage = () => {
 
     const handleSubmitAnswer = async () => {
         if (!gameLogic) {
-            console.error("GameLogic is not initialized");
+            toast.error("GameLogic is not initialized");
             return;
         }
         if (!gameLogic.hasMarker()) {
             toast.info("Please place a marker on the map before submitting your answer.");
             return;
         }
-   
-        console.log(gameLogic.getClick());
+
         const click = gameLogic.getClick();
-        console.log(click);
         if (click != null) {
-            const r = await gameserv.calculate_level_daily(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
-            console.log(r);
+            await gameserv.calculate_level_daily(levels[counter], Math.round(click.lat * 100) / 100, Math.round(click.lng * 100) / 100);
         }
-      
+
         setIsMapExpanded(false);
-     
+
         try {
             const completedGame = await gameserv.complete_daily_game();
-            console.log(completedGame);
-            console.log("Fetching leaderboard from API...");
             const response = await gameserv.getLeaderboardDaily();
             const currentUserId = completedGame.userId;
             setCurrentUserId(currentUserId);
@@ -120,15 +121,14 @@ const DailyGamePage = () => {
                 startTime: playerData.startTime,
                 endTime: playerData.endTime,
             }));
-            console.log("Leaderboard response:", response.data);
             setPlayers(leaderboardData);
             if (completedGame && completedGame.score !== undefined) {
                 setCurrentScore(completedGame.score);
             }
-            
+
             setShowLeaderboard(true);
-        } catch (error) {
-            console.error("Error fetching leaderboard:", error);
+        } catch (error: any) {
+            toast.error(`Error fetching leaderboard:${ErrorHandle(error.response.data.errors)}`);
         }
 
     };
@@ -145,19 +145,19 @@ const DailyGamePage = () => {
                 {isMapExpanded && (
                     <>
                         <button className="close-map-button" onClick={toggleMap}>✖️</button>
-                          <button className="submit-button" onClick={handleSubmitAnswer}>
+                        <button className="submit-button" onClick={handleSubmitAnswer}>
                             Submit Answer
                         </button>
                     </>
                 )}
 
-                
+
             </div>
 
             {showLeaderboard && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <Leaderboard players={players} currentScore={currentScore} currentUserId={currentUserId}/>
+                        <Leaderboard players={players} currentScore={currentScore} currentUserId={currentUserId} />
                         <div className="modal-buttons">
                             <Link to="/" className="homepage-link">
                                 <button className="close-button"  >

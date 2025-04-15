@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Navigate, Link} from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import "./Auth.scss";
 import Cookies from "universal-cookie";
 import authService from "./authService";
 import { toast } from "sonner";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 const ForgetPasswordPage = () => {
     useEffect(() => {
@@ -36,10 +37,7 @@ const ForgetPasswordPage = () => {
                 toast.success("Link is sent to your email!");
             })
             .catch((error) => {
-                const errmsgs = error.response.data.errors;
-                errmsgs.forEach((msg: { errorMessage: string }) => {
-                  toast.error(msg.errorMessage);
-                });
+                toast.error(`Error sending an email: ${ErrorHandle(error.response.data.errors)}`);
             })
     }
     return (<>{isAuthenticated ? <Navigate to="/profile"></Navigate> :

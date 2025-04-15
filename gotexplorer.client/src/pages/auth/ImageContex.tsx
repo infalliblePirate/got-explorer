@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import authService from "./authService"
+import { toast } from "sonner";
+import ErrorHandle from "../../utils/ErrorHandle";
 
 type ProfileImageContextType = {
   profileImage: string | null;
@@ -28,8 +30,9 @@ export const ProfileImageProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const image = await authService.get_image(imageId);
         setProfileImage(image);
-      } catch (error) {
-        console.error("Failed to fetch profile image:", error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error : any) {
+          toast.error(`Fetching profile image failed: ${ErrorHandle(error.response.data.errors)}`);
       }
     }
   };
