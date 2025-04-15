@@ -86,7 +86,7 @@ const ProfilePage = () => {
         try {
             const decoded = jwtDecode<DecodedToken>(token);
             setUserData({
-                name: decoded.name,
+                name: cookies.get("changedName") || decoded.name,
                 email: decoded.email,
                 Id: Number(decoded.Id)
             });
@@ -174,6 +174,9 @@ const ProfilePage = () => {
     function changeName() {
         if (changedName != "") {
             authserv.update(changedName, userData.email)
+                .then(() => {
+                    cookies.set("changedName", changedName);
+                })
                 .catch((error) => {
                     toast.error(`Error changing name: ${error.response.data.errors}`);
                 });

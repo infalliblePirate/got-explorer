@@ -33,6 +33,7 @@ class AuthService {
         this.cookies.remove('levelIds');
         this.cookies.remove('token');
         this.cookies.remove('imageId');
+        this.cookies.remove('changedName')
     }
 
     signup(username: string, email: string, password: string) {
@@ -121,9 +122,7 @@ class AuthService {
     }
     delete() {
         api.delete("/account/delete", getAuthConfig());
-        this.cookies.remove('gameid');
-        this.cookies.remove('levelIds');
-        this.cookies.remove('token');
+        this.logout();
     }
     get_images() {
         return api.get("/image")
