@@ -3,7 +3,7 @@ import "../homepage/MainPage.scss";
 import Cookies from "universal-cookie";
 import { useEffect, useState } from "react";
 import { useProfileImage } from "../auth/ImageContex";
-// import Menu from "../../assets/images/menu.png";
+
 const Navigation = () => {
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null ? true : false;

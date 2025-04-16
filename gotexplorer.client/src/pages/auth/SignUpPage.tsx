@@ -6,6 +6,7 @@ import authService from "./authService";
 import { toast } from "sonner";
 import { GoogleLogin } from "@react-oauth/google";
 import ErrorHandle from "../../utils/ErrorHandle";
+import { useProfileImage } from "./ImageContex";
 
 
 const SignUpPage = () => {
@@ -16,7 +17,7 @@ const SignUpPage = () => {
     const authserv = authService;
     const cookies = new Cookies();
     const isAuthenticated = cookies.get('token') != null;
-
+    const { refreshProfileImage } = useProfileImage();
     const [userData, setUserData] = useState({
         username: "",
         email: "",
@@ -40,6 +41,7 @@ const SignUpPage = () => {
     const SubmitGoogle = (token: string) => {
         authserv.login_google(token)
             .then(() => {
+                refreshProfileImage();
                 toast.success("Successful registration!", {
                     style: {
                         backgroundColor: '#cfc15d',
@@ -67,6 +69,7 @@ const SignUpPage = () => {
         if (passValid && emailValid && userData.username !== "") {
             authserv.signup(userData.username, userData.email, userData.password)
                 .then(() => {
+                    refreshProfileImage();
                     toast.success("Successful registration!", {
                         style: {
                             backgroundColor: '#cfc15d',

@@ -134,8 +134,9 @@ const ProfilePage = () => {
             document.removeEventListener("mousedown", handleClickOutside);
             const changed = cookies.get("changedImage");
             const current = cookies.get("imageId");
+            const token = cookies.get("token");
 
-            if (changed && changed !== current) {
+            if (token && changed && changed !== current) {
                 authserv
                     .update_photo()
                     .then(() => {
