@@ -4,13 +4,14 @@ import Navigation from '../additional_components/Navigation';
 import './ProfilePage.scss';
 import Cookies from 'universal-cookie';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { jwtDecode, JwtPayload  } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useEffect, useRef, useState } from 'react';
 import authService from './authService';
 import { toast } from 'sonner';
 import GameService from '../games/GameService';
 import { Player } from '../games/LeaderBoard';
-import { useProfileImage } from "./ImageContex"; 
+import { useProfileImage } from "./ImageContex";
+import ErrorHandle from '../../utils/ErrorHandle';
 
 const Popover = ({ onSelectImage, popoverRef }: { onSelectImage: (imageId: string) => void; popoverRef: React.RefObject<HTMLDivElement>; }) => {
     const [children, setChildren] = useState<JSX.Element[]>([]);
@@ -44,7 +45,7 @@ const PossiblePicture = ({ id, source, onSelect }: { id: string, source: string,
     </button>
 }
 const ProfilePage = () => {
-        interface DecodedToken extends JwtPayload {
+    interface DecodedToken extends JwtPayload {
         name: string;
         email: string;
         Id: number | null;
@@ -73,10 +74,10 @@ const ProfilePage = () => {
     const [dailyLeaderboard, setDailyLeaderboard] = useState<Player[]>([]);
     const gameserv = GameService;
     const { setProfileImage, refreshProfileImage } = useProfileImage();
-    
+
     const handleClickOutside = (event: MouseEvent) => {
         if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
-            setPopover(false); 
+            setPopover(false);
         }
     };
 
@@ -85,13 +86,13 @@ const ProfilePage = () => {
         try {
             const decoded = jwtDecode<DecodedToken>(token);
             setUserData({
-                name: decoded.name,
+                name: cookies.get("changedName") || decoded.name,
                 email: decoded.email,
                 Id: Number(decoded.Id)
             });
             gameserv.getLeaderboard()
                 .then(response => {
-                    const data: Player[] = response.data; 
+                    const data: Player[] = response.data;
                     setLeaderboard(data);
                     const userIndex = data.findIndex((user: Player) => user.userId === Number(decoded.Id));
                     if (userIndex !== -1) {
@@ -99,15 +100,15 @@ const ProfilePage = () => {
                         setUserScore(data[userIndex].score);
                     }
                 })
-                .catch(error => console.error("Error fetching leaderboard:", error));
+                .catch(error => toast.error(`Error fetching leaderboard:${ErrorHandle(error.response.data.errors)}`));
             gameserv.getLeaderboardDaily()
-            .then(response => {
-                const data: Player[] = response.data;
-                setDailyLeaderboard(data);
-            })
-            .catch(error => console.error("Error fetching daily leaderboard:", error));
-        } catch (error) {
-            console.error('Token decoding failed:', error);
+                .then(response => {
+                    const data: Player[] = response.data;
+                    setDailyLeaderboard(data);
+                })
+                .catch(error => toast.error(`Error fetching daily leaderboard:${ErrorHandle(error.response.data.errors)}`));
+        } catch (error: any) {
+            toast.error(`Token decoding failed: ${error.response.data.errors}`);
         }
         const fetchImage = () => {
             try {
@@ -123,27 +124,27 @@ const ProfilePage = () => {
                             setImageSrc(resp);
                         });
                 }
-            } catch (error) {
-                console.error("Error fetching image:", error);
+            } catch (error: any) {
+                toast.error(`Error fetching image: ${error.response.data.errors}`);
             }
         };
 
         fetchImage();
         return () => {
-          document.removeEventListener("mousedown", handleClickOutside);
-          const changed = cookies.get("changedImage");
-          const current = cookies.get("imageId");
+            document.removeEventListener("mousedown", handleClickOutside);
+            const changed = cookies.get("changedImage");
+            const current = cookies.get("imageId");
 
-          if (changed && changed !== current) {
-            authserv
-              .update_photo()
-                .then(() => {
-                refreshProfileImage(); 
-              })
-              .catch((error) => {
-                console.error("Failed to update photo:", error);
-              });
-          }
+            if (changed && changed !== current) {
+                authserv
+                    .update_photo()
+                    .then(() => {
+                        refreshProfileImage();
+                    })
+                    .catch((error) => {
+                        toast.error(`Failed to update photo: ${error.response.data.errors}`);;
+                    });
+            }
         };
 
     }, []);
@@ -153,10 +154,10 @@ const ProfilePage = () => {
             authserv.get_image(imageId).
                 then((resp) => {
                     setImageSrc(resp);
-                    setProfileImage(resp);  
+                    setProfileImage(resp);
                 });
-        } catch (error) {
-            console.error("Error fetching image:", error);
+        } catch (error: any) {
+            toast.error(`Error fetching image: ${error.response.data.errors}`);
         }
     };
 
@@ -172,17 +173,30 @@ const ProfilePage = () => {
     }
     function changeName() {
         if (changedName != "") {
-            authserv.update(changedName, userData.email)
-                .catch((err) => {
-                    console.error(err);
-                });
+            authserv
+              .update(changedName, userData.email)
+              .then(() => {
+                cookies.set("changedName", changedName);
+                setUserData((prev) => ({ ...prev, name: changedName }));
+                setChangedName(""); 
+                toast.success("Username updated successfully");
+              })
+              .catch((error) => {
+                const errors = error?.response?.data?.errors;
+                const message =
+                  Array.isArray(errors) && errors.length > 0
+                    ? errors[0].errorMessage 
+                    : "Unknown error";
+                toast.error(`Error changing name: ${message}`);
+              });
+
         }
     }
     function changePassword() {
         if (changedPasswords.oldPassword != "" && changedPasswords.changedPassword != "") {
             authserv.update_password(changedPasswords.oldPassword, changedPasswords.changedPassword).then(() => { navigate(0); })
-                .catch((err) => {
-                    console.error(err);
+                .catch((error) => {
+                    toast.error(`Error changing password: ${error.response.data.errors}`);
                 });
         }
     }
@@ -193,8 +207,8 @@ const ProfilePage = () => {
                 setTimeout(() => {
                     resolve();
                 }, 2000);
-            } catch (error) {
-                console.log(error);
+            } catch (error: any) {
+                toast.error(`Error deleting profile: ${error.response.data.errors}`);
                 reject();
             }
         });
@@ -237,48 +251,48 @@ const ProfilePage = () => {
                             <Popover onSelectImage={handleImageSelect} popoverRef={popoverRef} />
                         }
                         <button className="change-picture-button" onClick={handlePopout}>📸</button>
-                     </div>
-                     <h2 className="username">{userData.name}</h2>
-                 </div>
+                    </div>
+                    <h2 className="username">{userData.name}</h2>
+                </div>
 
                 <div className="profile-leaderboard">
                     <h4>Leader board</h4>
                     <div className="leaderboard-container">
                         <div className="leaderboard-left">
                             <h5>Standard Leaderboard</h5>
-                        {leaderboard.length > 0 && userRank !== null ? (
-                            <>
-                                <p className={leaderboard[0].userId === userData.Id ? "you" : ""}>
-                                    1. {leaderboard[0].userId === userData.Id ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
-                                </p>
-                                {userRank !== 1 && (
-                                    <>
-                                        {userRank === 2 && (
-                                            <p className="you">
-                                                2. You - {userScore} points
-                                            </p>
-                                        )}
-                                        {userRank > 2 && (
-                                            <>
-                                                <p>...</p>
+                            {leaderboard.length > 0 && userRank !== null ? (
+                                <>
+                                    <p className={leaderboard[0].userId === userData.Id ? "you" : ""}>
+                                        1. {leaderboard[0].userId === userData.Id ? "You" : leaderboard[0].username} - {leaderboard[0].score} points
+                                    </p>
+                                    {userRank !== 1 && (
+                                        <>
+                                            {userRank === 2 && (
                                                 <p className="you">
-                                                    {userRank}. You - {userScore} points
+                                                    2. You - {userScore} points
                                                 </p>
-                                            </>
-                                        )}
-                                    </>
-                                )}
-                            </>
-                        ) : (
-                            <p className="no-play">You haven't played yet</p>
-                        )}                             
+                                            )}
+                                            {userRank > 2 && (
+                                                <>
+                                                    <p>...</p>
+                                                    <p className="you">
+                                                        {userRank}. You - {userScore} points
+                                                    </p>
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <p className="no-play">You haven't played yet</p>
+                            )}
                         </div>
                         <div className="divider"></div>
                         <div className="leaderboard-right">
                             <h5>Daily Game</h5>
                             {dailyLeaderboard.length > 0 ? (
                                 <>
-                                    {dailyLeaderboard.map((user, index) => 
+                                    {dailyLeaderboard.map((user, index) =>
                                         user.userId === userData.Id && (
                                             <p key={user.userId} className="you">
                                                 {index + 1}. You - {user.score} points
@@ -290,7 +304,7 @@ const ProfilePage = () => {
                                 <p className="no-play">You haven't played the daily game yet</p>
                             )}
                         </div>
-                     </div>   
+                    </div>
                 </div>
 
 
@@ -298,7 +312,7 @@ const ProfilePage = () => {
                 <div className="profile-form">
                     <div className="form-group">
                         <label htmlFor="changedName">Name</label>
-                        <input id="changedName" name="changedName" type="text" placeholder="Change your name" onChange={(e) => setChangedName(e.target.value)} autoComplete="off" readOnly
+                        <input id="changedName" name="changedName" type="text" placeholder="Change your name" value={changedName} onChange={(e) => setChangedName(e.target.value)} autoComplete="off" readOnly
                             onFocus={(e) => e.target.removeAttribute('readOnly')} />
                         <button className="save-button" onClick={changeName}>Save new username</button>
                     </div>
@@ -318,11 +332,11 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
-                <Footer />
-            </div>
-            : <Navigate to="/login"></Navigate>
-        }
-        </>
+            <Footer />
+        </div>
+        : <Navigate to="/login"></Navigate>
+    }
+    </>
     );
 }
 export default ProfilePage;

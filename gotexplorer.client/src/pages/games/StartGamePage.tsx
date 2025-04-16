@@ -5,6 +5,7 @@ import GameService from "./GameService";
 import './StartGamePage.scss';
 import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
+import ErrorHandle from "../../utils/ErrorHandle";
 
 const StartGamePage = () => {
     const gameserv = GameService;
@@ -24,7 +25,7 @@ const StartGamePage = () => {
                     navigate("/lvl/game");
                 })
                 .catch((error) => {
-                    console.log(error);
+                    toast.error(`Couldn't start the game: ${ErrorHandle(error.response.data.errors)}`);
                 });
             return;
         }
@@ -45,7 +46,7 @@ const StartGamePage = () => {
                     if (error.response?.status === 429) {
                         toast.error("You have already played today's game!");
                     } else {
-                        console.error("Error starting daily game:", error);
+                        toast.error(`Couldn't start the game: ${ErrorHandle(error.response.data.errors)}`);
                     }
                 });
             return;
@@ -68,8 +69,7 @@ const StartGamePage = () => {
                 navigate("/lvl/demogame");
             })
             .catch((error) => {
-                console.error("Error starting demo game:", error);
-                toast.error("Failed to start demo game.");
+                toast.error(`Failed to start demo game: ${ErrorHandle(error.response.data.errors)}`);
             });
     };
     return (
