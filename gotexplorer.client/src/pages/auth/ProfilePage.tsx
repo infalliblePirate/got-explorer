@@ -173,13 +173,23 @@ const ProfilePage = () => {
     }
     function changeName() {
         if (changedName != "") {
-            authserv.update(changedName, userData.email)
-                .then(() => {
-                    cookies.set("changedName", changedName);
-                })
-                .catch((error) => {
-                    toast.error(`Error changing name: ${error.response.data.errors}`);
-                });
+            authserv
+              .update(changedName, userData.email)
+              .then(() => {
+                cookies.set("changedName", changedName);
+                setUserData((prev) => ({ ...prev, name: changedName }));
+                setChangedName(""); 
+                toast.success("Username updated successfully");
+              })
+              .catch((error) => {
+                const errors = error?.response?.data?.errors;
+                const message =
+                  Array.isArray(errors) && errors.length > 0
+                    ? errors[0].errorMessage 
+                    : "Unknown error";
+                toast.error(`Error changing name: ${message}`);
+              });
+
         }
     }
     function changePassword() {
@@ -302,7 +312,7 @@ const ProfilePage = () => {
                 <div className="profile-form">
                     <div className="form-group">
                         <label htmlFor="changedName">Name</label>
-                        <input id="changedName" name="changedName" type="text" placeholder="Change your name" onChange={(e) => setChangedName(e.target.value)} autoComplete="off" readOnly
+                        <input id="changedName" name="changedName" type="text" placeholder="Change your name" value={changedName} onChange={(e) => setChangedName(e.target.value)} autoComplete="off" readOnly
                             onFocus={(e) => e.target.removeAttribute('readOnly')} />
                         <button className="save-button" onClick={changeName}>Save new username</button>
                     </div>
