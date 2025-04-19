@@ -88,7 +88,7 @@ const TeamPage = () => {
             <TeamMember
               name="Mariia Yakovenko"
               role="3D artist, UI/UX designer"
-              description="Sometimes taking a leap forward means leaving a few things behind."
+              description='Designer after seeing Comic Sans in a production build:  "The North remembers. Winter will come for such diabolical font crimes"'
               image={marie}
               socials={[
                 { icon: "facebook", link: "https://facebook.com" },

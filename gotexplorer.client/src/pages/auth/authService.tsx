@@ -34,6 +34,8 @@ class AuthService {
         this.cookies.remove('token');
         this.cookies.remove('imageId');
         this.cookies.remove('changedName')
+        this.cookies.remove('changedImage');
+        this.cookies.remove('dailyLevelIds');
     }
 
     signup(username: string, email: string, password: string) {
