@@ -16,7 +16,13 @@
 
 .logo {
     content: url(../../assets/images/Logo.svg);
-   width: 400px;
+    width: 400px;
+    @include respond(tab-land) {
+        width: 350px;
+    }
+    @include respond(phone) {
+        width: 280px;
+    }
 }
 
 .link {
@@ -680,6 +686,13 @@ nav {
             height: auto;
             margin: 60px;
             margin-bottom: 24px;
+            @include respond(tab-land) {
+                width: 350px;
+            }
+        
+            @include respond(phone) {
+                width: 280px;
+            }
         }
 
         h2 {
@@ -687,6 +700,13 @@ nav {
             font-weight: 100;
             font-family: 'GOTfont';
             color: #fdfdfd;
+            @include respond(tab-land) {
+                font-size: 40px;
+            }
+        
+            @include respond(phone) {
+                font-size: 36px;
+            }
         }
     }
 
