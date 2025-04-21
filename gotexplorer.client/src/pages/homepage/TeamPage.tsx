@@ -40,62 +40,63 @@ const TeamPage = () => {
                             { icon: "twitter", link: "https://twitter.com" },
                         ]}
                     />
-            <TeamMember
-              name="Kateryna Pavlenko"
-              role="Backend developer"
-              description="I don’t always test my code, but when I do, it’s in production."
-              image={katya}
-              socials={[
-                { icon: "facebook", link: "https://facebook.com" },
-                { icon: "instagram", link: "https://instagram.com" },
-                { icon: "twitter", link: "https://twitter.com" },
-              ]}
-            />
-            <TeamMember
-              name="Yelyzaveta Bredikhina"
-              role="Frontend developer"
-              description="You’re ripped at every edge but you’re a masterpiece."
-              image={liza}
-              socials={[
-                { icon: "facebook", link: "https://facebook.com" },
-                { icon: "instagram", link: "https://instagram.com" },
-                { icon: "twitter", link: "https://twitter.com" },
-              ]}
-            />
-            <TeamMember
-              name="Dmytro Levkovych"
-              role="QA"
-              description="Feature doesn't work. I dont know why. It doesn't even matter how hard you try."
-              image={dima}
-              socials={[
-                { icon: "facebook", link: "https://facebook.com" },
-                { icon: "instagram", link: "https://instagram.com" },
-                { icon: "twitter", link: "https://twitter.com" },
-              ]}
-            />
-            <TeamMember
-              name="Anastasia Grinke"
-              role="3D artist, Fronted developer, UI/UX designer"
-              description="3D is spending two days texturing… then forgetting to save."
-              image={nastya}
-              socials={[
-                { icon: "facebook", link: "https://facebook.com" },
-                { icon: "instagram", link: "https://instagram.com" },
-                { icon: "twitter", link: "https://twitter.com" },
-              ]}
-            />
-            <TeamMember
-              name="Mariia Yakovenko"
-              role="3D artist, UI/UX designer"
-              description='Designer after seeing Comic Sans in a production build:  "The North remembers. Winter will come for such diabolical font crimes"'
-              image={marie}
-              socials={[
-                { icon: "facebook", link: "https://facebook.com" },
-                { icon: "instagram", link: "https://instagram.com" },
-                { icon: "twitter", link: "https://twitter.com" },
-              ]}
-            />
-          </div>
+                    <TeamMember
+                        name="Kateryna Pavlenko"
+                        role="Backend developer"
+                        description="I don’t always test my code, but when I do, it’s in production."
+                        image={katya}
+                        socials={[
+                            { icon: "facebook", link: "https://facebook.com" },
+                            { icon: "instagram", link: "https://instagram.com" },
+                            { icon: "twitter", link: "https://twitter.com" },
+                        ]}
+                    />
+                    <TeamMember
+                        name="Yelyzaveta Bredikhina"
+                        role="Frontend developer"
+                        description="You’re ripped at every edge but you’re a masterpiece."
+                        image={liza}
+                        socials={[
+                            { icon: "facebook", link: "https://facebook.com" },
+                            { icon: "instagram", link: "https://instagram.com" },
+                            { icon: "twitter", link: "https://twitter.com" },
+                        ]}
+                    />
+                    <TeamMember
+                        name="Dmytro Levkovych"
+                        role="QA"
+                        description="Feature doesn't work. I dont know why. It doesn't even matter how hard you try."
+                        image={dima}
+                        socials={[
+                            { icon: "facebook", link: "https://facebook.com" },
+                            { icon: "instagram", link: "https://instagram.com" },
+                            { icon: "twitter", link: "https://twitter.com" },
+                        ]}
+                    />
+                    <TeamMember
+                        name="Anastasia Grinke"
+                        role="3D artist, Fronted developer, UI/UX designer"
+                        description="3D is spending two days texturing… then forgetting to save."
+                        image={nastya}
+                        socials={[
+                            { icon: "facebook", link: "https://facebook.com" },
+                            { icon: "instagram", link: "https://instagram.com" },
+                            { icon: "twitter", link: "https://twitter.com" },
+                        ]}
+                    />
+                    <TeamMember
+                        name="Mariia Yakovenko"
+                        role="3D artist, UI/UX designer"
+                        description='Designer after seeing Comic Sans in a production build:  "The North remembers. Winter will come for such diabolical font crimes"'
+                        image={marie}
+                        socials={[
+                            { icon: "facebook", link: "https://facebook.com" },
+                            { icon: "instagram", link: "https://instagram.com" },
+                            { icon: "twitter", link: "https://twitter.com" },
+                        ]}
+                    />
+                </div>
+            </div>
         </div>
     );
 };
